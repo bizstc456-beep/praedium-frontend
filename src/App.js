@@ -19,6 +19,9 @@ import TenantSetPasswordPage from './pages/TenantSetPasswordPage';
 import TenantPortalPage from './pages/TenantPortalPage';
 import TenantMaintenancePage from './pages/TenantMaintenancePage';
 import LeaseRenewalsPage from './pages/LeaseRenewalsPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import NotFoundPage from './pages/NotFoundPage';
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
   process.env.REACT_APP_SUPABASE_ANON_KEY
@@ -62,7 +65,10 @@ function App() {
         <Route path="/tenant" element={user ? <TenantPortalPage /> : <Navigate to="/tenant/login" />} />
         <Route path="/tenant/maintenance" element={user ? <TenantMaintenancePage /> : <Navigate to="/tenant/login" />} />
         <Route path="/renewals" element={user ? <LeaseRenewalsPage /> : <Navigate to="/login" />} />
+        <Route path="/terms" element={<TermsOfServicePage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/" element={user ? <DashboardPage /> : <Navigate to="/login" />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );

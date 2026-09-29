@@ -1,0 +1,116 @@
+/* Layout for long-form legal pages (Terms of Service, Privacy Policy). */
+
+.rf-legal-page {
+  min-height: 100vh;
+  background: var(--rf-accent-soft, #f1e9ff);
+  padding: 48px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.rf-legal-card {
+  width: 100%;
+  max-width: 760px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 40px 48px 56px;
+}
+
+.rf-legal-brand {
+  font-weight: 700;
+  font-size: 20px;
+  background: var(--rf-gradient, linear-gradient(135deg, #7c3aed 0%, #e0316d 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
+}
+
+.rf-legal-card h1 {
+  margin: 0 0 4px;
+  font-size: 28px;
+}
+
+.rf-legal-updated {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.rf-legal-card section {
+  margin-bottom: 28px;
+}
+
+.rf-legal-card h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #1f2937;
+}
+
+.rf-legal-card p {
+  line-height: 1.6;
+  color: #374151;
+  margin: 0 0 12px;
+}
+
+.rf-legal-card ul {
+  margin: 0 0 12px;
+  padding-left: 22px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.rf-legal-card li {
+  margin-bottom: 6px;
+}
+
+.rf-legal-card a {
+  color: var(--rf-accent, #7c3aed);
+  text-decoration: underline;
+}
+
+.rf-legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.rf-legal-table th,
+.rf-legal-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.rf-legal-table th {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rf-legal-footer {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rf-legal-footer a {
+  color: var(--rf-accent, #7c3aed);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .rf-legal-card {
+    padding: 28px 20px 40px;
+  }
+  .rf-legal-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
