@@ -48,6 +48,7 @@ export default function AppShell({ active, wide, children }) {
           {isAdmin && <Link to="/admin" className={linkClass('admin')}>Admin</Link>}
         </nav>
         <button onClick={handleLogout} className="rf-signout">Sign Out</button>
+        <a href="mailto:rentflow.biz@gmail.com" className="rf-support-link">Need help? Contact support</a>
       </aside>
       <main className={`rf-main${wide ? ' rf-main-wide' : ''}`}>{children}</main>
     </div>

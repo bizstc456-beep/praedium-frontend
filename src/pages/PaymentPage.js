@@ -101,7 +101,7 @@ export default function PaymentPage() {
             <div className="rf-feature">SMS notifications</div>
             <div className="rf-feature">Document storage</div>
             <div className="rf-feature">AI-powered tenant analysis</div>
-            <div className="rf-feature">Priority support</div>
+            <div className="rf-feature">Priority support (<a href="mailto:rentflow.biz@gmail.com">rentflow.biz@gmail.com</a>)</div>
           </div>
 
           {subscription ? (
