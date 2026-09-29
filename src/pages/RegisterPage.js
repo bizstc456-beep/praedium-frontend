@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -29,6 +30,11 @@ export default function RegisterPage() {
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      return;
+    }
+
+    if (!agreedToTerms) {
+      setError('Please agree to the Terms of Service and Privacy Policy to continue');
       return;
     }
 
@@ -130,7 +136,22 @@ export default function RegisterPage() {
               required
             />
           </div>
-          <button type="submit" className="rf-btn rf-btn-primary rf-btn-block" disabled={loading}>
+          <div className="rf-field rf-field-checkbox">
+            <label className="rf-checkbox-label">
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+              />
+              <span>
+                I agree to the{' '}
+                <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</Link>
+                {' '}and{' '}
+                <Link to="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>
+              </span>
+            </label>
+          </div>
+          <button type="submit" className="rf-btn rf-btn-primary rf-btn-block" disabled={loading || !agreedToTerms}>
             {loading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
