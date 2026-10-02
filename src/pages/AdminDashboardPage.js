@@ -189,20 +189,20 @@ export default function AdminDashboardPage() {
               <svg viewBox="0 0 300 64" width="100%" height="64" style={{ display: 'block' }}>
                 <defs>
                   <linearGradient id="pd-sparkfill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.22" />
-                    <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
+                    <stop offset="0%" stopColor="#d9a441" stopOpacity="0.22" />
+                    <stop offset="100%" stopColor="#d9a441" stopOpacity="0" />
                   </linearGradient>
                 </defs>
                 <path d={spark.areaPath} fill="url(#pd-sparkfill)" />
                 <path
                   d={spark.linePath}
                   fill="none"
-                  stroke="#7c3aed"
+                  stroke="#d9a441"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                <circle cx={spark.last[0]} cy={spark.last[1]} r="3.5" fill="#7c3aed" />
+                <circle cx={spark.last[0]} cy={spark.last[1]} r="3.5" fill="#d9a441" />
               </svg>
             )}
           </div>
