@@ -107,11 +107,11 @@ export default function LandlordDashboardPage() {
   };
 
   if (loading) {
-    return <div className="rf-state"><p>Loading your dashboard...</p></div>;
+    return <div className="pd-state"><p>Loading your dashboard...</p></div>;
   }
 
   if (error) {
-    return <div className="rf-state"><p>{error}</p></div>;
+    return <div className="pd-state"><p>{error}</p></div>;
   }
 
   const hasPending = summary.pending_amount > 0;
@@ -192,41 +192,41 @@ export default function LandlordDashboardPage() {
   };
 
   return (
-    <div className="rf-dash">
-      <div className="rf-dash-grid">
-        <div className="rf-dash-main">
+    <div className="pd-dash">
+      <div className="pd-dash-grid">
+        <div className="pd-dash-main">
           {showOnboarding && (
-            <div className="rf-onboarding rf-anim-in">
-              <div className="rf-onboarding-head">
-                <div className="rf-onboarding-title">
+            <div className="pd-onboarding pd-anim-in">
+              <div className="pd-onboarding-head">
+                <div className="pd-onboarding-title">
                   <span>Getting started</span>
-                  <span className="rf-onboarding-progress">{onboardingDoneCount} of {onboardingSteps.length}</span>
+                  <span className="pd-onboarding-progress">{onboardingDoneCount} of {onboardingSteps.length}</span>
                 </div>
                 <button
                   type="button"
-                  className="rf-onboarding-close"
+                  className="pd-onboarding-close"
                   onClick={dismissOnboarding}
                   aria-label="Dismiss getting started checklist"
                 >
                   &times;
                 </button>
               </div>
-              <div className="rf-onboarding-steps">
+              <div className="pd-onboarding-steps">
                 {(() => {
                   const firstIncompleteIndex = onboardingSteps.findIndex((s) => !s.done);
                   return onboardingSteps.map((step, i) => {
                     const isCurrent = i === firstIncompleteIndex;
                     return (
                       <div
-                        className={`rf-onboarding-step ${step.done ? 'done' : ''} ${isCurrent ? 'current' : ''}`}
+                        className={`pd-onboarding-step ${step.done ? 'done' : ''} ${isCurrent ? 'current' : ''}`}
                         key={step.key}
                       >
-                        <div className="rf-onboarding-step-left">
-                          <span className="rf-onboarding-check">{step.done ? '✓' : ''}</span>
-                          <span className="rf-onboarding-label">{step.label}</span>
+                        <div className="pd-onboarding-step-left">
+                          <span className="pd-onboarding-check">{step.done ? '✓' : ''}</span>
+                          <span className="pd-onboarding-label">{step.label}</span>
                         </div>
                         {isCurrent && (
-                          <Link to={step.to} className="rf-onboarding-cta">{step.cta} &rarr;</Link>
+                          <Link to={step.to} className="pd-onboarding-cta">{step.cta} &rarr;</Link>
                         )}
                       </div>
                     );
@@ -236,28 +236,28 @@ export default function LandlordDashboardPage() {
             </div>
           )}
 
-          <p className="rf-greet">Overview &middot; {monthLabel}</p>
+          <p className="pd-greet">Overview &middot; {monthLabel}</p>
 
-          <div className="rf-hero">
-            <span className="rf-hero-num">
+          <div className="pd-hero">
+            <span className="pd-hero-num">
               <CountUp
                 value={(summary.total_collected_this_month || 0) / 100}
                 format={(n) => `$${n.toFixed(2)}`}
               />
             </span>
-            <span className="rf-hero-label">collected this month</span>
+            <span className="pd-hero-label">collected this month</span>
           </div>
 
-          <div className="rf-chips">
-            <div className="rf-chip">
+          <div className="pd-chips">
+            <div className="pd-chip">
               <b><CountUp value={summary.total_properties} /></b>
               <span>properties</span>
             </div>
-            <div className="rf-chip">
+            <div className="pd-chip">
               <b><CountUp value={summary.total_tenants} /></b>
               <span>tenants</span>
             </div>
-            <div className="rf-chip">
+            <div className="pd-chip">
               <b>
                 <CountUp
                   value={(summary.pending_amount || 0) / 100}
@@ -269,53 +269,53 @@ export default function LandlordDashboardPage() {
           </div>
 
           {hasPending && (
-            <div className="rf-banner">
+            <div className="pd-banner">
               <div>
-                <div className="rf-banner-title">You have {formatMoney(summary.pending_amount)} pending this month</div>
-                <div className="rf-banner-sub">Check the properties below for who's behind, then follow up from Messages.</div>
+                <div className="pd-banner-title">You have {formatMoney(summary.pending_amount)} pending this month</div>
+                <div className="pd-banner-sub">Check the properties below for who's behind, then follow up from Messages.</div>
               </div>
-              <Link to="/messages" className="rf-banner-btn">Go to Messages</Link>
+              <Link to="/messages" className="pd-banner-btn">Go to Messages</Link>
             </div>
           )}
 
           {hasRenewals && (
-            <div className="rf-banner">
+            <div className="pd-banner">
               <div>
-                <div className="rf-banner-title">
+                <div className="pd-banner-title">
                   {renewalsSoon.length === 1 ? 'A lease ends' : `${renewalsSoon.length} leases end`} within 90 days
                 </div>
-                <div className="rf-banner-sub">
+                <div className="pd-banner-sub">
                   {renewalsSoon.map((t) => t.name).join(', ')} &mdash; Quebec's TAL notice window is open, so send any
                   rent-increase or non-renewal notice now.
                 </div>
               </div>
-              <Link to="/properties" className="rf-banner-btn">Go to Properties</Link>
+              <Link to="/properties" className="pd-banner-btn">Go to Properties</Link>
             </div>
           )}
 
-          <div className="rf-page-header-row">
-            <h2 className="rf-section-title" style={{ margin: 0 }}>Your properties</h2>
-            <Link to="/properties" className="rf-btn rf-btn-secondary">Manage properties</Link>
+          <div className="pd-page-header-row">
+            <h2 className="pd-section-title" style={{ margin: 0 }}>Your properties</h2>
+            <Link to="/properties" className="pd-btn pd-btn-secondary">Manage properties</Link>
           </div>
 
           {properties.length === 0 ? (
-            <p className="rf-empty">
+            <p className="pd-empty">
               You haven't added any properties yet. <Link to="/properties">Add your first property</Link> to get started.
             </p>
           ) : (
-            <div className="rf-plist">
+            <div className="pd-plist">
               {properties.map((p) => {
                 const unitCount = (p.tenants || []).length;
                 return (
-                  <div className="rf-prow" key={p.id}>
+                  <div className="pd-prow" key={p.id}>
                     <div>
-                      <div className="rf-prow-addr">{p.address}</div>
-                      <div className="rf-prow-city">
+                      <div className="pd-prow-addr">{p.address}</div>
+                      <div className="pd-prow-city">
                         {p.city}{unitCount ? ` · ${unitCount} unit${unitCount === 1 ? '' : 's'}` : ''}
                       </div>
                     </div>
-                    <div className="rf-prow-rent">{formatMoney(p.collected_this_month + p.pending_amount)}/mo</div>
-                    <span className={`rf-dot-status ${p.status === 'paid' ? 'good' : 'warn'}`}>
+                    <div className="pd-prow-rent">{formatMoney(p.collected_this_month + p.pending_amount)}/mo</div>
+                    <span className={`pd-dot-status ${p.status === 'paid' ? 'good' : 'warn'}`}>
                       {p.status === 'paid' ? 'Paid' : `${formatMoney(p.pending_amount)} pending`}
                     </span>
                   </div>
@@ -325,51 +325,51 @@ export default function LandlordDashboardPage() {
           )}
         </div>
 
-        <div className="rf-rail">
-          <div className="rf-rail-card rf-anim-in" style={{ animationDelay: '0ms' }}>
-            <div className="rf-rail-card-title">Quick actions</div>
-            <div className="rf-quick-actions">
-              <Link to="/properties?new=1" className="rf-quick-action">+ Add property</Link>
-              <Link to="/properties" className="rf-quick-action">Record payment</Link>
-              <Link to="/properties" className="rf-quick-action">Invite tenant</Link>
-              <Link to="/reports?new=1" className="rf-quick-action">Log expense</Link>
+        <div className="pd-rail">
+          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '0ms' }}>
+            <div className="pd-rail-card-title">Quick actions</div>
+            <div className="pd-quick-actions">
+              <Link to="/properties?new=1" className="pd-quick-action">+ Add property</Link>
+              <Link to="/properties" className="pd-quick-action">Record payment</Link>
+              <Link to="/properties" className="pd-quick-action">Invite tenant</Link>
+              <Link to="/reports?new=1" className="pd-quick-action">Log expense</Link>
             </div>
           </div>
 
-          <div className="rf-rail-card rf-anim-in" style={{ animationDelay: '70ms' }}>
-            <div className="rf-rail-card-title">Recent activity</div>
+          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '70ms' }}>
+            <div className="pd-rail-card-title">Recent activity</div>
             {recentActivity.length === 0 ? (
-              <p className="rf-rail-empty">Nothing yet this month.</p>
+              <p className="pd-rail-empty">Nothing yet this month.</p>
             ) : (
-              <div className="rf-activity-list">
+              <div className="pd-activity-list">
                 {recentActivity.map((a) => (
-                  <div className="rf-activity-row" key={a.key}>
-                    <span className={`rf-activity-dot ${a.dot}`} />
-                    <span className="rf-activity-text">{a.text}</span>
-                    <span className="rf-activity-date">{shortDate(a.date)}</span>
+                  <div className="pd-activity-row" key={a.key}>
+                    <span className={`pd-activity-dot ${a.dot}`} />
+                    <span className="pd-activity-text">{a.text}</span>
+                    <span className="pd-activity-date">{shortDate(a.date)}</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="rf-rail-card rf-anim-in" style={{ animationDelay: '140ms' }}>
-            <div className="rf-rail-card-head">
-              <span className="rf-rail-card-title">Maintenance</span>
-              <Link to="/maintenance" className="rf-rail-view-all">View all</Link>
+          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '140ms' }}>
+            <div className="pd-rail-card-head">
+              <span className="pd-rail-card-title">Maintenance</span>
+              <Link to="/maintenance" className="pd-rail-view-all">View all</Link>
             </div>
-            <div className="rf-rail-count">
+            <div className="pd-rail-count">
               <b>{openMaintenance.length}</b>
               <span>open request{openMaintenance.length === 1 ? '' : 's'}</span>
             </div>
             {maintenancePreview.length === 0 ? (
-              <p className="rf-rail-empty">Nothing open right now.</p>
+              <p className="pd-rail-empty">Nothing open right now.</p>
             ) : (
-              <div className="rf-rail-mini-list">
+              <div className="pd-rail-mini-list">
                 {maintenancePreview.map((r) => (
-                  <div className="rf-rail-mini-row" key={r.id}>
+                  <div className="pd-rail-mini-row" key={r.id}>
                     <span>{r.title}{r.tenants?.unit_label ? ` — ${r.tenants.unit_label}` : ''}</span>
-                    <span className={`rf-badge ${r.status === 'open' ? 'warn rf-badge-pulse' : 'neutral'}`}>
+                    <span className={`pd-badge ${r.status === 'open' ? 'warn pd-badge-pulse' : 'neutral'}`}>
                       {r.status === 'open' ? 'Open' : 'In progress'}
                     </span>
                   </div>
@@ -378,19 +378,19 @@ export default function LandlordDashboardPage() {
             )}
           </div>
 
-          <div className="rf-rail-card rf-anim-in" style={{ animationDelay: '210ms' }}>
-            <div className="rf-rail-card-head">
-              <span className="rf-rail-card-title">Lease renewals</span>
-              <Link to="/renewals" className="rf-rail-view-all">View all</Link>
+          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '210ms' }}>
+            <div className="pd-rail-card-head">
+              <span className="pd-rail-card-title">Lease renewals</span>
+              <Link to="/renewals" className="pd-rail-view-all">View all</Link>
             </div>
             {renewalPreview.length === 0 ? (
-              <p className="rf-rail-empty">No renewal windows open right now.</p>
+              <p className="pd-rail-empty">No renewal windows open right now.</p>
             ) : (
-              <div className="rf-rail-mini-list">
+              <div className="pd-rail-mini-list">
                 {renewalPreview.map((r) => (
-                  <div className="rf-rail-mini-row" key={r.tenant_id}>
+                  <div className="pd-rail-mini-row" key={r.tenant_id}>
                     <span>{shortName(r.tenant_name)} &mdash; ends {shortDate(r.lease_end_date)}</span>
-                    <span className={`rf-badge ${r.status === 'in_window' ? 'warn' : 'muted'}`}>
+                    <span className={`pd-badge ${r.status === 'in_window' ? 'warn' : 'muted'}`}>
                       {r.status === 'in_window' ? 'Window open' : 'Upcoming'}
                     </span>
                   </div>

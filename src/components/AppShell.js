@@ -30,13 +30,13 @@ export default function AppShell({ active, wide, children }) {
     navigate('/login');
   };
 
-  const linkClass = (page) => (active === page ? 'rf-nav-link current' : 'rf-nav-link');
+  const linkClass = (page) => (active === page ? 'pd-nav-link current' : 'pd-nav-link');
 
   return (
-    <div className="rf-shell">
-      <aside className="rf-side">
-        <div className="rf-brand">Praedium</div>
-        <nav className="rf-nav">
+    <div className="pd-shell">
+      <aside className="pd-side">
+        <div className="pd-brand">Praedium</div>
+        <nav className="pd-nav">
           <Link to="/" className={linkClass('dashboard')}>Dashboard</Link>
           <Link to="/insights" className={linkClass('insights')}>Insights</Link>
           <Link to="/properties" className={linkClass('properties')}>Properties</Link>
@@ -47,10 +47,10 @@ export default function AppShell({ active, wide, children }) {
           <Link to="/payment" className={linkClass('billing')}>Billing</Link>
           {isAdmin && <Link to="/admin" className={linkClass('admin')}>Admin</Link>}
         </nav>
-        <button onClick={handleLogout} className="rf-signout">Sign Out</button>
-        <a href="mailto:support@praedium.pro" className="rf-support-link">Need help? Contact support</a>
+        <button onClick={handleLogout} className="pd-signout">Sign Out</button>
+        <a href="mailto:support@praedium.pro" className="pd-support-link">Need help? Contact support</a>
       </aside>
-      <main className={`rf-main${wide ? ' rf-main-wide' : ''}`}>{children}</main>
+      <main className={`pd-main${wide ? ' pd-main-wide' : ''}`}>{children}</main>
     </div>
   );
 }

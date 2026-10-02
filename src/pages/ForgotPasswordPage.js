@@ -32,29 +32,29 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="rf-auth-page">
-      <div className="rf-auth-card">
-        <div className="rf-auth-brand">Praedium</div>
-        <div className="rf-auth-header">
+    <div className="pd-auth-page">
+      <div className="pd-auth-card">
+        <div className="pd-auth-brand">Praedium</div>
+        <div className="pd-auth-header">
           <h1>Reset your password</h1>
           <p>Enter your email and we'll send you a link to reset it.</p>
         </div>
         {sent ? (
           <div>
-            <div className="rf-alert-success">
+            <div className="pd-alert-success">
               If an account exists for {email}, a reset link is on its way. Check your inbox (and spam folder).
             </div>
-            <div className="rf-auth-footer">
+            <div className="pd-auth-footer">
               <p><Link to="/login">Back to sign in</Link></p>
             </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            {error && <div className="rf-alert-danger">{error}</div>}
-            <div className="rf-field">
+            {error && <div className="pd-alert-danger">{error}</div>}
+            <div className="pd-field">
               <label>Email</label>
               <input
-                className="rf-input"
+                className="pd-input"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -62,10 +62,10 @@ export default function ForgotPasswordPage() {
                 required
               />
             </div>
-            <button type="submit" className="rf-btn rf-btn-primary rf-btn-block" disabled={loading}>
+            <button type="submit" className="pd-btn pd-btn-primary pd-btn-block" disabled={loading}>
               {loading ? 'Sending...' : 'Send reset link'}
             </button>
-            <div className="rf-auth-footer">
+            <div className="pd-auth-footer">
               <p><Link to="/login">Back to sign in</Link></p>
             </div>
           </form>

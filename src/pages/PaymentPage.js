@@ -78,43 +78,43 @@ export default function PaymentPage() {
 
   return (
     <AppShell active="billing">
-      <div className="rf-pricing-wrap">
-        <div className="rf-pricing-header">
+      <div className="pd-pricing-wrap">
+        <div className="pd-pricing-header">
           <h1>Praedium Pricing</h1>
           <p>Simple, transparent pricing for landlords</p>
-          {user && <p className="rf-pricing-user">Signed in as {user.email}</p>}
+          {user && <p className="pd-pricing-user">Signed in as {user.email}</p>}
         </div>
 
-        <div className="rf-price-card">
-          <div className="rf-price-row">
+        <div className="pd-price-card">
+          <div className="pd-price-row">
             <h2>Pro Plan</h2>
-            <div className="rf-price-amount">$150<span className="period">/month</span></div>
+            <div className="pd-price-amount">$150<span className="period">/month</span></div>
           </div>
 
-          <div className="rf-trial-badge">30-Day Free Trial</div>
-          <p className="rf-trial-note">Card required to start your trial — you won't be charged for 30 days.</p>
+          <div className="pd-trial-badge">30-Day Free Trial</div>
+          <p className="pd-trial-note">Card required to start your trial — you won't be charged for 30 days.</p>
 
-          <div className="rf-feature-list">
-            <div className="rf-feature">Unlimited properties</div>
-            <div className="rf-feature">Unlimited tenants</div>
-            <div className="rf-feature">Payment tracking</div>
-            <div className="rf-feature">SMS notifications</div>
-            <div className="rf-feature">Document storage</div>
-            <div className="rf-feature">AI-powered tenant analysis</div>
-            <div className="rf-feature">Priority support (<a href="mailto:support@praedium.pro">support@praedium.pro</a>)</div>
+          <div className="pd-feature-list">
+            <div className="pd-feature">Unlimited properties</div>
+            <div className="pd-feature">Unlimited tenants</div>
+            <div className="pd-feature">Payment tracking</div>
+            <div className="pd-feature">SMS notifications</div>
+            <div className="pd-feature">Document storage</div>
+            <div className="pd-feature">AI-powered tenant analysis</div>
+            <div className="pd-feature">Priority support (<a href="mailto:support@praedium.pro">support@praedium.pro</a>)</div>
           </div>
 
           {subscription ? (
-            <div className="rf-subscription-active">
-              <span className="rf-badge good">Active subscription</span>
-              <p className="rf-trial-note">Next billing date: {new Date(subscription.next_billing_date).toLocaleDateString()}</p>
-              <button className="rf-btn rf-btn-secondary rf-btn-block" disabled>
+            <div className="pd-subscription-active">
+              <span className="pd-badge good">Active subscription</span>
+              <p className="pd-trial-note">Next billing date: {new Date(subscription.next_billing_date).toLocaleDateString()}</p>
+              <button className="pd-btn pd-btn-secondary pd-btn-block" disabled>
                 Already subscribed
               </button>
             </div>
           ) : (
             <button
-              className="rf-btn rf-btn-primary rf-btn-block"
+              className="pd-btn pd-btn-primary pd-btn-block"
               onClick={handleCheckout}
               disabled={loading}
             >
@@ -122,23 +122,23 @@ export default function PaymentPage() {
             </button>
           )}
 
-          <div className="rf-price-footer">
+          <div className="pd-price-footer">
             <p>Cancelling before day 30 means you're never charged</p>
             <p>Cancel anytime</p>
           </div>
         </div>
 
-        <div className="rf-faq">
+        <div className="pd-faq">
           <h2>Common questions</h2>
-          <div className="rf-faq-item">
+          <div className="pd-faq-item">
             <h3>Do I need a credit card for the trial?</h3>
             <p>Yes, we collect your card when you start the trial, but you won't be charged anything for 30 days. Cancel anytime before then and you won't be billed.</p>
           </div>
-          <div className="rf-faq-item">
+          <div className="pd-faq-item">
             <h3>Can I cancel my subscription?</h3>
             <p>Yes, you can cancel anytime. Your access continues until the end of your billing period.</p>
           </div>
-          <div className="rf-faq-item">
+          <div className="pd-faq-item">
             <h3>What payment methods do you accept?</h3>
             <p>We accept all major credit and debit cards via Stripe.</p>
           </div>

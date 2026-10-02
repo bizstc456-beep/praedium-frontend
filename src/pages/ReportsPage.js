@@ -259,7 +259,7 @@ export default function ReportsPage() {
   if (loading && !report) {
     return (
       <AppShell active="reports">
-        <div className="rf-state"><p>Loading your reports...</p></div>
+        <div className="pd-state"><p>Loading your reports...</p></div>
       </AppShell>
     );
   }
@@ -267,24 +267,24 @@ export default function ReportsPage() {
   if (error) {
     return (
       <AppShell active="reports">
-        <div className="rf-state"><p>{error}</p></div>
+        <div className="pd-state"><p>{error}</p></div>
       </AppShell>
     );
   }
 
   return (
     <AppShell active="reports">
-      <div className="rf-page-header rf-page-header-row">
+      <div className="pd-page-header pd-page-header-row">
         <div>
           <h1>Reports</h1>
           <p>Income, expenses, and a tax-ready export for any date range</p>
         </div>
-        <button className="rf-btn rf-btn-secondary" onClick={exportCSV} disabled={!report}>Export CSV</button>
+        <button className="pd-btn pd-btn-secondary" onClick={exportCSV} disabled={!report}>Export CSV</button>
       </div>
 
-      <div className="rf-card">
-        <div className="rf-range-row">
-          <div className="rf-range-presets">
+      <div className="pd-card">
+        <div className="pd-range-row">
+          <div className="pd-range-presets">
             {[
               { value: 'this_month', label: 'This month' },
               { value: 'last_month', label: 'Last month' },
@@ -294,7 +294,7 @@ export default function ReportsPage() {
             ].map((p) => (
               <button
                 key={p.value}
-                className={`rf-btn ${preset === p.value ? 'rf-btn-primary' : 'rf-btn-secondary'}`}
+                className={`pd-btn ${preset === p.value ? 'pd-btn-primary' : 'pd-btn-secondary'}`}
                 onClick={() => applyPreset(p.value)}
               >
                 {p.label}
@@ -302,11 +302,11 @@ export default function ReportsPage() {
             ))}
           </div>
           {preset === 'custom' && (
-            <div className="rf-range-custom">
-              <input className="rf-input" type="date" value={start} onChange={(e) => setStart(e.target.value)} />
+            <div className="pd-range-custom">
+              <input className="pd-input" type="date" value={start} onChange={(e) => setStart(e.target.value)} />
               <span>to</span>
-              <input className="rf-input" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
-              <button className="rf-btn rf-btn-primary" onClick={applyCustomRange}>Apply</button>
+              <input className="pd-input" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
+              <button className="pd-btn pd-btn-primary" onClick={applyCustomRange}>Apply</button>
             </div>
           )}
         </div>
@@ -314,18 +314,18 @@ export default function ReportsPage() {
 
       {report && (
         <>
-          <div className="rf-chips">
-            <div className="rf-chip"><b>{formatMoney(report.summary.income)}</b><span>income</span></div>
-            <div className="rf-chip"><b>{formatMoney(report.summary.expenses)}</b><span>expenses</span></div>
-            <div className="rf-chip"><b>{formatMoney(report.summary.net)}</b><span>net income</span></div>
+          <div className="pd-chips">
+            <div className="pd-chip"><b>{formatMoney(report.summary.income)}</b><span>income</span></div>
+            <div className="pd-chip"><b>{formatMoney(report.summary.expenses)}</b><span>expenses</span></div>
+            <div className="pd-chip"><b>{formatMoney(report.summary.net)}</b><span>net income</span></div>
           </div>
 
-          <h2 className="rf-section-title">By property</h2>
+          <h2 className="pd-section-title">By property</h2>
           {report.properties.length === 0 ? (
-            <p className="rf-empty">No properties yet.</p>
+            <p className="pd-empty">No properties yet.</p>
           ) : (
-            <div className="rf-table-wrap" style={{ marginBottom: 28 }}>
-              <table className="rf-table rf-table-stack">
+            <div className="pd-table-wrap" style={{ marginBottom: 28 }}>
+              <table className="pd-table pd-table-stack">
                 <thead>
                   <tr>
                     <th>Property</th>
@@ -350,9 +350,9 @@ export default function ReportsPage() {
 
           {report.expenses_by_category.length > 0 && (
             <>
-              <h2 className="rf-section-title">Expenses by category</h2>
-              <div className="rf-table-wrap" style={{ marginBottom: 28 }}>
-                <table className="rf-table rf-table-stack">
+              <h2 className="pd-section-title">Expenses by category</h2>
+              <div className="pd-table-wrap" style={{ marginBottom: 28 }}>
+                <table className="pd-table pd-table-stack">
                   <thead>
                     <tr>
                       <th>Category</th>
@@ -374,24 +374,24 @@ export default function ReportsPage() {
         </>
       )}
 
-      <div className="rf-page-header-row">
-        <h2 className="rf-section-title" style={{ margin: 0 }}>Expenses</h2>
-        <button className="rf-btn rf-btn-primary" onClick={openExpenseForm} disabled={properties.length === 0}>
+      <div className="pd-page-header-row">
+        <h2 className="pd-section-title" style={{ margin: 0 }}>Expenses</h2>
+        <button className="pd-btn pd-btn-primary" onClick={openExpenseForm} disabled={properties.length === 0}>
           + Add expense
         </button>
       </div>
-      {properties.length === 0 && <p className="rf-empty">Add a property first to start logging expenses.</p>}
+      {properties.length === 0 && <p className="pd-empty">Add a property first to start logging expenses.</p>}
 
       {expenseFormOpen && (
-        <div className="rf-card">
-          <h2 className="rf-section-title">New expense</h2>
-          {formError && <div className="rf-alert">{formError}</div>}
+        <div className="pd-card">
+          <h2 className="pd-section-title">New expense</h2>
+          {formError && <div className="pd-alert">{formError}</div>}
           <form onSubmit={submitExpense}>
-            <div className="rf-form-row">
-              <div className="rf-field">
+            <div className="pd-form-row">
+              <div className="pd-field">
                 <label>Property</label>
                 <select
-                  className="rf-select"
+                  className="pd-select"
                   value={expenseForm.property_id}
                   onChange={(e) => setExpenseForm({ ...expenseForm, property_id: e.target.value })}
                 >
@@ -400,10 +400,10 @@ export default function ReportsPage() {
                   ))}
                 </select>
               </div>
-              <div className="rf-field">
+              <div className="pd-field">
                 <label>Category</label>
                 <select
-                  className="rf-select"
+                  className="pd-select"
                   value={expenseForm.category}
                   onChange={(e) => setExpenseForm({ ...expenseForm, category: e.target.value })}
                 >
@@ -413,11 +413,11 @@ export default function ReportsPage() {
                 </select>
               </div>
             </div>
-            <div className="rf-form-row">
-              <div className="rf-field">
+            <div className="pd-form-row">
+              <div className="pd-field">
                 <label>Amount ($)</label>
                 <input
-                  className="rf-input"
+                  className="pd-input"
                   type="number"
                   step="0.01"
                   min="0"
@@ -426,38 +426,38 @@ export default function ReportsPage() {
                   placeholder="250.00"
                 />
               </div>
-              <div className="rf-field">
+              <div className="pd-field">
                 <label>Date</label>
                 <input
-                  className="rf-input"
+                  className="pd-input"
                   type="date"
                   value={expenseForm.expense_date}
                   onChange={(e) => setExpenseForm({ ...expenseForm, expense_date: e.target.value })}
                 />
               </div>
             </div>
-            <div className="rf-field">
+            <div className="pd-field">
               <label>Notes (optional)</label>
               <input
-                className="rf-input"
+                className="pd-input"
                 value={expenseForm.notes}
                 onChange={(e) => setExpenseForm({ ...expenseForm, notes: e.target.value })}
                 placeholder="Plumber — leaking faucet, unit 2"
               />
             </div>
-            <div className="rf-form-actions">
-              <button type="submit" className="rf-btn rf-btn-primary">Save expense</button>
-              <button type="button" className="rf-btn rf-btn-secondary" onClick={closeExpenseForm}>Cancel</button>
+            <div className="pd-form-actions">
+              <button type="submit" className="pd-btn pd-btn-primary">Save expense</button>
+              <button type="button" className="pd-btn pd-btn-secondary" onClick={closeExpenseForm}>Cancel</button>
             </div>
           </form>
         </div>
       )}
 
       {expenses.length === 0 ? (
-        <p className="rf-empty">No expenses logged yet.</p>
+        <p className="pd-empty">No expenses logged yet.</p>
       ) : (
-        <div className="rf-table-wrap">
-          <table className="rf-table rf-table-stack">
+        <div className="pd-table-wrap">
+          <table className="pd-table pd-table-stack">
             <thead>
               <tr>
                 <th>Date</th>
@@ -473,11 +473,11 @@ export default function ReportsPage() {
                 <tr key={e.id}>
                   <td data-label="Date">{e.expense_date}</td>
                   <td data-label="Property">{propertyAddress(e.property_id)}</td>
-                  <td data-label="Category"><span className="rf-badge neutral">{categoryLabel(e.category)}</span></td>
+                  <td data-label="Category"><span className="pd-badge neutral">{categoryLabel(e.category)}</span></td>
                   <td data-label="Notes">{e.notes || '—'}</td>
                   <td data-label="Amount">{formatMoney(e.amount)}</td>
                   <td>
-                    <button className="rf-btn rf-btn-danger" onClick={() => deleteExpense(e)}>Delete</button>
+                    <button className="pd-btn pd-btn-danger" onClick={() => deleteExpense(e)}>Delete</button>
                   </td>
                 </tr>
               ))}

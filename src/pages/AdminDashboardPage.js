@@ -105,7 +105,7 @@ export default function AdminDashboardPage() {
   if (loading) {
     return (
       <AppShell active="admin">
-        <div className="rf-state"><p>Loading admin data...</p></div>
+        <div className="pd-state"><p>Loading admin data...</p></div>
       </AppShell>
     );
   }
@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
   if (accessDenied) {
     return (
       <AppShell active="admin">
-        <div className="rf-state"><p>You don't have access to this page.</p></div>
+        <div className="pd-state"><p>You don't have access to this page.</p></div>
       </AppShell>
     );
   }
@@ -123,25 +123,25 @@ export default function AdminDashboardPage() {
 
   return (
     <AppShell active="admin" wide>
-      <div className="rf-page-header">
+      <div className="pd-page-header">
         <h1>Admin Dashboard</h1>
         <p>Praedium platform overview</p>
       </div>
 
-      <div className="rf-statgrid">
-        <div className="rf-statcard rf-anim-in" style={{ animationDelay: '0ms' }}>
+      <div className="pd-statgrid">
+        <div className="pd-statcard pd-anim-in" style={{ animationDelay: '0ms' }}>
           <div className="k">Total Users</div>
           <div className="v"><CountUp value={stats.totalUsers} /></div>
         </div>
-        <div className="rf-statcard rf-anim-in" style={{ animationDelay: '50ms' }}>
+        <div className="pd-statcard pd-anim-in" style={{ animationDelay: '50ms' }}>
           <div className="k">Properties</div>
           <div className="v"><CountUp value={stats.totalProperties} /></div>
         </div>
-        <div className="rf-statcard rf-anim-in" style={{ animationDelay: '100ms' }}>
+        <div className="pd-statcard pd-anim-in" style={{ animationDelay: '100ms' }}>
           <div className="k">Tenants</div>
           <div className="v"><CountUp value={stats.totalTenants} /></div>
         </div>
-        <div className="rf-statcard rf-anim-in" style={{ animationDelay: '150ms' }}>
+        <div className="pd-statcard pd-anim-in" style={{ animationDelay: '150ms' }}>
           <div className="k">Total Revenue</div>
           <div className="v">
             <CountUp value={(stats.totalRevenue || 0) / 100} format={(n) => `$${n.toFixed(2)}`} />
@@ -149,11 +149,11 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="rf-dash-grid">
-        <div className="rf-dash-main">
-          <h2 className="rf-section-title">Registered users</h2>
-          <div className="rf-table-wrap">
-            <table className="rf-table">
+      <div className="pd-dash-grid">
+        <div className="pd-dash-main">
+          <h2 className="pd-section-title">Registered users</h2>
+          <div className="pd-table-wrap">
+            <table className="pd-table">
               <thead>
                 <tr>
                   <th>Email</th>
@@ -167,7 +167,7 @@ export default function AdminDashboardPage() {
                     <td>{user.email}</td>
                     <td>{new Date(user.created_at).toLocaleDateString()}</td>
                     <td>
-                      <span className={`rf-badge ${user.confirmed_at ? 'good' : 'warn'}`}>
+                      <span className={`pd-badge ${user.confirmed_at ? 'good' : 'warn'}`}>
                         {user.confirmed_at ? 'Active' : 'Pending'}
                       </span>
                     </td>
@@ -178,22 +178,22 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="rf-rail">
-          <div className="rf-rail-card rf-anim-in" style={{ animationDelay: '0ms' }}>
-            <div className="rf-rail-card-title">Signups</div>
-            <div className="rf-signups-delta">
+        <div className="pd-rail">
+          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '0ms' }}>
+            <div className="pd-rail-card-title">Signups</div>
+            <div className="pd-signups-delta">
               <b>+{signupsTotal}</b>
               <span>last 8 weeks</span>
             </div>
             {spark && (
               <svg viewBox="0 0 300 64" width="100%" height="64" style={{ display: 'block' }}>
                 <defs>
-                  <linearGradient id="rf-sparkfill" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="pd-sparkfill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.22" />
                     <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
                   </linearGradient>
                 </defs>
-                <path d={spark.areaPath} fill="url(#rf-sparkfill)" />
+                <path d={spark.areaPath} fill="url(#pd-sparkfill)" />
                 <path
                   d={spark.linePath}
                   fill="none"
@@ -207,12 +207,12 @@ export default function AdminDashboardPage() {
             )}
           </div>
 
-          <div className="rf-rail-card rf-anim-in" style={{ animationDelay: '70ms' }}>
-            <div className="rf-rail-card-title">Needs attention</div>
+          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '70ms' }}>
+            <div className="pd-rail-card-title">Needs attention</div>
             {needsAttention.length === 0 ? (
-              <p className="rf-rail-empty">Nothing needs attention right now.</p>
+              <p className="pd-rail-empty">Nothing needs attention right now.</p>
             ) : (
-              <div className="rf-activity-list">
+              <div className="pd-activity-list">
                 {needsAttention.map((n, i) => {
                   const daysAgo = n.since
                     ? Math.max(0, Math.floor((Date.now() - new Date(n.since)) / MS_PER_DAY))
@@ -221,14 +221,14 @@ export default function AdminDashboardPage() {
                     ? `Subscription past due since ${shortDate(n.since)}`
                     : `Signed up ${daysAgo} day${daysAgo === 1 ? '' : 's'} ago, onboarding stalled`;
                   return (
-                    <div className="rf-attention-row" key={`${n.email}-${i}`}>
-                      <div className="rf-attention-head">
-                        <span className="rf-attention-email">{n.email}</span>
-                        <span className={`rf-badge ${n.reason === 'payment_failed' ? 'danger' : 'warn'}`}>
+                    <div className="pd-attention-row" key={`${n.email}-${i}`}>
+                      <div className="pd-attention-head">
+                        <span className="pd-attention-email">{n.email}</span>
+                        <span className={`pd-badge ${n.reason === 'payment_failed' ? 'danger' : 'warn'}`}>
                           {REASON_LABEL[n.reason] || n.reason}
                         </span>
                       </div>
-                      <div className="rf-attention-reason">{detail}</div>
+                      <div className="pd-attention-reason">{detail}</div>
                     </div>
                   );
                 })}
@@ -236,18 +236,18 @@ export default function AdminDashboardPage() {
             )}
           </div>
 
-          <div className="rf-rail-card rf-anim-in" style={{ animationDelay: '140ms' }}>
-            <div className="rf-rail-card-title">Platform activity</div>
-            <div className="rf-rail-mini-list">
-              <div className="rf-activity-stat-row">
+          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '140ms' }}>
+            <div className="pd-rail-card-title">Platform activity</div>
+            <div className="pd-rail-mini-list">
+              <div className="pd-activity-stat-row">
                 <span>Payments processed</span>
                 <span>{stats.paymentsThisMonth} this month</span>
               </div>
-              <div className="rf-activity-stat-row">
+              <div className="pd-activity-stat-row">
                 <span>Maintenance requests open</span>
                 <span>{stats.maintenanceOpen} platform-wide</span>
               </div>
-              <div className="rf-activity-stat-row">
+              <div className="pd-activity-stat-row">
                 <span>Properties added</span>
                 <span>{stats.propertiesThisWeek} this week</span>
               </div>

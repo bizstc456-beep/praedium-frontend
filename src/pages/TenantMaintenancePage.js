@@ -91,44 +91,44 @@ export default function TenantMaintenancePage() {
 
   return (
     <TenantShell active="maintenance">
-      <div className="rf-page-header rf-page-header-row">
+      <div className="pd-page-header pd-page-header-row">
         <div>
           <h1>Maintenance</h1>
           <p>Submit a request and track its status</p>
         </div>
-        <button className="rf-btn rf-btn-primary" onClick={() => setFormOpen((v) => !v)}>
+        <button className="pd-btn pd-btn-primary" onClick={() => setFormOpen((v) => !v)}>
           {formOpen ? 'Cancel' : 'New request'}
         </button>
       </div>
 
-      {error && <div className="rf-alert-danger">{error}</div>}
+      {error && <div className="pd-alert-danger">{error}</div>}
 
       {formOpen && (
-        <div className="rf-card" style={{ marginBottom: 24 }}>
-          <h2 className="rf-section-title">New maintenance request</h2>
+        <div className="pd-card" style={{ marginBottom: 24 }}>
+          <h2 className="pd-section-title">New maintenance request</h2>
           <form onSubmit={submitRequest}>
-            {formError && <div className="rf-alert-danger">{formError}</div>}
-            <div className="rf-field">
+            {formError && <div className="pd-alert-danger">{formError}</div>}
+            <div className="pd-field">
               <label>Title</label>
               <input
-                className="rf-input"
+                className="pd-input"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Leaking kitchen faucet"
                 required
               />
             </div>
-            <div className="rf-field">
+            <div className="pd-field">
               <label>Details (optional)</label>
               <textarea
-                className="rf-input"
+                className="pd-input"
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Anything that would help your landlord understand the issue"
               />
             </div>
-            <button type="submit" className="rf-btn rf-btn-primary" disabled={submitting}>
+            <button type="submit" className="pd-btn pd-btn-primary" disabled={submitting}>
               {submitting ? 'Submitting...' : 'Submit request'}
             </button>
           </form>
@@ -136,12 +136,12 @@ export default function TenantMaintenancePage() {
       )}
 
       {loading ? (
-        <p className="rf-empty">Loading...</p>
+        <p className="pd-empty">Loading...</p>
       ) : requests.length === 0 ? (
-        <p className="rf-empty">You haven't submitted any maintenance requests yet.</p>
+        <p className="pd-empty">You haven't submitted any maintenance requests yet.</p>
       ) : (
-        <div className="rf-table-wrap">
-          <table className="rf-table">
+        <div className="pd-table-wrap">
+          <table className="pd-table">
             <thead>
               <tr>
                 <th>Request</th>
@@ -155,11 +155,11 @@ export default function TenantMaintenancePage() {
                   <td>
                     <div style={{ fontWeight: 600 }}>{r.title}</div>
                     {r.description && (
-                      <div className="rf-prow-city" style={{ marginTop: 2 }}>{r.description}</div>
+                      <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.description}</div>
                     )}
                   </td>
                   <td>{formatDate(r.created_at)}</td>
-                  <td><span className={`rf-badge ${STATUS_BADGE[r.status] || 'neutral'}`}>{STATUS_LABEL[r.status] || r.status}</span></td>
+                  <td><span className={`pd-badge ${STATUS_BADGE[r.status] || 'neutral'}`}>{STATUS_LABEL[r.status] || r.status}</span></td>
                 </tr>
               ))}
             </tbody>

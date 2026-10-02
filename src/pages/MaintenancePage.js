@@ -255,38 +255,38 @@ export default function MaintenancePage() {
     : requests;
 
   const vendorsPanel = (
-    <div className="rf-card rf-vend-card">
-      <div className="rf-vend-head">
-        <div className="rf-vend-title">Your vendors</div>
-        <p className="rf-vend-sub">Your go-to people for maintenance jobs — one tap away when a request comes in.</p>
+    <div className="pd-card pd-vend-card">
+      <div className="pd-vend-head">
+        <div className="pd-vend-title">Your vendors</div>
+        <p className="pd-vend-sub">Your go-to people for maintenance jobs — one tap away when a request comes in.</p>
       </div>
 
-      {vendorError && <div className="rf-alert-danger" style={{ marginBottom: 12 }}>{vendorError}</div>}
+      {vendorError && <div className="pd-alert-danger" style={{ marginBottom: 12 }}>{vendorError}</div>}
 
       {vendorsLoading ? (
-        <p className="rf-empty" style={{ padding: '12px 0' }}>Loading...</p>
+        <p className="pd-empty" style={{ padding: '12px 0' }}>Loading...</p>
       ) : vendors.length === 0 && !vendorFormOpen ? (
-        <p className="rf-empty" style={{ padding: '12px 0' }}>
+        <p className="pd-empty" style={{ padding: '12px 0' }}>
           No vendors added yet. Add your go-to plumber, electrician, or cleaner so they're one tap away.
         </p>
       ) : (
-        <div className="rf-vend-list">
+        <div className="pd-vend-list">
           {vendors.map((v) => (
-            <div className="rf-vend-row" key={v.id}>
-              <div className="rf-vend-row-main">
-                <div className="rf-vend-row-top">
-                  <span className="rf-vend-name">{v.name}</span>
-                  <span className="rf-badge neutral rf-vend-tag">{tradeLabel(v.trade)}</span>
+            <div className="pd-vend-row" key={v.id}>
+              <div className="pd-vend-row-main">
+                <div className="pd-vend-row-top">
+                  <span className="pd-vend-name">{v.name}</span>
+                  <span className="pd-badge neutral pd-vend-tag">{tradeLabel(v.trade)}</span>
                 </div>
-                <div className="rf-vend-contact">
+                <div className="pd-vend-contact">
                   <span><PhoneIcon /> {v.phone}</span>
                   {v.email && <span><MailIcon /> {v.email}</span>}
                 </div>
               </div>
-              <div className="rf-vend-row-actions">
+              <div className="pd-vend-row-actions">
                 <button
                   type="button"
-                  className="rf-vend-icon-btn"
+                  className="pd-vend-icon-btn"
                   onClick={() => openEditVendor(v)}
                   title="Edit vendor"
                   aria-label={`Edit ${v.name}`}
@@ -295,7 +295,7 @@ export default function MaintenancePage() {
                 </button>
                 <button
                   type="button"
-                  className="rf-vend-icon-btn danger"
+                  className="pd-vend-icon-btn danger"
                   onClick={() => deleteVendor(v)}
                   title="Remove vendor"
                   aria-label={`Remove ${v.name}`}
@@ -309,12 +309,12 @@ export default function MaintenancePage() {
       )}
 
       {vendorFormOpen ? (
-        <form className="rf-vend-form" onSubmit={submitVendor}>
-          <div className="rf-field">
+        <form className="pd-vend-form" onSubmit={submitVendor}>
+          <div className="pd-field">
             <label htmlFor="vend-trade">Type of work</label>
             <select
               id="vend-trade"
-              className="rf-select"
+              className="pd-select"
               value={vendorForm.trade}
               onChange={(e) => setVendorForm({ ...vendorForm, trade: e.target.value })}
             >
@@ -323,42 +323,42 @@ export default function MaintenancePage() {
               ))}
             </select>
           </div>
-          <div className="rf-field">
+          <div className="pd-field">
             <label htmlFor="vend-name">Name</label>
             <input
               id="vend-name"
-              className="rf-input"
+              className="pd-input"
               value={vendorForm.name}
               onChange={(e) => setVendorForm({ ...vendorForm, name: e.target.value })}
               placeholder="Mike Tremblay"
             />
           </div>
-          <div className="rf-field">
+          <div className="pd-field">
             <label htmlFor="vend-phone">Phone</label>
             <input
               id="vend-phone"
-              className="rf-input"
+              className="pd-input"
               value={vendorForm.phone}
               onChange={(e) => setVendorForm({ ...vendorForm, phone: e.target.value })}
               placeholder="(514) 555-0142"
             />
           </div>
-          <div className="rf-field" style={{ marginBottom: 14 }}>
+          <div className="pd-field" style={{ marginBottom: 14 }}>
             <label htmlFor="vend-email">Email (optional)</label>
             <input
               id="vend-email"
-              className="rf-input"
+              className="pd-input"
               type="email"
               value={vendorForm.email}
               onChange={(e) => setVendorForm({ ...vendorForm, email: e.target.value })}
               placeholder="mike@email.com"
             />
           </div>
-          <div className="rf-actions">
-            <button type="button" className="rf-btn rf-btn-secondary" onClick={closeVendorForm} disabled={savingVendor}>
+          <div className="pd-actions">
+            <button type="button" className="pd-btn pd-btn-secondary" onClick={closeVendorForm} disabled={savingVendor}>
               Cancel
             </button>
-            <button type="submit" className="rf-btn rf-btn-primary" disabled={savingVendor}>
+            <button type="submit" className="pd-btn pd-btn-primary" disabled={savingVendor}>
               {savingVendor ? 'Saving...' : editingVendorId ? 'Update vendor' : 'Save vendor'}
             </button>
           </div>
@@ -366,7 +366,7 @@ export default function MaintenancePage() {
       ) : (
         <button
           type="button"
-          className="rf-btn rf-btn-secondary rf-btn-block"
+          className="pd-btn pd-btn-secondary pd-btn-block"
           onClick={openAddVendor}
           style={{ marginTop: vendors.length ? 14 : 0 }}
         >
@@ -379,36 +379,36 @@ export default function MaintenancePage() {
   if (loading) {
     return (
       <AppShell active="maintenance" wide>
-        <div className="rf-page-header">
+        <div className="pd-page-header">
           <h1>Maintenance</h1>
           <p>Requests your tenants have submitted through their portal</p>
         </div>
-        <p className="rf-empty">Loading...</p>
+        <p className="pd-empty">Loading...</p>
       </AppShell>
     );
   }
 
   return (
     <AppShell active="maintenance" wide>
-      <div className="rf-page-header">
+      <div className="pd-page-header">
         <h1>Maintenance</h1>
         <p>Requests your tenants have submitted through their portal</p>
       </div>
 
-      {error && <div className="rf-alert-danger">{error}</div>}
+      {error && <div className="pd-alert-danger">{error}</div>}
 
-      <div className="rf-mnt-grid">
-        <div className="rf-mnt-main">
-          <div className="rf-card" style={{ marginBottom: 20 }}>
-            <div className="rf-range-presets">
+      <div className="pd-mnt-grid">
+        <div className="pd-mnt-main">
+          <div className="pd-card" style={{ marginBottom: 20 }}>
+            <div className="pd-range-presets">
               <button
-                className={`rf-btn ${filter === 'open' ? 'rf-btn-primary' : 'rf-btn-secondary'}`}
+                className={`pd-btn ${filter === 'open' ? 'pd-btn-primary' : 'pd-btn-secondary'}`}
                 onClick={() => setFilter('open')}
               >
                 Open &amp; in progress
               </button>
               <button
-                className={`rf-btn ${filter === 'all' ? 'rf-btn-primary' : 'rf-btn-secondary'}`}
+                className={`pd-btn ${filter === 'all' ? 'pd-btn-primary' : 'pd-btn-secondary'}`}
                 onClick={() => setFilter('all')}
               >
                 All requests
@@ -417,14 +417,14 @@ export default function MaintenancePage() {
           </div>
 
           {visibleRequests.length === 0 ? (
-            <p className="rf-empty">
+            <p className="pd-empty">
               {requests.length === 0
                 ? 'No maintenance requests yet. Once you invite tenants to their portal, requests they submit will show up here.'
                 : 'Nothing open right now.'}
             </p>
           ) : (
-            <div className="rf-table-wrap">
-              <table className="rf-table">
+            <div className="pd-table-wrap">
+              <table className="pd-table">
                 <thead>
                   <tr>
                     <th>Property</th>
@@ -447,15 +447,15 @@ export default function MaintenancePage() {
                         <td>
                           <div style={{ fontWeight: 600 }}>{r.title}</div>
                           {r.description && (
-                            <div className="rf-prow-city" style={{ marginTop: 2 }}>{r.description}</div>
+                            <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.description}</div>
                           )}
                         </td>
                         <td>{formatDate(r.created_at)}</td>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <span className={`rf-badge ${meta.badge}`}>{meta.label}</span>
+                            <span className={`pd-badge ${meta.badge}`}>{meta.label}</span>
                             <select
-                              className="rf-input"
+                              className="pd-input"
                               style={{ width: 'auto', padding: '4px 8px', fontSize: 12.5 }}
                               value={r.status}
                               disabled={updatingId === r.id}
@@ -476,7 +476,7 @@ export default function MaintenancePage() {
           )}
         </div>
 
-        <div className="rf-mnt-rail">
+        <div className="pd-mnt-rail">
           {vendorsPanel}
         </div>
       </div>

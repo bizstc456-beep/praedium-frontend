@@ -392,7 +392,7 @@ export default function PropertiesPage() {
   if (loading) {
     return (
       <AppShell active="properties">
-        <div className="rf-state"><p>Loading your properties...</p></div>
+        <div className="pd-state"><p>Loading your properties...</p></div>
       </AppShell>
     );
   }
@@ -400,27 +400,27 @@ export default function PropertiesPage() {
   if (error) {
     return (
       <AppShell active="properties">
-        <div className="rf-state"><p>{error}</p></div>
+        <div className="pd-state"><p>{error}</p></div>
       </AppShell>
     );
   }
 
   return (
     <AppShell active="properties">
-      <div className="rf-page-header rf-page-header-row">
+      <div className="pd-page-header pd-page-header-row">
         <div>
           <h1>Properties</h1>
           <p>Add your buildings, their units, and the tenants renting them</p>
         </div>
-        <button className="rf-btn rf-btn-primary" onClick={openNewPropertyForm}>+ Add property</button>
+        <button className="pd-btn pd-btn-primary" onClick={openNewPropertyForm}>+ Add property</button>
       </div>
 
-      {paymentSuccess && <p className="rf-success-text">{paymentSuccess}</p>}
+      {paymentSuccess && <p className="pd-success-text">{paymentSuccess}</p>}
 
       {propertyFormOpen === 'new' && (
-        <div className="rf-card">
-          <h2 className="rf-section-title">New property</h2>
-          {formError && <div className="rf-alert">{formError}</div>}
+        <div className="pd-card">
+          <h2 className="pd-section-title">New property</h2>
+          {formError && <div className="pd-alert">{formError}</div>}
           <PropertyForm
             form={propertyForm}
             setForm={setPropertyForm}
@@ -431,16 +431,16 @@ export default function PropertiesPage() {
       )}
 
       {properties.length === 0 ? (
-        <p className="rf-empty">You haven't added any properties yet. Click "Add property" to get started.</p>
+        <p className="pd-empty">You haven't added any properties yet. Click "Add property" to get started.</p>
       ) : (
         properties.map((p) => {
           const propertyDocsKey = `property-${p.id}`;
           return (
-            <div className="rf-property-card" key={p.id}>
+            <div className="pd-property-card" key={p.id}>
               {propertyFormOpen === p.id ? (
                 <>
-                  <h2 className="rf-section-title">Edit property</h2>
-                  {formError && <div className="rf-alert">{formError}</div>}
+                  <h2 className="pd-section-title">Edit property</h2>
+                  {formError && <div className="pd-alert">{formError}</div>}
                   <PropertyForm
                     form={propertyForm}
                     setForm={setPropertyForm}
@@ -449,18 +449,18 @@ export default function PropertiesPage() {
                   />
                 </>
               ) : (
-                <div className="rf-property-head">
+                <div className="pd-property-head">
                   <div>
-                    <div className="rf-prow-addr">{p.address}</div>
-                    <div className="rf-prow-city">
+                    <div className="pd-prow-addr">{p.address}</div>
+                    <div className="pd-prow-city">
                       {p.city}{p.property_type ? ` · ${p.property_type}` : ''}
                       {p.bedrooms ? ` · ${p.bedrooms} bed` : ''}{p.bathrooms ? ` / ${p.bathrooms} bath` : ''}
                     </div>
-                    {p.notes && <div className="rf-property-notes">{p.notes}</div>}
+                    {p.notes && <div className="pd-property-notes">{p.notes}</div>}
                   </div>
-                  <div className="rf-property-actions">
-                    <button className="rf-btn rf-btn-secondary" onClick={() => openEditPropertyForm(p)}>Edit</button>
-                    <button className="rf-btn rf-btn-primary" onClick={() => openNewTenantForm(p.id)}>+ Add tenant</button>
+                  <div className="pd-property-actions">
+                    <button className="pd-btn pd-btn-secondary" onClick={() => openEditPropertyForm(p)}>Edit</button>
+                    <button className="pd-btn pd-btn-primary" onClick={() => openNewTenantForm(p.id)}>+ Add tenant</button>
                     <KebabMenu
                       items={[
                         { label: docsOpenKey === propertyDocsKey ? 'Hide documents' : 'Documents', onClick: () => toggleDocs(propertyDocsKey) },
@@ -472,9 +472,9 @@ export default function PropertiesPage() {
               )}
 
               {docsOpenKey === propertyDocsKey && (
-                <div className="rf-nested-card">
-                  <h2 className="rf-section-title">Property documents</h2>
-                  <p className="rf-empty" style={{ marginTop: -8, marginBottom: 10 }}>
+                <div className="pd-nested-card">
+                  <h2 className="pd-section-title">Property documents</h2>
+                  <p className="pd-empty" style={{ marginTop: -8, marginBottom: 10 }}>
                     Building-level files — insurance policy, deed, inspection reports.
                   </p>
                   <DocumentsPanel entityType="property" entityId={p.id} />
@@ -482,9 +482,9 @@ export default function PropertiesPage() {
               )}
 
               {tenantFormOpen?.propertyId === p.id && !tenantFormOpen.tenantId && (
-                <div className="rf-card rf-nested-card">
-                  <h2 className="rf-section-title">New tenant</h2>
-                  {formError && <div className="rf-alert">{formError}</div>}
+                <div className="pd-card pd-nested-card">
+                  <h2 className="pd-section-title">New tenant</h2>
+                  {formError && <div className="pd-alert">{formError}</div>}
                   <TenantForm
                     form={tenantForm}
                     setForm={setTenantForm}
@@ -495,17 +495,17 @@ export default function PropertiesPage() {
               )}
 
               {(tenantsByProperty[p.id] || []).length === 0 ? (
-                <p className="rf-empty">No tenants yet for this property.</p>
+                <p className="pd-empty">No tenants yet for this property.</p>
               ) : (
-                <div className="rf-unit-list">
+                <div className="pd-unit-list">
                   {tenantsByProperty[p.id].map((t) => {
                     const tenantDocsKey = `tenant-${t.id}`;
                     return (
                       <React.Fragment key={t.id}>
                         {tenantFormOpen?.tenantId === t.id ? (
-                          <div className="rf-card rf-nested-card">
-                            <h2 className="rf-section-title">Edit tenant</h2>
-                            {formError && <div className="rf-alert">{formError}</div>}
+                          <div className="pd-card pd-nested-card">
+                            <h2 className="pd-section-title">Edit tenant</h2>
+                            {formError && <div className="pd-alert">{formError}</div>}
                             <TenantForm
                               form={tenantForm}
                               setForm={setTenantForm}
@@ -514,29 +514,29 @@ export default function PropertiesPage() {
                             />
                           </div>
                         ) : (
-                          <div className="rf-unit-row">
-                            <div className="rf-unit-info">
-                              <div className="rf-unit-name">
+                          <div className="pd-unit-row">
+                            <div className="pd-unit-info">
+                              <div className="pd-unit-name">
                                 {t.name}{t.unit_label ? ` — ${t.unit_label}` : ''}
-                                {t.renewal_soon && <span className="rf-badge warn rf-unit-badge">Lease ends soon</span>}
+                                {t.renewal_soon && <span className="pd-badge warn pd-unit-badge">Lease ends soon</span>}
                               </div>
-                              <div className="rf-prow-city">
+                              <div className="pd-prow-city">
                                 {t.phone}{t.email ? ` · ${t.email}` : ''}
                                 {t.lease_end_date ? ` · lease ends ${toDateInputValue(t.lease_end_date)}` : ''}
                               </div>
                             </div>
-                            <div className="rf-prow-rent">{formatMoney(t.rent_amount)}/mo</div>
-                            <span className={`rf-dot-status ${t.status === 'paid' ? 'good' : 'warn'}`}>
+                            <div className="pd-prow-rent">{formatMoney(t.rent_amount)}/mo</div>
+                            <span className={`pd-dot-status ${t.status === 'paid' ? 'good' : 'warn'}`}>
                               {t.status === 'paid' ? 'Paid' : `${formatMoney(t.pending_amount)} pending`}
                             </span>
-                            <div className="rf-unit-actions">
-                              <button className="rf-btn rf-btn-secondary" onClick={() => openEditTenantForm(t)}>Edit</button>
-                              <button className="rf-btn rf-btn-primary" onClick={() => openPaymentForm(t)}>Record payment</button>
+                            <div className="pd-unit-actions">
+                              <button className="pd-btn pd-btn-secondary" onClick={() => openEditTenantForm(t)}>Edit</button>
+                              <button className="pd-btn pd-btn-primary" onClick={() => openPaymentForm(t)}>Record payment</button>
                               {t.auth_user_id ? (
-                                <span className="rf-badge good">Portal invited</span>
+                                <span className="pd-badge good">Portal invited</span>
                               ) : (
                                 <button
-                                  className="rf-btn rf-btn-secondary"
+                                  className="pd-btn pd-btn-secondary"
                                   onClick={() => inviteTenant(t)}
                                   disabled={!t.email || inviteStatus[t.id]?.loading}
                                   title={!t.email ? 'Add an email address first' : 'Send a portal invite email'}
@@ -552,18 +552,18 @@ export default function PropertiesPage() {
                               />
                             </div>
                             {inviteStatus[t.id]?.error && (
-                              <div className="rf-alert-danger" style={{ marginTop: 8 }}>{inviteStatus[t.id].error}</div>
+                              <div className="pd-alert-danger" style={{ marginTop: 8 }}>{inviteStatus[t.id].error}</div>
                             )}
                             {inviteStatus[t.id]?.success && (
-                              <div className="rf-alert-success" style={{ marginTop: 8 }}>Invite sent to {t.email}.</div>
+                              <div className="pd-alert-success" style={{ marginTop: 8 }}>Invite sent to {t.email}.</div>
                             )}
                           </div>
                         )}
 
                         {docsOpenKey === tenantDocsKey && (
-                          <div className="rf-nested-card">
-                            <h2 className="rf-section-title">Documents &mdash; {t.name}</h2>
-                            <p className="rf-empty" style={{ marginTop: -8, marginBottom: 10 }}>
+                          <div className="pd-nested-card">
+                            <h2 className="pd-section-title">Documents &mdash; {t.name}</h2>
+                            <p className="pd-empty" style={{ marginTop: -8, marginBottom: 10 }}>
                               Lease, ID copy, or anything else tied to this tenant.
                             </p>
                             <DocumentsPanel entityType="tenant" entityId={t.id} />
@@ -571,15 +571,15 @@ export default function PropertiesPage() {
                         )}
 
                         {paymentFormOpen === t.id && (
-                          <div className="rf-card rf-nested-card">
-                            <h2 className="rf-section-title">Record a payment &mdash; {t.name}</h2>
-                            {formError && <div className="rf-alert">{formError}</div>}
+                          <div className="pd-card pd-nested-card">
+                            <h2 className="pd-section-title">Record a payment &mdash; {t.name}</h2>
+                            {formError && <div className="pd-alert">{formError}</div>}
                             <form onSubmit={submitPaymentForm}>
-                              <div className="rf-form-row">
-                                <div className="rf-field">
+                              <div className="pd-form-row">
+                                <div className="pd-field">
                                   <label>Amount ($)</label>
                                   <input
-                                    className="rf-input"
+                                    className="pd-input"
                                     type="number"
                                     step="0.01"
                                     min="0"
@@ -587,19 +587,19 @@ export default function PropertiesPage() {
                                     onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
                                   />
                                 </div>
-                                <div className="rf-field">
+                                <div className="pd-field">
                                   <label>Date</label>
                                   <input
-                                    className="rf-input"
+                                    className="pd-input"
                                     type="date"
                                     value={paymentForm.payment_date}
                                     onChange={(e) => setPaymentForm({ ...paymentForm, payment_date: e.target.value })}
                                   />
                                 </div>
-                                <div className="rf-field">
+                                <div className="pd-field">
                                   <label>Method</label>
                                   <select
-                                    className="rf-select"
+                                    className="pd-select"
                                     value={paymentForm.payment_method}
                                     onChange={(e) => setPaymentForm({ ...paymentForm, payment_method: e.target.value })}
                                   >
@@ -610,9 +610,9 @@ export default function PropertiesPage() {
                                   </select>
                                 </div>
                               </div>
-                              <div className="rf-form-actions">
-                                <button type="submit" className="rf-btn rf-btn-primary">Record payment</button>
-                                <button type="button" className="rf-btn rf-btn-secondary" onClick={closePaymentForm}>Cancel</button>
+                              <div className="pd-form-actions">
+                                <button type="submit" className="pd-btn pd-btn-primary">Record payment</button>
+                                <button type="button" className="pd-btn pd-btn-secondary" onClick={closePaymentForm}>Cancel</button>
                               </div>
                             </form>
                           </div>
@@ -633,30 +633,30 @@ export default function PropertiesPage() {
 function PropertyForm({ form, setForm, onSubmit, onCancel }) {
   return (
     <form onSubmit={onSubmit}>
-      <div className="rf-form-row">
-        <div className="rf-field">
+      <div className="pd-form-row">
+        <div className="pd-field">
           <label>Address</label>
-          <input className="rf-input" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="245 Rue Principale" />
+          <input className="pd-input" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="245 Rue Principale" />
         </div>
-        <div className="rf-field">
+        <div className="pd-field">
           <label>City</label>
-          <input className="rf-input" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Saint-Constant" />
+          <input className="pd-input" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Saint-Constant" />
         </div>
       </div>
-      <div className="rf-form-row">
-        <div className="rf-field">
+      <div className="pd-form-row">
+        <div className="pd-field">
           <label>Province</label>
-          <input className="rf-input" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} />
+          <input className="pd-input" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} />
         </div>
-        <div className="rf-field">
+        <div className="pd-field">
           <label>Postal code</label>
-          <input className="rf-input" value={form.postal_code} onChange={(e) => setForm({ ...form, postal_code: e.target.value })} placeholder="J5A 2G9" />
+          <input className="pd-input" value={form.postal_code} onChange={(e) => setForm({ ...form, postal_code: e.target.value })} placeholder="J5A 2G9" />
         </div>
       </div>
-      <div className="rf-form-row">
-        <div className="rf-field">
+      <div className="pd-form-row">
+        <div className="pd-field">
           <label>Type</label>
-          <select className="rf-select" value={form.property_type} onChange={(e) => setForm({ ...form, property_type: e.target.value })}>
+          <select className="pd-select" value={form.property_type} onChange={(e) => setForm({ ...form, property_type: e.target.value })}>
             <option value="single-family">Single-family</option>
             <option value="duplex">Duplex</option>
             <option value="triplex">Triplex</option>
@@ -665,22 +665,22 @@ function PropertyForm({ form, setForm, onSubmit, onCancel }) {
             <option value="other">Other</option>
           </select>
         </div>
-        <div className="rf-field">
+        <div className="pd-field">
           <label>Bedrooms</label>
-          <input className="rf-input" type="number" min="0" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} />
+          <input className="pd-input" type="number" min="0" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} />
         </div>
-        <div className="rf-field">
+        <div className="pd-field">
           <label>Bathrooms</label>
-          <input className="rf-input" type="number" min="0" step="0.5" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} />
+          <input className="pd-input" type="number" min="0" step="0.5" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} />
         </div>
       </div>
-      <div className="rf-field">
+      <div className="pd-field">
         <label>Notes</label>
-        <textarea className="rf-textarea" rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Anything worth remembering about this property" />
+        <textarea className="pd-textarea" rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Anything worth remembering about this property" />
       </div>
-      <div className="rf-form-actions">
-        <button type="submit" className="rf-btn rf-btn-primary">Save property</button>
-        <button type="button" className="rf-btn rf-btn-secondary" onClick={onCancel}>Cancel</button>
+      <div className="pd-form-actions">
+        <button type="submit" className="pd-btn pd-btn-primary">Save property</button>
+        <button type="button" className="pd-btn pd-btn-secondary" onClick={onCancel}>Cancel</button>
       </div>
     </form>
   );
@@ -689,43 +689,43 @@ function PropertyForm({ form, setForm, onSubmit, onCancel }) {
 function TenantForm({ form, setForm, onSubmit, onCancel }) {
   return (
     <form onSubmit={onSubmit}>
-      <div className="rf-form-row">
-        <div className="rf-field">
+      <div className="pd-form-row">
+        <div className="pd-field">
           <label>Tenant name</label>
-          <input className="rf-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <input className="pd-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         </div>
-        <div className="rf-field">
+        <div className="pd-field">
           <label>Unit (optional)</label>
-          <input className="rf-input" value={form.unit_label} onChange={(e) => setForm({ ...form, unit_label: e.target.value })} placeholder="Unit 2" />
+          <input className="pd-input" value={form.unit_label} onChange={(e) => setForm({ ...form, unit_label: e.target.value })} placeholder="Unit 2" />
         </div>
       </div>
-      <div className="rf-form-row">
-        <div className="rf-field">
+      <div className="pd-form-row">
+        <div className="pd-field">
           <label>Phone</label>
-          <input className="rf-input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+15145551234" />
+          <input className="pd-input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+15145551234" />
         </div>
-        <div className="rf-field">
+        <div className="pd-field">
           <label>Email (optional)</label>
-          <input className="rf-input" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          <input className="pd-input" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </div>
       </div>
-      <div className="rf-form-row">
-        <div className="rf-field">
+      <div className="pd-form-row">
+        <div className="pd-field">
           <label>Monthly rent ($)</label>
-          <input className="rf-input" type="number" step="0.01" min="0" value={form.rent_amount} onChange={(e) => setForm({ ...form, rent_amount: e.target.value })} placeholder="1850.00" />
+          <input className="pd-input" type="number" step="0.01" min="0" value={form.rent_amount} onChange={(e) => setForm({ ...form, rent_amount: e.target.value })} placeholder="1850.00" />
         </div>
-        <div className="rf-field">
+        <div className="pd-field">
           <label>Lease start</label>
-          <input className="rf-input" type="date" value={form.lease_start_date} onChange={(e) => setForm({ ...form, lease_start_date: e.target.value })} />
+          <input className="pd-input" type="date" value={form.lease_start_date} onChange={(e) => setForm({ ...form, lease_start_date: e.target.value })} />
         </div>
-        <div className="rf-field">
+        <div className="pd-field">
           <label>Lease end</label>
-          <input className="rf-input" type="date" value={form.lease_end_date} onChange={(e) => setForm({ ...form, lease_end_date: e.target.value })} />
+          <input className="pd-input" type="date" value={form.lease_end_date} onChange={(e) => setForm({ ...form, lease_end_date: e.target.value })} />
         </div>
       </div>
-      <div className="rf-form-actions">
-        <button type="submit" className="rf-btn rf-btn-primary">Save tenant</button>
-        <button type="button" className="rf-btn rf-btn-secondary" onClick={onCancel}>Cancel</button>
+      <div className="pd-form-actions">
+        <button type="submit" className="pd-btn pd-btn-primary">Save tenant</button>
+        <button type="button" className="pd-btn pd-btn-secondary" onClick={onCancel}>Cancel</button>
       </div>
     </form>
   );
@@ -853,42 +853,42 @@ function DocumentsPanel({ entityType, entityId }) {
 
   return (
     <div>
-      {error && <div className="rf-alert">{error}</div>}
+      {error && <div className="pd-alert">{error}</div>}
 
       {loading ? (
-        <p className="rf-empty">Loading documents...</p>
+        <p className="pd-empty">Loading documents...</p>
       ) : documents.length === 0 ? (
-        <p className="rf-empty">No documents uploaded yet.</p>
+        <p className="pd-empty">No documents uploaded yet.</p>
       ) : (
-        <div className="rf-doc-list">
+        <div className="pd-doc-list">
           {documents.map((doc) => (
-            <div className="rf-doc-row" key={doc.id}>
-              <div className="rf-doc-info">
-                <div className="rf-doc-icon">{docIconLabel(doc.mime_type)}</div>
+            <div className="pd-doc-row" key={doc.id}>
+              <div className="pd-doc-info">
+                <div className="pd-doc-icon">{docIconLabel(doc.mime_type)}</div>
                 <div>
-                  <a className="rf-doc-name" href={doc.url} target="_blank" rel="noopener noreferrer">
+                  <a className="pd-doc-name" href={doc.url} target="_blank" rel="noopener noreferrer">
                     {doc.file_name}
                   </a>
-                  <div className="rf-doc-meta">
+                  <div className="pd-doc-meta">
                     {DOC_CATEGORIES.find((c) => c.value === doc.category)?.label || 'Other'}
                     {doc.file_size ? ` · ${formatFileSize(doc.file_size)}` : ''}
                   </div>
                 </div>
               </div>
-              <button className="rf-btn rf-btn-danger" onClick={() => handleDelete(doc)}>Delete</button>
+              <button className="pd-btn pd-btn-danger" onClick={() => handleDelete(doc)}>Delete</button>
             </div>
           ))}
         </div>
       )}
 
-      <form onSubmit={handleUpload} className="rf-doc-upload-row">
+      <form onSubmit={handleUpload} className="pd-doc-upload-row">
         <input type="file" ref={fileInputRef} />
-        <select className="rf-doc-category-select" value={category} onChange={(e) => setCategory(e.target.value)}>
+        <select className="pd-doc-category-select" value={category} onChange={(e) => setCategory(e.target.value)}>
           {DOC_CATEGORIES.map((c) => (
             <option key={c.value} value={c.value}>{c.label}</option>
           ))}
         </select>
-        <button type="submit" className="rf-btn rf-btn-secondary" disabled={uploading}>
+        <button type="submit" className="pd-btn pd-btn-secondary" disabled={uploading}>
           {uploading ? 'Uploading...' : 'Upload'}
         </button>
       </form>

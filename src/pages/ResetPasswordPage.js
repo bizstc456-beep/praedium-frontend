@@ -73,23 +73,23 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="rf-auth-page">
-      <div className="rf-auth-card">
-        <div className="rf-auth-brand">Praedium</div>
-        <div className="rf-auth-header">
+    <div className="pd-auth-page">
+      <div className="pd-auth-card">
+        <div className="pd-auth-brand">Praedium</div>
+        <div className="pd-auth-header">
           <h1>Set a new password</h1>
           <p>Choose a new password for your account.</p>
         </div>
 
         {success ? (
-          <div className="rf-auth-footer">Password updated — taking you to your dashboard...</div>
+          <div className="pd-auth-footer">Password updated — taking you to your dashboard...</div>
         ) : ready ? (
           <form onSubmit={handleReset}>
-            {error && <div className="rf-alert-danger">{error}</div>}
-            <div className="rf-field">
+            {error && <div className="pd-alert-danger">{error}</div>}
+            <div className="pd-field">
               <label>New password</label>
               <input
-                className="rf-input"
+                className="pd-input"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -98,10 +98,10 @@ export default function ResetPasswordPage() {
                 minLength={6}
               />
             </div>
-            <div className="rf-field">
+            <div className="pd-field">
               <label>Confirm new password</label>
               <input
-                className="rf-input"
+                className="pd-input"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -110,16 +110,16 @@ export default function ResetPasswordPage() {
                 minLength={6}
               />
             </div>
-            <button type="submit" className="rf-btn rf-btn-primary rf-btn-block" disabled={loading}>
+            <button type="submit" className="pd-btn pd-btn-primary pd-btn-block" disabled={loading}>
               {loading ? 'Updating...' : 'Update password'}
             </button>
           </form>
         ) : (
           <div>
-            <div className="rf-alert-danger">
+            <div className="pd-alert-danger">
               This link is invalid or has expired.
             </div>
-            <div className="rf-auth-footer">
+            <div className="pd-auth-footer">
               <p><Link to="/forgot-password">Request a new reset link</Link></p>
             </div>
           </div>

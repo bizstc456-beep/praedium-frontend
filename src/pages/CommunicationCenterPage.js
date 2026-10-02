@@ -158,7 +158,7 @@ export default function CommunicationCenterPage() {
   if (loading) {
     return (
       <AppShell active="messages">
-        <div className="rf-state"><p>Loading your messages...</p></div>
+        <div className="pd-state"><p>Loading your messages...</p></div>
       </AppShell>
     );
   }
@@ -166,30 +166,30 @@ export default function CommunicationCenterPage() {
   if (error) {
     return (
       <AppShell active="messages">
-        <div className="rf-state"><p>{error}</p></div>
+        <div className="pd-state"><p>{error}</p></div>
       </AppShell>
     );
   }
 
   return (
     <AppShell active="messages">
-      <div className="rf-page-header">
+      <div className="pd-page-header">
         <h1>Communication Center</h1>
         <p>Send SMS to your tenants and see your message history</p>
       </div>
 
-      <div className="rf-card">
-        <h2 className="rf-section-title">Send a message</h2>
+      <div className="pd-card">
+        <h2 className="pd-section-title">Send a message</h2>
         {tenants.length === 0 ? (
-          <p className="rf-empty">You don't have any tenants yet, so there's no one to message. Add a tenant first.</p>
+          <p className="pd-empty">You don't have any tenants yet, so there's no one to message. Add a tenant first.</p>
         ) : (
           <form onSubmit={handleSend}>
-            {sendError && <div className="rf-alert">{sendError}</div>}
-            {sendSuccess && <p className="rf-success-text">{sendSuccess}</p>}
-            <div className="rf-field">
+            {sendError && <div className="pd-alert">{sendError}</div>}
+            {sendSuccess && <p className="pd-success-text">{sendSuccess}</p>}
+            <div className="pd-field">
               <label>Tenant</label>
               <select
-                className="rf-select"
+                className="pd-select"
                 value={selectedTenantId}
                 onChange={(e) => setSelectedTenantId(e.target.value)}
               >
@@ -202,14 +202,14 @@ export default function CommunicationCenterPage() {
               </select>
             </div>
             {selectedTenant && quickTemplates.length > 0 && (
-              <div className="rf-field">
+              <div className="pd-field">
                 <label>Quick templates</label>
-                <div className="rf-quick-actions">
+                <div className="pd-quick-actions">
                   {quickTemplates.map((tpl) => (
                     <button
                       key={tpl.id || tpl.template_name}
                       type="button"
-                      className="rf-btn rf-btn-secondary"
+                      className="pd-btn pd-btn-secondary"
                       onClick={() => handleQuickAction(tpl)}
                     >
                       {tpl.template_name}
@@ -218,29 +218,29 @@ export default function CommunicationCenterPage() {
                 </div>
               </div>
             )}
-            <div className="rf-field">
+            <div className="pd-field">
               <label>Message</label>
               <textarea
-                className="rf-textarea"
+                className="pd-textarea"
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder="Type your message..."
                 rows={3}
               />
             </div>
-            <button type="submit" className="rf-btn rf-btn-primary" disabled={sending}>
+            <button type="submit" className="pd-btn pd-btn-primary" disabled={sending}>
               {sending ? 'Sending...' : 'Send SMS'}
             </button>
           </form>
         )}
       </div>
 
-      <h2 className="rf-section-title">Message history</h2>
+      <h2 className="pd-section-title">Message history</h2>
       {messages.length === 0 ? (
-        <p className="rf-empty">No messages yet.</p>
+        <p className="pd-empty">No messages yet.</p>
       ) : (
-        <div className="rf-table-wrap">
-          <table className="rf-table">
+        <div className="pd-table-wrap">
+          <table className="pd-table">
             <thead>
               <tr>
                 <th>Tenant</th>
@@ -260,7 +260,7 @@ export default function CommunicationCenterPage() {
                     <td>{m.to_phone}</td>
                     <td>{m.message}</td>
                     <td>
-                      <span className={`rf-badge ${m.status === 'received' ? 'neutral' : 'good'}`}>
+                      <span className={`pd-badge ${m.status === 'received' ? 'neutral' : 'good'}`}>
                         {m.status === 'received' ? 'Received' : 'Sent'}
                       </span>
                     </td>

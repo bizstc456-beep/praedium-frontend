@@ -26,10 +26,10 @@ export default function KebabMenu({ items, label = 'More actions' }) {
   }, [open]);
 
   return (
-    <div className="rf-kebab" ref={ref}>
+    <div className="pd-kebab" ref={ref}>
       <button
         type="button"
-        className="rf-kebab-trigger"
+        className="pd-kebab-trigger"
         aria-label={label}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
@@ -37,13 +37,13 @@ export default function KebabMenu({ items, label = 'More actions' }) {
         &#8942;
       </button>
       {open && (
-        <div className="rf-kebab-menu" role="menu">
+        <div className="pd-kebab-menu" role="menu">
           {items.map((item, i) => (
             <button
               key={i}
               type="button"
               role="menuitem"
-              className={`rf-kebab-item${item.danger ? ' danger' : ''}`}
+              className={`pd-kebab-item${item.danger ? ' danger' : ''}`}
               onClick={() => {
                 setOpen(false);
                 item.onClick();

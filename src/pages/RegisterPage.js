@@ -73,19 +73,19 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="rf-auth-page">
-      <div className="rf-auth-card">
-        <div className="rf-auth-brand">Praedium</div>
-        <div className="rf-auth-header">
+    <div className="pd-auth-page">
+      <div className="pd-auth-card">
+        <div className="pd-auth-brand">Praedium</div>
+        <div className="pd-auth-header">
           <h1>Create your account</h1>
           <p>Start your 30-day free trial — no charge today.</p>
         </div>
         <form onSubmit={handleRegister}>
-          {error && <div className="rf-alert-danger">{error}</div>}
-          <div className="rf-field">
+          {error && <div className="pd-alert-danger">{error}</div>}
+          <div className="pd-field">
             <label>Full name</label>
             <input
-              className="rf-input"
+              className="pd-input"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -93,20 +93,20 @@ export default function RegisterPage() {
               required
             />
           </div>
-          <div className="rf-field">
+          <div className="pd-field">
             <label>Phone</label>
             <input
-              className="rf-input"
+              className="pd-input"
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="514-555-0123"
             />
           </div>
-          <div className="rf-field">
+          <div className="pd-field">
             <label>Email</label>
             <input
-              className="rf-input"
+              className="pd-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -114,10 +114,10 @@ export default function RegisterPage() {
               required
             />
           </div>
-          <div className="rf-field">
+          <div className="pd-field">
             <label>Password</label>
             <input
-              className="rf-input"
+              className="pd-input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -125,10 +125,10 @@ export default function RegisterPage() {
               required
             />
           </div>
-          <div className="rf-field">
+          <div className="pd-field">
             <label>Confirm password</label>
             <input
-              className="rf-input"
+              className="pd-input"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -136,8 +136,8 @@ export default function RegisterPage() {
               required
             />
           </div>
-          <div className="rf-field rf-field-checkbox">
-            <label className="rf-checkbox-label">
+          <div className="pd-field pd-field-checkbox">
+            <label className="pd-checkbox-label">
               <input
                 type="checkbox"
                 checked={agreedToTerms}
@@ -151,11 +151,11 @@ export default function RegisterPage() {
               </span>
             </label>
           </div>
-          <button type="submit" className="rf-btn rf-btn-primary rf-btn-block" disabled={loading || !agreedToTerms}>
+          <button type="submit" className="pd-btn pd-btn-primary pd-btn-block" disabled={loading || !agreedToTerms}>
             {loading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
-        <div className="rf-auth-footer">
+        <div className="pd-auth-footer">
           <p>Already have an account? <Link to="/login">Sign in</Link></p>
         </div>
       </div>

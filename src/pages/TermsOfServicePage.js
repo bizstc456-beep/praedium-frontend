@@ -5,11 +5,11 @@ import '../styles/legal.css';
 
 export default function TermsOfServicePage() {
   return (
-    <div className="rf-legal-page">
-      <div className="rf-legal-card">
-        <div className="rf-legal-brand">Praedium</div>
+    <div className="pd-legal-page">
+      <div className="pd-legal-card">
+        <div className="pd-legal-brand">Praedium</div>
         <h1>Terms of Service</h1>
-        <p className="rf-legal-updated">Last updated: September 19, 2026</p>
+        <p className="pd-legal-updated">Last updated: September 19, 2026</p>
 
         <section>
           <h2>1. The basics</h2>
@@ -79,7 +79,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2>5. Third-party services we rely on</h2>
           <p>Praedium is built on top of a few third-party services, each with its own terms and privacy practices:</p>
-          <table className="rf-legal-table">
+          <table className="pd-legal-table">
             <thead>
               <tr><th>Provider</th><th>What it's used for</th></tr>
             </thead>
@@ -127,7 +127,7 @@ export default function TermsOfServicePage() {
           </p>
         </section>
 
-        <div className="rf-legal-footer">
+        <div className="pd-legal-footer">
           <Link to="/">Back to Praedium</Link>
         </div>
       </div>

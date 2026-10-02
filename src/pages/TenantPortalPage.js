@@ -64,51 +64,51 @@ export default function TenantPortalPage() {
   if (loading) {
     return (
       <TenantShell active="rental">
-        <div className="rf-page-header">
+        <div className="pd-page-header">
           <h1>My Rental</h1>
         </div>
-        <p className="rf-empty">Loading...</p>
+        <p className="pd-empty">Loading...</p>
       </TenantShell>
     );
   }
 
   return (
     <TenantShell active="rental">
-      <div className="rf-page-header">
+      <div className="pd-page-header">
         <h1>My Rental</h1>
         <p>{property ? property.address : 'Your lease details'}</p>
       </div>
 
-      {error && <div className="rf-alert-danger">{error}</div>}
+      {error && <div className="pd-alert-danger">{error}</div>}
 
       {tenant && (
         <>
-          <div className="rf-chips">
-            <div className="rf-chip"><b>{formatMoney(tenant.rent_amount)}</b><span>monthly rent</span></div>
+          <div className="pd-chips">
+            <div className="pd-chip"><b>{formatMoney(tenant.rent_amount)}</b><span>monthly rent</span></div>
             {balance && (
-              <div className="rf-chip">
+              <div className="pd-chip">
                 <b>{balance.status === 'paid' ? 'Paid up' : formatMoney(balance.pending_amount)}</b>
                 <span>{balance.status === 'paid' ? 'this month' : 'due this month'}</span>
               </div>
             )}
-            <div className="rf-chip"><b>{formatDate(tenant.lease_end_date)}</b><span>lease ends</span></div>
+            <div className="pd-chip"><b>{formatDate(tenant.lease_end_date)}</b><span>lease ends</span></div>
           </div>
 
-          <div className="rf-card" style={{ marginBottom: 24 }}>
-            <h2 className="rf-section-title">Lease details</h2>
-            <div className="rf-prow-city">
+          <div className="pd-card" style={{ marginBottom: 24 }}>
+            <h2 className="pd-section-title">Lease details</h2>
+            <div className="pd-prow-city">
               Unit: {tenant.unit_label || '—'}<br />
               Lease start: {formatDate(tenant.lease_start_date)}<br />
               Lease end: {formatDate(tenant.lease_end_date)}
             </div>
           </div>
 
-          <h2 className="rf-section-title">Payment history</h2>
+          <h2 className="pd-section-title">Payment history</h2>
           {payments.length === 0 ? (
-            <p className="rf-empty">No payments recorded yet.</p>
+            <p className="pd-empty">No payments recorded yet.</p>
           ) : (
-            <div className="rf-table-wrap">
-              <table className="rf-table">
+            <div className="pd-table-wrap">
+              <table className="pd-table">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -124,7 +124,7 @@ export default function TenantPortalPage() {
                       <td>{formatMoney(p.amount)}</td>
                       <td>{p.payment_method || '—'}</td>
                       <td>
-                        <span className={`rf-badge ${p.status === 'paid' ? 'good' : 'warn'}`}>
+                        <span className={`pd-badge ${p.status === 'paid' ? 'good' : 'warn'}`}>
                           {p.status === 'paid' ? 'Paid' : p.status}
                         </span>
                       </td>

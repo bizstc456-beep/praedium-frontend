@@ -5,11 +5,11 @@ import '../styles/legal.css';
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="rf-legal-page">
-      <div className="rf-legal-card">
-        <div className="rf-legal-brand">Praedium</div>
+    <div className="pd-legal-page">
+      <div className="pd-legal-card">
+        <div className="pd-legal-brand">Praedium</div>
         <h1>Privacy Policy</h1>
-        <p className="rf-legal-updated">Last updated: September 19, 2026</p>
+        <p className="pd-legal-updated">Last updated: September 19, 2026</p>
 
         <section>
           <h2>1. Who this policy covers</h2>
@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
 
         <section>
           <h2>2. What we collect, and why</h2>
-          <table className="rf-legal-table">
+          <table className="pd-legal-table">
             <thead>
               <tr><th>What we collect</th><th>Why</th></tr>
             </thead>
@@ -148,7 +148,7 @@ export default function PrivacyPolicyPage() {
           </p>
         </section>
 
-        <div className="rf-legal-footer">
+        <div className="pd-legal-footer">
           <Link to="/">Back to Praedium</Link>
         </div>
       </div>

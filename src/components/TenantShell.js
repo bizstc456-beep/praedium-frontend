@@ -18,19 +18,19 @@ export default function TenantShell({ active, children }) {
     navigate('/tenant/login');
   };
 
-  const linkClass = (page) => (active === page ? 'rf-nav-link current' : 'rf-nav-link');
+  const linkClass = (page) => (active === page ? 'pd-nav-link current' : 'pd-nav-link');
 
   return (
-    <div className="rf-shell">
-      <aside className="rf-side">
-        <div className="rf-brand">Praedium</div>
-        <nav className="rf-nav">
+    <div className="pd-shell">
+      <aside className="pd-side">
+        <div className="pd-brand">Praedium</div>
+        <nav className="pd-nav">
           <Link to="/tenant" className={linkClass('rental')}>My Rental</Link>
           <Link to="/tenant/maintenance" className={linkClass('maintenance')}>Maintenance</Link>
         </nav>
-        <button onClick={handleLogout} className="rf-signout">Sign Out</button>
+        <button onClick={handleLogout} className="pd-signout">Sign Out</button>
       </aside>
-      <main className="rf-main">{children}</main>
+      <main className="pd-main">{children}</main>
     </div>
   );
 }

@@ -104,7 +104,7 @@ export default function InsightsPage() {
   if (loading) {
     return (
       <AppShell active="insights" wide>
-        <div className="rf-ins-loading">Loading insights&hellip;</div>
+        <div className="pd-ins-loading">Loading insights&hellip;</div>
       </AppShell>
     );
   }
@@ -112,7 +112,7 @@ export default function InsightsPage() {
   if (error) {
     return (
       <AppShell active="insights" wide>
-        <div className="rf-ins-loading">{error}</div>
+        <div className="pd-ins-loading">{error}</div>
       </AppShell>
     );
   }
@@ -120,9 +120,9 @@ export default function InsightsPage() {
   if (!properties.length) {
     return (
       <AppShell active="insights" wide>
-        <div className="rf-ins-empty">
-          <div className="rf-ins-empty-title">No portfolio data yet</div>
-          <div className="rf-ins-empty-sub">Add your first property to start tracking cash flow and occupancy here.</div>
+        <div className="pd-ins-empty">
+          <div className="pd-ins-empty-title">No portfolio data yet</div>
+          <div className="pd-ins-empty-sub">Add your first property to start tracking cash flow and occupancy here.</div>
         </div>
       </AppShell>
     );
@@ -175,66 +175,66 @@ export default function InsightsPage() {
 
   return (
     <AppShell active="insights" wide>
-      <div className="rf-ins">
-        <div className="rf-ins-header">
+      <div className="pd-ins">
+        <div className="pd-ins-header">
           <div>
-            <div className="rf-ins-eyebrow">Portfolio performance</div>
-            <div className="rf-ins-title">Insights</div>
-            <div className="rf-ins-sub">Cash flow and occupancy across your {properties.length} propert{properties.length === 1 ? 'y' : 'ies'}.</div>
+            <div className="pd-ins-eyebrow">Portfolio performance</div>
+            <div className="pd-ins-title">Insights</div>
+            <div className="pd-ins-sub">Cash flow and occupancy across your {properties.length} propert{properties.length === 1 ? 'y' : 'ies'}.</div>
           </div>
         </div>
 
-        <div className="rf-ins-grid">
+        <div className="pd-ins-grid">
           {/* LEFT */}
-          <div className="rf-ins-main">
+          <div className="pd-ins-main">
 
-            <div className="rf-ins-kpis">
-              <div className="rf-card rf-ins-kpi">
-                <div className="rf-ins-kpi-label">Net cash flow &middot; this month</div>
-                <div className="rf-ins-kpi-value">{formatMoney(summary.net_cash_flow)}</div>
+            <div className="pd-ins-kpis">
+              <div className="pd-card pd-ins-kpi">
+                <div className="pd-ins-kpi-label">Net cash flow &middot; this month</div>
+                <div className="pd-ins-kpi-value">{formatMoney(summary.net_cash_flow)}</div>
                 {netChangeLabel && (
-                  <div className={`rf-ins-kpi-delta ${summary.net_change_pct >= 0 ? 'good' : 'warn'}`}>{netChangeLabel}</div>
+                  <div className={`pd-ins-kpi-delta ${summary.net_change_pct >= 0 ? 'good' : 'warn'}`}>{netChangeLabel}</div>
                 )}
               </div>
-              <div className="rf-card rf-ins-kpi">
-                <div className="rf-ins-kpi-label">Portfolio occupancy</div>
-                <div className="rf-ins-kpi-value">{summary.occupancy_pct}%</div>
-                <div className="rf-ins-meter"><span style={{ width: `${summary.occupancy_pct}%` }} /></div>
-                <div className="rf-ins-kpi-note">{summary.occupancy_occupied} of {summary.occupancy_units} units</div>
+              <div className="pd-card pd-ins-kpi">
+                <div className="pd-ins-kpi-label">Portfolio occupancy</div>
+                <div className="pd-ins-kpi-value">{summary.occupancy_pct}%</div>
+                <div className="pd-ins-meter"><span style={{ width: `${summary.occupancy_pct}%` }} /></div>
+                <div className="pd-ins-kpi-note">{summary.occupancy_occupied} of {summary.occupancy_units} units</div>
               </div>
-              <div className="rf-card rf-ins-kpi">
-                <div className="rf-ins-kpi-label">Est. vacancy loss</div>
-                <div className="rf-ins-kpi-value warn">{formatMoney(summary.vacancy_loss)}<span className="rf-ins-kpi-unit">/mo</span></div>
-                <div className="rf-ins-kpi-note">{summary.occupancy_units - summary.occupancy_occupied} vacant unit{(summary.occupancy_units - summary.occupancy_occupied) === 1 ? '' : 's'}</div>
+              <div className="pd-card pd-ins-kpi">
+                <div className="pd-ins-kpi-label">Est. vacancy loss</div>
+                <div className="pd-ins-kpi-value warn">{formatMoney(summary.vacancy_loss)}<span className="pd-ins-kpi-unit">/mo</span></div>
+                <div className="pd-ins-kpi-note">{summary.occupancy_units - summary.occupancy_occupied} vacant unit{(summary.occupancy_units - summary.occupancy_occupied) === 1 ? '' : 's'}</div>
               </div>
-              <div className="rf-card rf-ins-kpi">
-                <div className="rf-ins-kpi-label">Avg rent / occupied unit</div>
-                <div className="rf-ins-kpi-value">{formatMoney(summary.avg_rent_per_unit)}</div>
-                <div className="rf-ins-kpi-note">across {summary.occupancy_occupied} lease{summary.occupancy_occupied === 1 ? '' : 's'}</div>
+              <div className="pd-card pd-ins-kpi">
+                <div className="pd-ins-kpi-label">Avg rent / occupied unit</div>
+                <div className="pd-ins-kpi-value">{formatMoney(summary.avg_rent_per_unit)}</div>
+                <div className="pd-ins-kpi-note">across {summary.occupancy_occupied} lease{summary.occupancy_occupied === 1 ? '' : 's'}</div>
               </div>
             </div>
 
-            <div className="rf-card rf-ins-chart-card">
-              <div className="rf-ins-chart-head">
-                <div className="rf-ins-chart-title">Cash flow, last 6 months</div>
-                <div className="rf-ins-legend">
-                  <span className="rf-ins-legend-item"><span className="rf-ins-swatch income" />Income</span>
-                  <span className="rf-ins-legend-item"><span className="rf-ins-swatch expense" />Expenses</span>
+            <div className="pd-card pd-ins-chart-card">
+              <div className="pd-ins-chart-head">
+                <div className="pd-ins-chart-title">Cash flow, last 6 months</div>
+                <div className="pd-ins-legend">
+                  <span className="pd-ins-legend-item"><span className="pd-ins-swatch income" />Income</span>
+                  <span className="pd-ins-legend-item"><span className="pd-ins-swatch expense" />Expenses</span>
                 </div>
               </div>
 
-              <svg viewBox={`0 0 ${VIEW_W} 214`} className="rf-ins-svg">
+              <svg viewBox={`0 0 ${VIEW_W} 214`} className="pd-ins-svg">
                 {ticks.map((t) => {
                   const y = BASELINE_Y - (t / chartMax) * PLOT_H;
                   return (
                     <g key={t}>
-                      <line x1={LEFT_PAD} y1={y} x2={VIEW_W - RIGHT_PAD} y2={y} className="rf-ins-gridline" />
-                      <text x={LEFT_PAD - 6} y={y + 3} textAnchor="end" className="rf-ins-axis-label">{formatCompact(t)}</text>
+                      <line x1={LEFT_PAD} y1={y} x2={VIEW_W - RIGHT_PAD} y2={y} className="pd-ins-gridline" />
+                      <text x={LEFT_PAD - 6} y={y + 3} textAnchor="end" className="pd-ins-axis-label">{formatCompact(t)}</text>
                     </g>
                   );
                 })}
 
-                <line x1={LEFT_PAD} y1={BASELINE_Y} x2={VIEW_W - RIGHT_PAD} y2={BASELINE_Y} className="rf-ins-baseline" />
+                <line x1={LEFT_PAD} y1={BASELINE_Y} x2={VIEW_W - RIGHT_PAD} y2={BASELINE_Y} className="pd-ins-baseline" />
 
                 {barGroups.map((g, i) => (
                   <g key={g.month}>
@@ -249,15 +249,15 @@ export default function InsightsPage() {
                       style={{ cursor: 'pointer' }}
                     />
                     {i === activeIdx && (
-                      <line x1={g.center} y1={PLOT_TOP_Y} x2={g.center} y2={BASELINE_Y} className="rf-ins-hover-guide" />
+                      <line x1={g.center} y1={PLOT_TOP_Y} x2={g.center} y2={BASELINE_Y} className="pd-ins-hover-guide" />
                     )}
-                    <rect x={g.incomeX} y={g.incomeY} width={BAR_W} height={g.incomeH} rx="3" className="rf-ins-bar income" />
-                    <rect x={g.expenseX} y={g.expenseY} width={BAR_W} height={g.expenseH} rx="3" className="rf-ins-bar expense" />
+                    <rect x={g.incomeX} y={g.incomeY} width={BAR_W} height={g.incomeH} rx="3" className="pd-ins-bar income" />
+                    <rect x={g.expenseX} y={g.expenseY} width={BAR_W} height={g.expenseH} rx="3" className="pd-ins-bar expense" />
                     <text
                       x={g.center}
                       y={204}
                       textAnchor="middle"
-                      className={i === barGroups.length - 1 ? 'rf-ins-month-label current' : 'rf-ins-month-label'}
+                      className={i === barGroups.length - 1 ? 'pd-ins-month-label current' : 'pd-ins-month-label'}
                     >
                       {g.label}
                     </text>
@@ -267,33 +267,33 @@ export default function InsightsPage() {
 
               {activeMonth && (
                 <div
-                  className="rf-ins-tooltip"
+                  className="pd-ins-tooltip"
                   style={{ left: `${(activeMonth.center / VIEW_W) * 100}%` }}
                 >
-                  <div className="rf-ins-tooltip-title">{activeMonth.label} 2026</div>
-                  <div className="rf-ins-tooltip-row income">Income <b>{formatMoney(activeMonth.income)}</b></div>
-                  <div className="rf-ins-tooltip-row expense">Expenses <b>{formatMoney(activeMonth.expenses)}</b></div>
-                  <div className="rf-ins-tooltip-row">Net <b>{formatMoney(activeMonth.net)}</b></div>
+                  <div className="pd-ins-tooltip-title">{activeMonth.label} 2026</div>
+                  <div className="pd-ins-tooltip-row income">Income <b>{formatMoney(activeMonth.income)}</b></div>
+                  <div className="pd-ins-tooltip-row expense">Expenses <b>{formatMoney(activeMonth.expenses)}</b></div>
+                  <div className="pd-ins-tooltip-row">Net <b>{formatMoney(activeMonth.net)}</b></div>
                 </div>
               )}
             </div>
 
-            <div className="rf-card rf-ins-table-card">
-              <div className="rf-ins-chart-title">Property performance</div>
-              <div className="rf-ins-table-head">
-                <span>Property</span><span>Occupancy</span><span className="rf-ins-num">Income /mo</span><span className="rf-ins-num">Status</span>
+            <div className="pd-card pd-ins-table-card">
+              <div className="pd-ins-chart-title">Property performance</div>
+              <div className="pd-ins-table-head">
+                <span>Property</span><span>Occupancy</span><span className="pd-ins-num">Income /mo</span><span className="pd-ins-num">Status</span>
               </div>
               {sortedProperties.map((p) => {
                 const pct = p.units > 0 ? Math.round((p.occupied / p.units) * 100) : 0;
                 return (
-                  <div className="rf-ins-table-row" key={p.id}>
-                    <span className="rf-ins-prop-name">{p.address}</span>
-                    <span className="rf-ins-occ-cell">
-                      <span className="rf-ins-meter small"><span style={{ width: `${pct}%` }} /></span>
-                      <span className="rf-ins-occ-frac">{p.occupied}/{p.units}</span>
+                  <div className="pd-ins-table-row" key={p.id}>
+                    <span className="pd-ins-prop-name">{p.address}</span>
+                    <span className="pd-ins-occ-cell">
+                      <span className="pd-ins-meter small"><span style={{ width: `${pct}%` }} /></span>
+                      <span className="pd-ins-occ-frac">{p.occupied}/{p.units}</span>
                     </span>
-                    <span className="rf-ins-num rf-ins-income-cell">{formatMoney(p.income)}</span>
-                    <span className={`rf-ins-num rf-ins-status ${p.vacant === 0 ? 'good' : 'warn'}`}>
+                    <span className="pd-ins-num pd-ins-income-cell">{formatMoney(p.income)}</span>
+                    <span className={`pd-ins-num pd-ins-status ${p.vacant === 0 ? 'good' : 'warn'}`}>
                       {p.vacant === 0 ? '✓ Full' : `${p.vacant} vacant`}
                     </span>
                   </div>
@@ -303,49 +303,49 @@ export default function InsightsPage() {
           </div>
 
           {/* RAIL */}
-          <div className="rf-ins-rail">
+          <div className="pd-ins-rail">
             {topPerformer && (
-              <div className="rf-card rf-ins-top-performer">
-                <div className="rf-ins-rail-label">Top performer</div>
-                <div className="rf-ins-top-name">{topPerformer.address}</div>
-                <div className="rf-ins-top-row">
-                  <span className={`rf-ins-badge ${topPerformer.vacant === 0 ? 'good' : 'warn'}`}>
+              <div className="pd-card pd-ins-top-performer">
+                <div className="pd-ins-rail-label">Top performer</div>
+                <div className="pd-ins-top-name">{topPerformer.address}</div>
+                <div className="pd-ins-top-row">
+                  <span className={`pd-ins-badge ${topPerformer.vacant === 0 ? 'good' : 'warn'}`}>
                     {topPerformer.vacant === 0 ? '✓ Fully occupied' : `${topPerformer.vacant} vacant`}
                   </span>
-                  <span className="rf-ins-top-income">{formatMoney(topPerformer.income)}/mo</span>
+                  <span className="pd-ins-top-income">{formatMoney(topPerformer.income)}/mo</span>
                 </div>
               </div>
             )}
 
-            <div className="rf-card rf-ins-rail-card">
-              <div className="rf-ins-rail-head">
-                <div className="rf-ins-rail-title">Expenses by category</div>
-                <span className="rf-ins-rail-tag">6 mo</span>
+            <div className="pd-card pd-ins-rail-card">
+              <div className="pd-ins-rail-head">
+                <div className="pd-ins-rail-title">Expenses by category</div>
+                <span className="pd-ins-rail-tag">6 mo</span>
               </div>
-              {sortedCategories.length === 0 && <div className="rf-rail-empty">No expenses logged yet</div>}
+              {sortedCategories.length === 0 && <div className="pd-rail-empty">No expenses logged yet</div>}
               {sortedCategories.map((c) => (
-                <div className="rf-ins-cat-row" key={c.category}>
-                  <div className="rf-ins-cat-top">
+                <div className="pd-ins-cat-row" key={c.category}>
+                  <div className="pd-ins-cat-top">
                     <span>{categoryLabel(c.category)}</span>
-                    <span className="rf-ins-cat-amount">{formatMoney(c.amount)}</span>
+                    <span className="pd-ins-cat-amount">{formatMoney(c.amount)}</span>
                   </div>
-                  <div className="rf-ins-meter"><span style={{ width: `${Math.max(4, ((c.amount || 0) / maxCategoryAmount) * 100)}%` }} /></div>
+                  <div className="pd-ins-meter"><span style={{ width: `${Math.max(4, ((c.amount || 0) / maxCategoryAmount) * 100)}%` }} /></div>
                 </div>
               ))}
             </div>
 
-            <div className="rf-card rf-ins-rail-card">
-              <div className="rf-ins-rail-head">
-                <div className="rf-ins-rail-title">Vacant units</div>
-                <span className="rf-ins-rail-tag warn">{summary.occupancy_units - summary.occupancy_occupied} open</span>
+            <div className="pd-card pd-ins-rail-card">
+              <div className="pd-ins-rail-head">
+                <div className="pd-ins-rail-title">Vacant units</div>
+                <span className="pd-ins-rail-tag warn">{summary.occupancy_units - summary.occupancy_occupied} open</span>
               </div>
-              {vacantProperties.length === 0 && <div className="rf-rail-empty">No vacancies right now</div>}
+              {vacantProperties.length === 0 && <div className="pd-rail-empty">No vacancies right now</div>}
               {vacantProperties.map((p) => (
-                <div className="rf-ins-vacancy-row" key={p.id}>
-                  <span className="rf-ins-dot" />
-                  <div className="rf-ins-vacancy-text">
-                    <div className="rf-ins-vacancy-name">{p.address}</div>
-                    <div className="rf-ins-vacancy-sub">{p.vacant} unit{p.vacant === 1 ? '' : 's'} vacant &middot; ~{formatMoney(p.vacancy_loss)}/mo potential</div>
+                <div className="pd-ins-vacancy-row" key={p.id}>
+                  <span className="pd-ins-dot" />
+                  <div className="pd-ins-vacancy-text">
+                    <div className="pd-ins-vacancy-name">{p.address}</div>
+                    <div className="pd-ins-vacancy-sub">{p.vacant} unit{p.vacant === 1 ? '' : 's'} vacant &middot; ~{formatMoney(p.vacancy_loss)}/mo potential</div>
                   </div>
                 </div>
               ))}

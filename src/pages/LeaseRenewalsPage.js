@@ -114,40 +114,40 @@ export default function LeaseRenewalsPage() {
   if (loading) {
     return (
       <AppShell active="renewals">
-        <div className="rf-page-header">
+        <div className="pd-page-header">
           <h1>Lease Renewals</h1>
           <p>Quebec TAL notice-window tracking for upcoming lease ends</p>
         </div>
-        <p className="rf-empty">Loading...</p>
+        <p className="pd-empty">Loading...</p>
       </AppShell>
     );
   }
 
   return (
     <AppShell active="renewals">
-      <div className="rf-page-header">
+      <div className="pd-page-header">
         <h1>Lease Renewals</h1>
         <p>Quebec TAL notice-window tracking for upcoming lease ends</p>
       </div>
 
-      {error && <div className="rf-alert-danger">{error}</div>}
+      {error && <div className="pd-alert-danger">{error}</div>}
 
-      <div className="rf-alert-danger" style={{ background: 'var(--rf-accent-soft)', color: 'var(--rf-accent)', border: '1px solid rgba(124,58,237,0.25)' }}>
+      <div className="pd-alert-danger" style={{ background: 'var(--pd-accent-soft)', color: 'var(--pd-accent)', border: '1px solid rgba(124,58,237,0.25)' }}>
         General reference only, not legal advice: Quebec's TAL generally requires notice of a rent
         increase or lease change 3–6 months before a lease of 12+ months ends, or 1–2 months before
         a shorter fixed-term lease ends. Confirm the exact requirements for your situation before acting.
       </div>
 
-      <div className="rf-card" style={{ marginBottom: 20 }}>
-        <div className="rf-range-presets">
+      <div className="pd-card" style={{ marginBottom: 20 }}>
+        <div className="pd-range-presets">
           <button
-            className={`rf-btn ${filter === 'attention' ? 'rf-btn-primary' : 'rf-btn-secondary'}`}
+            className={`pd-btn ${filter === 'attention' ? 'pd-btn-primary' : 'pd-btn-secondary'}`}
             onClick={() => setFilter('attention')}
           >
             Needs attention
           </button>
           <button
-            className={`rf-btn ${filter === 'all' ? 'rf-btn-primary' : 'rf-btn-secondary'}`}
+            className={`pd-btn ${filter === 'all' ? 'pd-btn-primary' : 'pd-btn-secondary'}`}
             onClick={() => setFilter('all')}
           >
             All leases with an end date
@@ -156,14 +156,14 @@ export default function LeaseRenewalsPage() {
       </div>
 
       {visible.length === 0 ? (
-        <p className="rf-empty">
+        <p className="pd-empty">
           {renewals.length === 0
             ? "No tenants have a lease end date on file yet, so there's nothing to track."
             : "Nothing needs attention right now."}
         </p>
       ) : (
-        <div className="rf-table-wrap">
-          <table className="rf-table">
+        <div className="pd-table-wrap">
+          <table className="pd-table">
             <thead>
               <tr>
                 <th>Property</th>
@@ -184,15 +184,15 @@ export default function LeaseRenewalsPage() {
                     <td>{formatDate(r.lease_end_date)}</td>
                     <td>
                       {formatDate(r.window_start)} – {formatDate(r.window_end)}
-                      <div className="rf-prow-city" style={{ marginTop: 2 }}>{r.bracket}</div>
+                      <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.bracket}</div>
                     </td>
-                    <td><span className={`rf-badge ${meta.badge}`}>{meta.label}</span></td>
+                    <td><span className={`pd-badge ${meta.badge}`}>{meta.label}</span></td>
                     <td>
                       {r.renewal_notice_sent_at ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <span className="rf-badge good">Sent {formatDate(r.renewal_notice_sent_at)}</span>
+                          <span className="pd-badge good">Sent {formatDate(r.renewal_notice_sent_at)}</span>
                           <button
-                            className="rf-btn rf-btn-secondary"
+                            className="pd-btn pd-btn-secondary"
                             disabled={updatingId === r.tenant_id}
                             onClick={() => undoSent(r)}
                           >
@@ -201,7 +201,7 @@ export default function LeaseRenewalsPage() {
                         </div>
                       ) : (
                         <button
-                          className="rf-btn rf-btn-primary"
+                          className="pd-btn pd-btn-primary"
                           disabled={updatingId === r.tenant_id}
                           onClick={() => markSent(r)}
                         >

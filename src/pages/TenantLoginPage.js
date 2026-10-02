@@ -31,19 +31,19 @@ export default function TenantLoginPage() {
   };
 
   return (
-    <div className="rf-auth-page">
-      <div className="rf-auth-card">
-        <div className="rf-auth-brand">Praedium</div>
-        <div className="rf-auth-header">
+    <div className="pd-auth-page">
+      <div className="pd-auth-card">
+        <div className="pd-auth-brand">Praedium</div>
+        <div className="pd-auth-header">
           <h1>Tenant portal</h1>
           <p>Sign in to view your lease and submit maintenance requests.</p>
         </div>
         <form onSubmit={handleLogin}>
-          {error && <div className="rf-alert-danger">{error}</div>}
-          <div className="rf-field">
+          {error && <div className="pd-alert-danger">{error}</div>}
+          <div className="pd-field">
             <label>Email</label>
             <input
-              className="rf-input"
+              className="pd-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -51,13 +51,13 @@ export default function TenantLoginPage() {
               required
             />
           </div>
-          <div className="rf-field">
-            <div className="rf-field-label-row">
+          <div className="pd-field">
+            <div className="pd-field-label-row">
               <label>Password</label>
               <Link to="/forgot-password">Forgot password?</Link>
             </div>
             <input
-              className="rf-input"
+              className="pd-input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -65,11 +65,11 @@ export default function TenantLoginPage() {
               required
             />
           </div>
-          <button type="submit" className="rf-btn rf-btn-primary rf-btn-block" disabled={loading}>
+          <button type="submit" className="pd-btn pd-btn-primary pd-btn-block" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
-        <div className="rf-auth-footer">
+        <div className="pd-auth-footer">
           <p>New here? Use the invite link your landlord emailed you to set up your account.</p>
         </div>
       </div>
