@@ -33,7 +33,7 @@ export default function TenantLoginPage() {
   return (
     <div className="rf-auth-page">
       <div className="rf-auth-card">
-        <div className="rf-auth-brand">Rentflow</div>
+        <div className="rf-auth-brand">Praedium</div>
         <div className="rf-auth-header">
           <h1>Tenant portal</h1>
           <p>Sign in to view your lease and submit maintenance requests.</p>

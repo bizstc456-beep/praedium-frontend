@@ -227,7 +227,7 @@ export default function ReportsPage() {
   const exportCSV = () => {
     if (!report) return;
     const rows = [];
-    rows.push(['Rentflow report', `${start} to ${end}`]);
+    rows.push(['Praedium report', `${start} to ${end}`]);
     rows.push([]);
     rows.push(['Summary']);
     rows.push(['Income', (report.summary.income / 100).toFixed(2)]);
@@ -249,7 +249,7 @@ export default function ReportsPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `rentflow-report-${start}-to-${end}.csv`;
+    link.download = `praedium-report-${start}-to-${end}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

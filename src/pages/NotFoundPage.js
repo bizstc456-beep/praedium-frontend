@@ -6,7 +6,7 @@ export default function NotFoundPage() {
   return (
     <div className="rf-auth-page">
       <div className="rf-auth-card" style={{ textAlign: 'center' }}>
-        <div className="rf-auth-brand">Rentflow</div>
+        <div className="rf-auth-brand">Praedium</div>
         <div className="rf-auth-header">
           <h1>Page not found</h1>
           <p>The page you're looking for doesn't exist or may have moved.</p>

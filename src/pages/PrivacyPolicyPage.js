@@ -7,22 +7,22 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="rf-legal-page">
       <div className="rf-legal-card">
-        <div className="rf-legal-brand">Rentflow</div>
+        <div className="rf-legal-brand">Praedium</div>
         <h1>Privacy Policy</h1>
         <p className="rf-legal-updated">Last updated: September 19, 2026</p>
 
         <section>
           <h2>1. Who this policy covers</h2>
           <p>
-            This policy covers both landlords who create a Rentflow account and their tenants,
+            This policy covers both landlords who create a Praedium account and their tenants,
             who don't create accounts themselves but whose information landlords enter into the
             Service.
           </p>
           <p>
             Under Quebec's Law 25, every organization handling personal information must
             designate a person in charge of the protection of personal information. For
-            Rentflow, that person is Felix, reachable at{' '}
-            <a href="mailto:rentflow.biz@gmail.com">rentflow.biz@gmail.com</a>.
+            Praedium, that person is Felix, reachable at{' '}
+            <a href="mailto:support@praedium.pro">support@praedium.pro</a>.
           </p>
         </section>
 
@@ -39,7 +39,7 @@ export default function PrivacyPolicyPage() {
               </tr>
               <tr>
                 <td>Billing info (card, billing history)</td>
-                <td>Handled by Stripe — Rentflow never stores your full card number</td>
+                <td>Handled by Stripe — Praedium never stores your full card number</td>
               </tr>
               <tr>
                 <td>Property/tenant info you enter (addresses, names, phone, email, lease dates, rent)</td>
@@ -72,7 +72,7 @@ export default function PrivacyPolicyPage() {
 
         <section>
           <h2>3. Who we share it with</h2>
-          <p>We don't sell your data or share it with advertisers. We do share it with the providers that make Rentflow work:</p>
+          <p>We don't sell your data or share it with advertisers. We do share it with the providers that make Praedium work:</p>
           <ul>
             <li>Supabase, for storage</li>
             <li>Stripe, for payments</li>
@@ -122,7 +122,7 @@ export default function PrivacyPolicyPage() {
             withdraw consent for their personal information (withdrawing consent may limit the
             landlord's ability to manage the tenancy through the Service). The fastest way to
             exercise these rights is usually to ask your landlord directly, but you can also
-            contact <a href="mailto:rentflow.biz@gmail.com">rentflow.biz@gmail.com</a>.
+            contact <a href="mailto:support@praedium.pro">support@praedium.pro</a>.
           </p>
           <p>You also have the right to file a complaint with the CAI.</p>
         </section>
@@ -134,7 +134,7 @@ export default function PrivacyPolicyPage() {
             signed in. We don't use advertising cookies or third-party trackers.
           </p>
           <p>
-            <strong>Children:</strong> Rentflow is a business tool not intended for use by anyone
+            <strong>Children:</strong> Praedium is a business tool not intended for use by anyone
             under 18, and we don't knowingly collect information from children.
           </p>
           <p>
@@ -144,12 +144,12 @@ export default function PrivacyPolicyPage() {
           <p>
             <strong>Contact:</strong> questions, requests, or complaints about this policy or
             your personal information can be sent to{' '}
-            <a href="mailto:rentflow.biz@gmail.com">rentflow.biz@gmail.com</a>.
+            <a href="mailto:support@praedium.pro">support@praedium.pro</a>.
           </p>
         </section>
 
         <div className="rf-legal-footer">
-          <Link to="/">Back to Rentflow</Link>
+          <Link to="/">Back to Praedium</Link>
         </div>
       </div>
     </div>

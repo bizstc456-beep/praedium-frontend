@@ -125,7 +125,7 @@ export default function AdminDashboardPage() {
     <AppShell active="admin" wide>
       <div className="rf-page-header">
         <h1>Admin Dashboard</h1>
-        <p>Rentflow platform overview</p>
+        <p>Praedium platform overview</p>
       </div>
 
       <div className="rf-statgrid">

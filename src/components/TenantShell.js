@@ -23,7 +23,7 @@ export default function TenantShell({ active, children }) {
   return (
     <div className="rf-shell">
       <aside className="rf-side">
-        <div className="rf-brand">Rentflow</div>
+        <div className="rf-brand">Praedium</div>
         <nav className="rf-nav">
           <Link to="/tenant" className={linkClass('rental')}>My Rental</Link>
           <Link to="/tenant/maintenance" className={linkClass('maintenance')}>Maintenance</Link>

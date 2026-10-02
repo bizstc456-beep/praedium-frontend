@@ -75,7 +75,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="rf-auth-page">
       <div className="rf-auth-card">
-        <div className="rf-auth-brand">Rentflow</div>
+        <div className="rf-auth-brand">Praedium</div>
         <div className="rf-auth-header">
           <h1>Set a new password</h1>
           <p>Choose a new password for your account.</p>

@@ -35,7 +35,7 @@ export default function AppShell({ active, wide, children }) {
   return (
     <div className="rf-shell">
       <aside className="rf-side">
-        <div className="rf-brand">Rentflow</div>
+        <div className="rf-brand">Praedium</div>
         <nav className="rf-nav">
           <Link to="/" className={linkClass('dashboard')}>Dashboard</Link>
           <Link to="/insights" className={linkClass('insights')}>Insights</Link>
@@ -48,7 +48,7 @@ export default function AppShell({ active, wide, children }) {
           {isAdmin && <Link to="/admin" className={linkClass('admin')}>Admin</Link>}
         </nav>
         <button onClick={handleLogout} className="rf-signout">Sign Out</button>
-        <a href="mailto:rentflow.biz@gmail.com" className="rf-support-link">Need help? Contact support</a>
+        <a href="mailto:support@praedium.pro" className="rf-support-link">Need help? Contact support</a>
       </aside>
       <main className={`rf-main${wide ? ' rf-main-wide' : ''}`}>{children}</main>
     </div>

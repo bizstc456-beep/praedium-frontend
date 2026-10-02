@@ -80,7 +80,7 @@ export default function PaymentPage() {
     <AppShell active="billing">
       <div className="rf-pricing-wrap">
         <div className="rf-pricing-header">
-          <h1>Rentflow Pricing</h1>
+          <h1>Praedium Pricing</h1>
           <p>Simple, transparent pricing for landlords</p>
           {user && <p className="rf-pricing-user">Signed in as {user.email}</p>}
         </div>
@@ -101,7 +101,7 @@ export default function PaymentPage() {
             <div className="rf-feature">SMS notifications</div>
             <div className="rf-feature">Document storage</div>
             <div className="rf-feature">AI-powered tenant analysis</div>
-            <div className="rf-feature">Priority support (<a href="mailto:rentflow.biz@gmail.com">rentflow.biz@gmail.com</a>)</div>
+            <div className="rf-feature">Priority support (<a href="mailto:support@praedium.pro">support@praedium.pro</a>)</div>
           </div>
 
           {subscription ? (

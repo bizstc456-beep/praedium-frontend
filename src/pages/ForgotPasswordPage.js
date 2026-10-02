@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="rf-auth-page">
       <div className="rf-auth-card">
-        <div className="rf-auth-brand">Rentflow</div>
+        <div className="rf-auth-brand">Praedium</div>
         <div className="rf-auth-header">
           <h1>Reset your password</h1>
           <p>Enter your email and we'll send you a link to reset it.</p>
