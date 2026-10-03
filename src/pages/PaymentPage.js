@@ -7,56 +7,97 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
+const TIERS = [
+  {
+    key: 'starter',
+    name: 'Starter',
+    price: 39,
+    unitLimit: '5 units',
+    blurb: 'For landlords just getting started.',
+    features: [
+      'Up to 5 rental units',
+      'Payment tracking',
+      'SMS notifications',
+      'Document storage',
+      'AI-powered tenant analysis',
+    ],
+  },
+  {
+    key: 'growth',
+    name: 'Growth',
+    price: 149,
+    unitLimit: '20 units',
+    blurb: 'For landlords scaling their portfolio.',
+    featured: true,
+    features: [
+      'Up to 20 rental units',
+      'Everything in Starter',
+      'Priority support',
+      'Advanced reporting',
+    ],
+  },
+  {
+    key: 'portfolio',
+    name: 'Portfolio',
+    price: 299,
+    unitLimit: 'Unlimited units',
+    blurb: 'For portfolios and property managers.',
+    features: [
+      'Unlimited rental units',
+      'Everything in Growth',
+      'Dedicated onboarding',
+    ],
+  },
+];
+
 export default function PaymentPage() {
   const [user, setUser] = useState(null);
-  const [subscription, setSubscription] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [plan, setPlan] = useState(null);
+  const [loadingTier, setLoadingTier] = useState(null);
 
   useEffect(() => {
-    getUser();
-    getSubscription();
+    getUserAndPlan();
   }, []);
 
-  const getUser = async () => {
+  const getUserAndPlan = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
-  };
-
-  const getSubscription = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
-
-    setSubscription(data);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/billing/plan/${user.id}`,
+        { headers: { Authorization: `Bearer ${session?.access_token}` } }
+      );
+      const data = await res.json();
+      if (res.ok) setPlan(data);
+    } catch (err) {
+      console.error('Error loading plan:', err);
+    }
   };
 
-  const handleCheckout = async () => {
-    setLoading(true);
+  const handleCheckout = async (tierKey) => {
+    setLoadingTier(tierKey);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
         alert('Please log in first');
         return;
       }
 
-      // Call backend to create Stripe checkout session. The backend now
-      // derives the user from this session token rather than trusting the
-      // body, so it has to be sent.
-      const { data: { session } } = await supabase.auth.getSession();
+      // The backend derives the user from this session token rather than
+      // trusting the body, and maps `tier` server-side to the matching
+      // Stripe price id -- the frontend never sends a price id directly.
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/create-checkout-session`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.access_token}`,
+            Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ userId: user.id, email: user.email }),
+          body: JSON.stringify({ tier: tierKey }),
         }
       );
 
@@ -66,77 +107,96 @@ export default function PaymentPage() {
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
-      // Redirect to Stripe's hosted checkout page
       window.location.href = data.url;
     } catch (error) {
       console.error('Checkout error:', error);
-      alert('Failed to start checkout. Please try again.');
+      alert(error.message || 'Failed to start checkout. Please try again.');
     } finally {
-      setLoading(false);
+      setLoadingTier(null);
     }
   };
 
   return (
     <AppShell active="billing">
-      <div className="pd-pricing-wrap">
+      <div className="pd-pricing-wrap pd-pricing-wrap-wide">
         <div className="pd-pricing-header">
           <h1>Praedium Pricing</h1>
-          <p>Simple, transparent pricing for landlords</p>
+          <p>Simple, transparent pricing that grows with your portfolio</p>
           {user && <p className="pd-pricing-user">Signed in as {user.email}</p>}
         </div>
 
-        <div className="pd-price-card">
-          <div className="pd-price-row">
-            <h2>Pro Plan</h2>
-            <div className="pd-price-amount">$150<span className="period">/month</span></div>
+        {plan && (
+          <div className="pd-plan-status">
+            <span className="pd-badge good">
+              Current plan: {plan.plan_label}
+            </span>
+            <span className="pd-plan-usage">
+              Using {plan.current_units} {plan.current_units === 1 ? 'unit' : 'units'}
+              {plan.max_units != null ? ` of ${plan.max_units}` : ' (unlimited)'}
+            </span>
           </div>
+        )}
 
-          <div className="pd-trial-badge">30-Day Free Trial</div>
-          <p className="pd-trial-note">Card required to start your trial — you won't be charged for 30 days.</p>
+        <div className="pd-trial-badge">30-Day Free Trial on every plan</div>
+        <p className="pd-trial-note">Card required to start your trial — you won't be charged for 30 days. Cancel anytime before then and you won't be billed.</p>
 
-          <div className="pd-feature-list">
-            <div className="pd-feature">Unlimited properties</div>
-            <div className="pd-feature">Unlimited tenants</div>
-            <div className="pd-feature">Payment tracking</div>
-            <div className="pd-feature">SMS notifications</div>
-            <div className="pd-feature">Document storage</div>
-            <div className="pd-feature">AI-powered tenant analysis</div>
-            <div className="pd-feature">Priority support (<a href="mailto:support@praedium.pro">support@praedium.pro</a>)</div>
-          </div>
+        <div className="pd-pricing-grid">
+          {TIERS.map((tier) => {
+            const isCurrent = plan && plan.plan_tier === tier.key;
+            return (
+              <div
+                key={tier.key}
+                className={`pd-price-card${tier.featured ? ' pd-price-card-featured' : ''}${isCurrent ? ' pd-price-card-current' : ''}`}
+              >
+                {tier.featured && <div className="pd-price-ribbon">Most popular</div>}
 
-          {subscription ? (
-            <div className="pd-subscription-active">
-              <span className="pd-badge good">Active subscription</span>
-              <p className="pd-trial-note">Next billing date: {new Date(subscription.next_billing_date).toLocaleDateString()}</p>
-              <button className="pd-btn pd-btn-secondary pd-btn-block" disabled>
-                Already subscribed
-              </button>
-            </div>
-          ) : (
-            <button
-              className="pd-btn pd-btn-primary pd-btn-block"
-              onClick={handleCheckout}
-              disabled={loading}
-            >
-              {loading ? 'Processing...' : 'Start 30-Day Free Trial'}
-            </button>
-          )}
+                <div className="pd-price-row">
+                  <h2>{tier.name}</h2>
+                  <div className="pd-price-amount">${tier.price}<span className="period">/month</span></div>
+                </div>
+                <p className="pd-price-sub">{tier.unitLimit} &middot; {tier.blurb}</p>
 
-          <div className="pd-price-footer">
-            <p>Cancelling before day 30 means you're never charged</p>
-            <p>Cancel anytime</p>
-          </div>
+                <div className="pd-feature-list">
+                  {tier.features.map((f) => (
+                    <div className="pd-feature" key={f}>{f}</div>
+                  ))}
+                </div>
+
+                {isCurrent ? (
+                  <button className="pd-btn pd-btn-secondary pd-btn-block" disabled>
+                    Your current plan
+                  </button>
+                ) : (
+                  <button
+                    className="pd-btn pd-btn-primary pd-btn-block"
+                    onClick={() => handleCheckout(tier.key)}
+                    disabled={loadingTier !== null}
+                  >
+                    {loadingTier === tier.key ? 'Processing...' : plan ? `Switch to ${tier.name}` : 'Start 30-Day Free Trial'}
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <div className="pd-faq">
           <h2>Common questions</h2>
           <div className="pd-faq-item">
+            <h3>What counts as a "unit"?</h3>
+            <p>Every rental unit across all your properties — a single-family home counts as 1, a duplex as 2, a fourplex as 4, and so on. Your plan is based on your total across your whole portfolio, not the number of properties.</p>
+          </div>
+          <div className="pd-faq-item">
+            <h3>What happens if I go over my plan's limit?</h3>
+            <p>You won't be able to add a new property or unit past your plan's cap — you'll be prompted to upgrade first. Your existing data is never affected.</p>
+          </div>
+          <div className="pd-faq-item">
             <h3>Do I need a credit card for the trial?</h3>
             <p>Yes, we collect your card when you start the trial, but you won't be charged anything for 30 days. Cancel anytime before then and you won't be billed.</p>
           </div>
           <div className="pd-faq-item">
-            <h3>Can I cancel my subscription?</h3>
-            <p>Yes, you can cancel anytime. Your access continues until the end of your billing period.</p>
+            <h3>Can I change plans later?</h3>
+            <p>Yes, you can switch plans anytime from this page. Your access continues until the end of your current billing period.</p>
           </div>
           <div className="pd-faq-item">
             <h3>What payment methods do you accept?</h3>
