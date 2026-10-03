@@ -132,7 +132,7 @@ export default function LeaseRenewalsPage() {
 
       {error && <div className="pd-alert-danger">{error}</div>}
 
-      <div className="pd-alert-danger" style={{ background: 'var(--pd-accent-soft)', color: 'var(--pd-accent)', border: '1px solid rgba(217,164,65,0.3)' }}>
+      <div className="pd-alert-danger" style={{ background: 'var(--pd-accent-soft)', color: 'var(--pd-accent)', border: '1px solid rgba(156,107,29,0.3)' }}>
         General reference only, not legal advice: Quebec's TAL generally requires notice of a rent
         increase or lease change 3–6 months before a lease of 12+ months ends, or 1–2 months before
         a shorter fixed-term lease ends. Confirm the exact requirements for your situation before acting.

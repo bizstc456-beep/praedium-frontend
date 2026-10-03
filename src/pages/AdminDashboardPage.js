@@ -197,12 +197,12 @@ export default function AdminDashboardPage() {
                 <path
                   d={spark.linePath}
                   fill="none"
-                  stroke="#d9a441"
+                  stroke="#9c6b1d"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                <circle cx={spark.last[0]} cy={spark.last[1]} r="3.5" fill="#d9a441" />
+                <circle cx={spark.last[0]} cy={spark.last[1]} r="3.5" fill="#9c6b1d" />
               </svg>
             )}
           </div>
