@@ -125,9 +125,11 @@ export default function PaymentPage() {
           {user && <p className="pd-pricing-user">Signed in as {user.email}</p>}
         </div>
 
-        {plan && (
+        {plan && plan.has_subscription && (
           <div className="pd-plan-status">
-            <span className="pd-badge good">
+            <span className={`pd-badge ${plan.subscription_status === 'past_due' ? 'warn' : 'good'}`}>
+              {plan.subscription_status === 'trialing' && 'On trial: '}
+              {plan.subscription_status === 'past_due' && 'Payment issue: '}
               Current plan: {plan.plan_label}
             </span>
             <span className="pd-plan-usage">
@@ -142,7 +144,7 @@ export default function PaymentPage() {
 
         <div className="pd-pricing-grid">
           {TIERS.map((tier) => {
-            const isCurrent = plan && plan.plan_tier === tier.key;
+            const isCurrent = plan && plan.has_subscription && plan.plan_tier === tier.key;
             return (
               <div
                 key={tier.key}
@@ -172,7 +174,7 @@ export default function PaymentPage() {
                     onClick={() => handleCheckout(tier.key)}
                     disabled={loadingTier !== null}
                   >
-                    {loadingTier === tier.key ? 'Processing...' : plan ? `Switch to ${tier.name}` : 'Start 30-Day Free Trial'}
+                    {loadingTier === tier.key ? 'Processing...' : (plan && plan.has_subscription) ? `Switch to ${tier.name}` : 'Start 30-Day Free Trial'}
                   </button>
                 )}
               </div>
