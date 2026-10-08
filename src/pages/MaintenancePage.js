@@ -430,6 +430,7 @@ export default function MaintenancePage() {
                     <th>Property</th>
                     <th>Tenant</th>
                     <th>Request</th>
+                    <th>Photo</th>
                     <th>Submitted</th>
                     <th>Status</th>
                   </tr>
@@ -448,6 +449,19 @@ export default function MaintenancePage() {
                           <div style={{ fontWeight: 600 }}>{r.title}</div>
                           {r.description && (
                             <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.description}</div>
+                          )}
+                        </td>
+                        <td>
+                          {r.photo_url ? (
+                            <a href={r.photo_url} target="_blank" rel="noopener noreferrer">
+                              <img
+                                src={r.photo_url}
+                                alt="Maintenance issue"
+                                style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }}
+                              />
+                            </a>
+                          ) : (
+                            <span className="pd-prow-city">—</span>
                           )}
                         </td>
                         <td>{formatDate(r.created_at)}</td>
