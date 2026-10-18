@@ -21,16 +21,20 @@ export default function TenantShell({ active, children }) {
   const linkClass = (page) => (active === page ? 'pd-nav-link current' : 'pd-nav-link');
 
   return (
-    <div className="pd-shell">
-      <aside className="pd-side">
-        <div className="pd-brand">Praedium</div>
-        <nav className="pd-nav">
-          <Link to="/tenant" className={linkClass('rental')}>My Rental</Link>
-          <Link to="/tenant/maintenance" className={linkClass('maintenance')}>Maintenance</Link>
-        </nav>
-        <button onClick={handleLogout} className="pd-signout">Sign Out</button>
-      </aside>
-      <main className="pd-main">{children}</main>
-    </div>
-  );
+  <div className="pd-shell pd-shell-tenant">
+    <aside className="pd-side">
+      <div className="pd-brand">Praedium</div>
+      <nav className="pd-nav">
+        <Link to="/tenant" className={linkClass('rental')}>My Rental</Link>
+        <Link to="/tenant/maintenance" className={linkClass('maintenance')}>Maintenance</Link>
+      </nav>
+      <button onClick={handleLogout} className="pd-signout">Sign Out</button>
+    </aside>
+    <main className="pd-main">{children}</main>
+    <nav className="pd-tenant-tabbar">
+      <Link to="/tenant" className={active === 'rental' ? 'pd-tab current' : 'pd-tab'}>My Rental</Link>
+      <Link to="/tenant/maintenance" className={active === 'maintenance' ? 'pd-tab current' : 'pd-tab'}>Maintenance</Link>
+    </nav>
+  </div>
+);
 }

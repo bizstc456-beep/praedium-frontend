@@ -951,6 +951,50 @@
   .pd-main {
     padding: 24px 18px 40px;
   }
+ 
+  /* Tenant-only: the top bar's inline nav links are replaced by the fixed
+     bottom tab bar below on phones -- keeps the header to just brand +
+     sign out instead of three things fighting for one row. */
+  .pd-shell-tenant .pd-side .pd-nav {
+    display: none;
+  } 
+}
+
+
+.pd-tenant-tabbar {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .pd-tenant-tabbar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    background: var(--pd-side-bg);
+    border-top: 1px solid var(--pd-side-line);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pd-tenant-tabbar .pd-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-side-ink2);
+    text-decoration: none;
+  }
+  .pd-tenant-tabbar .pd-tab.current {
+    color: var(--pd-accent-2);
+    background: var(--pd-side-current-bg);
+  }
+  .pd-shell-tenant .pd-main {
+    padding-bottom: calc(40px + 56px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* ---- properties page ---- */
