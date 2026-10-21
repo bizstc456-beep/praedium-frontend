@@ -198,7 +198,7 @@ export default function TenantMaintenancePage() {
               {requests.map((r) => (
                 <tr key={r.id}>
                   <td data-label="Request">
-                    <div>
+                    <div style={{ textAlign: 'left' }}>
                       <div style={{ fontWeight: 600 }}>{r.title}</div>
                       {r.description && (
                         <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.description}</div>
