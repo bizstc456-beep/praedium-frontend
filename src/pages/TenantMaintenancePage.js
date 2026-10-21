@@ -185,7 +185,7 @@ export default function TenantMaintenancePage() {
         <p className="pd-empty">You haven't submitted any maintenance requests yet.</p>
       ) : (
         <div className="pd-table-wrap">
-          <table className="pd-table">
+          <table className="pd-table pd-table-stack">
             <thead>
               <tr>
                 <th>Request</th>
@@ -197,13 +197,13 @@ export default function TenantMaintenancePage() {
             <tbody>
               {requests.map((r) => (
                 <tr key={r.id}>
-                  <td>
+                  <td data-label="Request">
                     <div style={{ fontWeight: 600 }}>{r.title}</div>
                     {r.description && (
                       <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.description}</div>
                     )}
                   </td>
-                  <td>
+                  <td data-label="Photo">
                     {r.photo_url ? (
                       <a href={r.photo_url} target="_blank" rel="noopener noreferrer">
                         <img
@@ -216,9 +216,9 @@ export default function TenantMaintenancePage() {
                       <span className="pd-prow-city">—</span>
                     )}
                   </td>
-                  <td>{formatDate(r.created_at)}</td>
-                  <td><span className={`pd-badge ${STATUS_BADGE[r.status] || 'neutral'}`}>{STATUS_LABEL[r.status] || r.status}</span></td>
-                </tr>
+                  <td data-label="Submitted">{formatDate(r.created_at)}</td>
+                  <td data-label="Status"><span className={`pd-badge ${STATUS_BADGE[r.status] || 'neutral'}`}>{STATUS_LABEL[r.status] || r.status}</span></td> 
+                  </tr>
               ))}
             </tbody>
           </table>
