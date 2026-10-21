@@ -45,6 +45,7 @@ export default function AppShell({ active, wide, children }) {
           <Link to="/renewals" className={linkClass('renewals')}>Lease Renewals</Link>
           <Link to="/messages" className={linkClass('messages')}>Messages</Link>
           <Link to="/payment" className={linkClass('billing')}>Billing</Link>
+          <Link to="/settings" className={linkClass('settings')}>Settings</Link>
           {isAdmin && <Link to="/admin" className={linkClass('admin')}>Admin</Link>}
         </nav>
         <button onClick={handleLogout} className="pd-signout">Sign Out</button>
