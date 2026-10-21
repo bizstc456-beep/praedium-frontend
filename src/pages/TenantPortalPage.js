@@ -108,7 +108,7 @@ export default function TenantPortalPage() {
             <p className="pd-empty">No payments recorded yet.</p>
           ) : (
             <div className="pd-table-wrap">
-              <table className="pd-table">
+              <table className="pd-table pd-table-stack">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -120,10 +120,10 @@ export default function TenantPortalPage() {
                 <tbody>
                   {payments.map((p) => (
                     <tr key={p.id}>
-                      <td>{formatDate(p.payment_date || p.created_at)}</td>
-                      <td>{formatMoney(p.amount)}</td>
-                      <td>{p.payment_method || '—'}</td>
-                      <td>
+                      <td data-label="Date">{formatDate(p.payment_date || p.created_at)}</td>
+                      <td data-label="Amount">{formatMoney(p.amount)}</td>
+                      <td data-label="Method">{p.payment_method || '-'}</td>
+                      <td data-label="Status">
                         <span className={`pd-badge ${p.status === 'paid' ? 'good' : 'warn'}`}>
                           {p.status === 'paid' ? 'Paid' : p.status}
                         </span>
