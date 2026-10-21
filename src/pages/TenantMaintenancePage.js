@@ -198,10 +198,12 @@ export default function TenantMaintenancePage() {
               {requests.map((r) => (
                 <tr key={r.id}>
                   <td data-label="Request">
-                    <div style={{ fontWeight: 600 }}>{r.title}</div>
-                    {r.description && (
-                      <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.description}</div>
-                    )}
+                    <div>
+                      <div style={{ fontWeight: 600 }}>{r.title}</div>
+                      {r.description && (
+                        <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.description}</div>
+                      )}
+                    </div>
                   </td>
                   <td data-label="Photo">
                     {r.photo_url ? (
@@ -217,8 +219,8 @@ export default function TenantMaintenancePage() {
                     )}
                   </td>
                   <td data-label="Submitted">{formatDate(r.created_at)}</td>
-                  <td data-label="Status"><span className={`pd-badge ${STATUS_BADGE[r.status] || 'neutral'}`}>{STATUS_LABEL[r.status] || r.status}</span></td> 
-                  </tr>
+                  <td data-label="Status"><span className={`pd-badge ${STATUS_BADGE[r.status] || 'neutral'}`}>{STATUS_LABEL[r.status] || r.status}</span></td>
+                </tr>
               ))}
             </tbody>
           </table>
