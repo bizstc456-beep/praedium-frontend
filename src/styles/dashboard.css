@@ -958,6 +958,9 @@
   .pd-shell-tenant .pd-side .pd-nav {
     display: none;
   } 
+    .pd-shell-tenant .pd-main {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 20px);
+  }
 }
 
 
