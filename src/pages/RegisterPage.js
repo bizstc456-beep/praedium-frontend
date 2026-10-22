@@ -157,6 +157,7 @@ export default function RegisterPage() {
         </form>
         <div className="pd-auth-footer">
           <p>Already have an account? <Link to="/login">Sign in</Link></p>
+          <p className="pd-auth-support">Need help? <a href="mailto:support@praedium.pro">Contact support</a></p>
         </div>
       </div>
     </div>
