@@ -2086,3 +2086,18 @@
   .pd-mnt-grid { grid-template-columns:1fr; }
   .pd-mnt-rail { order:2; }
 }
+.pd-auth-support {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--pd-ink2);
+  text-align: center;
+}
+
+.pd-auth-support a {
+  color: var(--pd-accent);
+  text-decoration: none;
+}
+
+.pd-auth-support a:hover {
+  text-decoration: underline;
+}

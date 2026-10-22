@@ -71,6 +71,7 @@ export default function LoginPage() {
         </form>
         <div className="pd-auth-footer">
           <p>Don't have an account? <Link to="/register">Sign up</Link></p>
+          <p className="pd-auth-support">Need help? <a href="mailto:support@praedium.pro">Contact support</a></p>
         </div>
       </div>
     </div>
