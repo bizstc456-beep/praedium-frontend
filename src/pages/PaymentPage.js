@@ -116,6 +116,85 @@ export default function PaymentPage() {
     }
   };
 
+  const handleChangePlan = async (tierKey) => {
+    const target = TIERS.find((t) => t.key === tierKey);
+    if (!window.confirm(`Switch to the ${target?.name} plan? The price difference will be prorated on your next invoice.`)) return;
+    setLoadingTier(tierKey);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/billing/change-plan`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ tier: tierKey }),
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to switch plans');
+      }
+      await getUserAndPlan();
+    } catch (error) {
+      console.error('Change plan error:', error);
+      alert(error.message || 'Failed to switch plans. Please try again.');
+    } finally {
+      setLoadingTier(null);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!window.confirm('Cancel your subscription? You will keep full access until the end of your current billing period.')) return;
+    setLoadingTier('cancel');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/billing/cancel`,
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to cancel subscription');
+      }
+      await getUserAndPlan();
+    } catch (error) {
+      console.error('Cancel subscription error:', error);
+      alert(error.message || 'Failed to cancel subscription. Please try again.');
+    } finally {
+      setLoadingTier(null);
+    }
+  };
+
+  const handleResume = async () => {
+    setLoadingTier('resume');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/billing/resume`,
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to resume subscription');
+      }
+      await getUserAndPlan();
+    } catch (error) {
+      console.error('Resume subscription error:', error);
+      alert(error.message || 'Failed to resume subscription. Please try again.');
+    } finally {
+      setLoadingTier(null);
+    }
+  };
+
   return (
     <AppShell active="billing">
       <div className="pd-pricing-wrap pd-pricing-wrap-wide">
@@ -126,17 +205,42 @@ export default function PaymentPage() {
         </div>
 
         {plan && plan.has_subscription && (
-          <div className="pd-plan-status">
-            <span className={`pd-badge ${plan.subscription_status === 'past_due' ? 'warn' : 'good'}`}>
-              {plan.subscription_status === 'trialing' && 'On trial: '}
-              {plan.subscription_status === 'past_due' && 'Payment issue: '}
-              Current plan: {plan.plan_label}
-            </span>
-            <span className="pd-plan-usage">
-              Using {plan.current_units} {plan.current_units === 1 ? 'unit' : 'units'}
-              {plan.max_units != null ? ` of ${plan.max_units}` : ' (unlimited)'}
-            </span>
-          </div>
+          <>
+            <div className="pd-plan-status">
+              <span className={`pd-badge ${plan.subscription_status === 'past_due' ? 'warn' : 'good'}`}>
+                {plan.subscription_status === 'trialing' && 'On trial: '}
+                {plan.subscription_status === 'past_due' && 'Payment issue: '}
+                Current plan: {plan.plan_label}
+              </span>
+              <span className="pd-plan-usage">
+                Using {plan.current_units} {plan.current_units === 1 ? 'unit' : 'units'}
+                {plan.max_units != null ? ` of ${plan.max_units}` : ' (unlimited)'}
+              </span>
+            </div>
+
+            {plan.cancel_at_period_end ? (
+              <div className="pd-plan-cancel-notice">
+                <span className="pd-badge warn">
+                  Cancels on {plan.current_period_end ? new Date(plan.current_period_end).toLocaleDateString() : 'end of billing period'}
+                </span>
+                <button
+                  className="pd-btn pd-btn-secondary"
+                  onClick={handleResume}
+                  disabled={loadingTier !== null}
+                >
+                  {loadingTier === 'resume' ? 'Processing...' : 'Resume subscription'}
+                </button>
+              </div>
+            ) : (
+              <button
+                className="pd-btn pd-btn-text pd-cancel-link"
+                onClick={handleCancel}
+                disabled={loadingTier !== null}
+              >
+                {loadingTier === 'cancel' ? 'Processing...' : 'Cancel subscription'}
+              </button>
+            )}
+          </>
         )}
 
         <div className="pd-trial-badge">30-Day Free Trial on every plan</div>
@@ -171,8 +275,7 @@ export default function PaymentPage() {
                 ) : (
                   <button
                     className="pd-btn pd-btn-primary pd-btn-block"
-                    onClick={() => handleCheckout(tier.key)}
-                    disabled={loadingTier !== null}
+                    onClick={() => (plan && plan.has_subscription ? handleChangePlan(tier.key) : handleCheckout(tier.key))} disabled={loadingTier !== null}
                   >
                     {loadingTier === tier.key ? 'Processing...' : (plan && plan.has_subscription) ? `Switch to ${tier.name}` : 'Start 30-Day Free Trial'}
                   </button>
