@@ -71,6 +71,7 @@ export default function TenantLoginPage() {
         </form>
         <div className="pd-auth-footer">
           <p>New here? Use the invite link your landlord emailed you to set up your account.</p>
+          <p className="pd-auth-support">Need help? <a href="mailto:support@praedium.pro">Contact support</a></p>
         </div>
       </div>
     </div>
