@@ -50,6 +50,11 @@
   padding: 26px 16px;
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .pd-brand {
