@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 import KebabMenu from '../components/KebabMenu';
+import DatePicker from '../components/DatePicker';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -736,11 +737,11 @@ function TenantForm({ form, setForm, onSubmit, onCancel }) {
         </div>
         <div className="pd-field">
           <label>Lease start</label>
-          <input className="pd-input" type="date" value={form.lease_start_date} onChange={(e) => setForm({ ...form, lease_start_date: e.target.value })} />
+          <DatePicker value={form.lease_start_date} onChange={(d) => setForm({ ...form, lease_start_date: d })} />
         </div>
         <div className="pd-field">
           <label>Lease end</label>
-          <input className="pd-input" type="date" value={form.lease_end_date} onChange={(e) => setForm({ ...form, lease_end_date: e.target.value })} />
+          <DatePicker value={form.lease_end_date} onChange={(d) => setForm({ ...form, lease_end_date: d })} />
         </div>
       </div>
       <div className="pd-form-actions">
