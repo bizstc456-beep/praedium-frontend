@@ -1109,6 +1109,7 @@
   flex-direction: column;
   gap: 3px;
   min-width: 160px;
+  flex-grow: 1;
 }
 
 .pd-unit-name {
