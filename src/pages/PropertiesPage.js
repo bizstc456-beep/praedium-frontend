@@ -562,7 +562,17 @@ export default function PropertiesPage() {
 
                         {docsOpenKey === tenantDocsKey && (
                           <div className="pd-nested-card">
-                            <h2 className="pd-section-title">Documents &mdash; {t.name}</h2>
+                            <div className="pd-panel-head">
+                              <h2 className="pd-section-title">Documents &mdash; {t.name}</h2>
+                              <button
+                                type="button"
+                                className="pd-panel-close"
+                                aria-label="Close documents"
+                                onClick={() => toggleDocs(tenantDocsKey)}
+                              >
+                                &times;
+                              </button>
+                            </div>
                             <p className="pd-empty" style={{ marginTop: -8, marginBottom: 10 }}>
                               Lease, ID copy, or anything else tied to this tenant.
                             </p>

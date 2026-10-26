@@ -1232,6 +1232,27 @@
   background: var(--pd-accent-soft);
 }
 
+.pd-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.pd-panel-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink2, #6b6153);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.pd-panel-close:hover {
+  color: var(--ink, #1c1712);
+  background: rgba(0, 0, 0, 0.05);
+}
+
 .pd-quick-actions {
   display: flex;
   flex-wrap: wrap;
