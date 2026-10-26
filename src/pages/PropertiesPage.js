@@ -473,7 +473,17 @@ export default function PropertiesPage() {
 
               {docsOpenKey === propertyDocsKey && (
                 <div className="pd-nested-card">
-                  <h2 className="pd-section-title">Property documents</h2>
+                  <div className="pd-panel-head">
+                    <h2 className="pd-section-title">Property documents</h2>
+                    <button
+                      type="button"
+                      className="pd-panel-close"
+                      aria-label="Close documents"
+                      onClick={() => toggleDocs(propertyDocsKey)}
+                    >
+                      &times;
+                    </button>
+                  </div>
                   <p className="pd-empty" style={{ marginTop: -8, marginBottom: 10 }}>
                     Building-level files — insurance policy, deed, inspection reports.
                   </p>
