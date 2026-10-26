@@ -1186,15 +1186,18 @@
 .pd-datepicker {
   position: relative;
 }
+
 .pd-datepicker-trigger {
   width: 100%;
   text-align: left;
   cursor: pointer;
   background: var(--pd-card);
 }
+
 .pd-datepicker-placeholder {
   color: var(--pd-ink2);
 }
+
 .pd-datepicker-popover {
   position: absolute;
   top: calc(100% + 6px);
@@ -1207,6 +1210,7 @@
   padding: 14px;
   width: 340px;
 }
+
 .pd-datepicker-year-nav {
   display: flex;
   align-items: center;
@@ -1216,6 +1220,7 @@
   font-size: 15px;
   margin-bottom: 10px;
 }
+
 .pd-datepicker-year-nav button {
   background: none;
   border: 1px solid var(--pd-line);
@@ -1227,14 +1232,17 @@
   line-height: 1;
   color: var(--pd-ink2);
 }
+
 .pd-datepicker-year-nav button:hover {
   color: var(--pd-ink);
   background: var(--pd-bg);
 }
+
 .pd-datepicker-body {
   display: flex;
   gap: 10px;
 }
+
 .pd-datepicker-months {
   display: flex;
   flex-direction: column;
@@ -1244,6 +1252,24 @@
   padding-right: 4px;
   border-right: 1px solid var(--pd-line);
 }
+
+.pd-datepicker-months {
+  scrollbar-width: thin;
+}
+
+.pd-datepicker-months::-webkit-scrollbar {
+  width: 5px;
+}
+
+.pd-datepicker-months::-webkit-scrollbar-thumb {
+  background: var(--pd-line);
+  border-radius: 10px;
+}
+
+.pd-datepicker-months::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .pd-datepicker-month-item {
   background: none;
   border: none;
@@ -1254,18 +1280,22 @@
   color: var(--pd-ink2);
   cursor: pointer;
 }
+
 .pd-datepicker-month-item:hover {
   background: var(--pd-bg);
   color: var(--pd-ink);
 }
+
 .pd-datepicker-month-item.active {
   background: var(--pd-accent-soft);
   color: var(--pd-ink);
   font-weight: 700;
 }
+
 .pd-datepicker-calendar {
   flex: 1;
 }
+
 .pd-datepicker-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -1274,11 +1304,13 @@
   color: var(--pd-ink2);
   margin-bottom: 4px;
 }
+
 .pd-datepicker-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 2px;
 }
+
 .pd-datepicker-day {
   background: none;
   border: none;
@@ -1289,16 +1321,20 @@
   cursor: pointer;
   color: var(--pd-ink);
 }
+
 .pd-datepicker-day.empty {
   cursor: default;
 }
+
 .pd-datepicker-day:not(.empty):hover {
   background: var(--pd-bg);
 }
+
 .pd-datepicker-day.today {
   border: 1px solid var(--pd-line);
   font-weight: 700;
 }
+
 .pd-datepicker-day.selected {
   background: var(--pd-gradient);
   color: #1c1710;
