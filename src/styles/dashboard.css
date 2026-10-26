@@ -1150,6 +1150,8 @@
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  flex-basis: 100%;
+  margin-top: 4px;
 }
 
 .pd-property-actions .pd-btn,
@@ -1238,6 +1240,7 @@
   justify-content: space-between;
   gap: 10px;
 }
+
 .pd-panel-close {
   background: none;
   border: none;
@@ -1248,6 +1251,7 @@
   padding: 2px 6px;
   border-radius: 6px;
 }
+
 .pd-panel-close:hover {
   color: var(--ink, #1c1712);
   background: rgba(0, 0, 0, 0.05);
