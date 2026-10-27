@@ -80,17 +80,11 @@ export default function TenantPortalPage() {
       </div>
 
       {error && <div className="pd-alert-danger">{error}</div>}
-
       {tenant && (
         <>
           <div className="pd-chips">
             <div className="pd-chip"><b>{formatMoney(tenant.rent_amount)}</b><span>monthly rent</span></div>
-            {balance && (
-              <div className="pd-chip">
-                <b>{balance.status === 'paid' ? 'Paid up' : formatMoney(balance.pending_amount)}</b>
-                <span>{balance.status === 'paid' ? 'this month' : 'due this month'}</span>
-              </div>
-            )}
+
             <div className="pd-chip"><b>{formatDate(tenant.lease_end_date)}</b><span>lease ends</span></div>
           </div>
 
