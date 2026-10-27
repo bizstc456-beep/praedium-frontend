@@ -468,10 +468,10 @@ export default function MaintenancePage() {
                         <td>{formatDate(r.created_at)}</td>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <span className={`pd-badge ${meta.badge}`}>{meta.label}</span>
+                            <span className={`pd-badge ${meta.badge}`} style={{ minWidth: 92, textAlign: 'center' }}>{meta.label}</span>
                             <select
                               className="pd-select"
-                              style={{ width: 'auto', padding: '4px 28px 4px 8px', fontSize: 12.5 }}
+                              style={{ width: 140, padding: '4px 28px 4px 8px', fontSize: 12.5 }}
                               value={r.status}
                               disabled={updatingId === r.id}
                               onChange={(e) => updateStatus(r, e.target.value)}
