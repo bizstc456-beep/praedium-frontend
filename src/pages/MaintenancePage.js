@@ -470,8 +470,8 @@ export default function MaintenancePage() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <span className={`pd-badge ${meta.badge}`}>{meta.label}</span>
                             <select
-                              className="pd-input"
-                              style={{ width: 'auto', padding: '4px 8px', fontSize: 12.5 }}
+                              className="pd-select"
+                              style={{ width: 'auto', padding: '4px 28px 4px 8px', fontSize: 12.5 }}
                               value={r.status}
                               disabled={updatingId === r.id}
                               onChange={(e) => updateStatus(r, e.target.value)}
