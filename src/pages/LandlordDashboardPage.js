@@ -11,8 +11,16 @@ const supabase = createClient(
 
 // All money from the API is in cents (matches Stripe's convention, used
 // consistently for rent_amount and payment amounts alike).
+function formatDollars(amount) {
+  const sign = amount < 0 ? '-' : '';
+  const abs = Math.abs(amount);
+  const parts = abs.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `${sign}${parts[0]},${parts[1]}$`;
+}
+
 function formatMoney(cents) {
-  return `$${((cents || 0) / 100).toFixed(2)}`;
+  return formatDollars((cents || 0) / 100);
 }
 
 function shortName(fullName) {
@@ -93,12 +101,12 @@ export default function LandlordDashboardPage() {
       fetch(`${base}/api/maintenance/landlord/${session.user.id}`, { headers })
         .then((r) => r.json())
         .then((d) => setMaintenanceRequests(d.requests || []))
-        .catch(() => {});
+        .catch(() => { });
 
       fetch(`${base}/api/lease-renewals/landlord/${session.user.id}`, { headers })
         .then((r) => r.json())
         .then((d) => setLeaseRenewals(d.renewals || []))
-        .catch(() => {});
+        .catch(() => { });
     } catch (err) {
       console.error('Error loading dashboard:', err);
       setError('Could not load your dashboard. Please try again shortly.');
@@ -243,7 +251,7 @@ export default function LandlordDashboardPage() {
             <span className="pd-hero-num">
               <CountUp
                 value={(summary.total_collected_this_month || 0) / 100}
-                format={(n) => `$${n.toFixed(2)}`}
+                format={(n) => formatDollars(n)}
               />
             </span>
             <span className="pd-hero-label">collected this month</span>
@@ -262,7 +270,7 @@ export default function LandlordDashboardPage() {
               <b>
                 <CountUp
                   value={(summary.pending_amount || 0) / 100}
-                  format={(n) => `$${n.toFixed(2)}`}
+                  format={(n) => formatDollars(n)}
                 />
               </b>
               <span>pending</span>
