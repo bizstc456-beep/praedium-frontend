@@ -25,24 +25,39 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import NotFoundPage from './pages/NotFoundPage';
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
+  process.env.REACT_APP_SUPABASE_ANON_KEY,
+  { auth: { storageKey: 'pd-landlord-auth' } }
+);
+const supabaseTenant = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY,
+  { auth: { storageKey: 'pd-tenant-auth' } }
 );
 
 function App() {
   const [user, setUser] = useState(null);
+  const [tenantUser, setTenantUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user || null);
+      const { data: { session: tenantSession } } = await supabaseTenant.auth.getSession();
+      setTenantUser(tenantSession?.user || null);
       setLoading(false);
     };
     checkAuth();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
     });
-    return () => subscription?.unsubscribe();
+    const { data: { subscription: tenantSubscription } } = supabaseTenant.auth.onAuthStateChange((_event, session) => {
+      setTenantUser(session?.user || null);
+    });
+    return () => {
+      subscription?.unsubscribe();
+      tenantSubscription?.unsubscribe();
+    };
   }, []);
 
   if (loading) return <div className="loading-container"><div className="spinner"></div><p>Loading...</p></div>;
@@ -55,17 +70,17 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/settings" element={user ? <SettingsPage /> : <Navigate to="/login" />} />
         <Route path="/payment" element={user ? <PaymentPage /> : <Navigate to="/login" />} />
-       <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/login" />} />
+        <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/login" />} />
         <Route path="/admin" element={user ? <AdminDashboardPage /> : <Navigate to="/login" />} />
         <Route path="/messages" element={user ? <CommunicationCenterPage /> : <Navigate to="/login" />} />
         <Route path="/properties" element={user ? <PropertiesPage /> : <Navigate to="/login" />} />
         <Route path="/reports" element={user ? <ReportsPage /> : <Navigate to="/login" />} />
         <Route path="/insights" element={user ? <InsightsPage /> : <Navigate to="/login" />} />
         <Route path="/maintenance" element={user ? <MaintenancePage /> : <Navigate to="/login" />} />
-        <Route path="/tenant/login" element={!user ? <TenantLoginPage /> : <Navigate to="/tenant" />} />
+        <Route path="/tenant/login" element={!tenantUser ? <TenantLoginPage /> : <Navigate to="/tenant" />} />
         <Route path="/tenant/set-password" element={<TenantSetPasswordPage />} />
-        <Route path="/tenant" element={user ? <TenantPortalPage /> : <Navigate to="/tenant/login" />} />
-        <Route path="/tenant/maintenance" element={user ? <TenantMaintenancePage /> : <Navigate to="/tenant/login" />} />
+        <Route path="/tenant" element={tenantUser ? <TenantPortalPage /> : <Navigate to="/tenant/login" />} />
+        <Route path="/tenant/maintenance" element={tenantUser ? <TenantMaintenancePage /> : <Navigate to="/tenant/login" />} />
         <Route path="/renewals" element={user ? <LeaseRenewalsPage /> : <Navigate to="/login" />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
