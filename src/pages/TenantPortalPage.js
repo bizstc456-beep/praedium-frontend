@@ -21,7 +21,6 @@ export default function TenantPortalPage() {
   const [tenant, setTenant] = useState(null);
   const [property, setProperty] = useState(null);
   const [payments, setPayments] = useState([]);
-  const [balance, setBalance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -53,7 +52,6 @@ export default function TenantPortalPage() {
       setTenant(meData.tenant);
       setProperty(meData.property);
       setPayments(paymentsData.payments || []);
-      setBalance(paymentsData.balance);
     } catch (err) {
       console.error('Error loading tenant portal:', err);
       setError(err.message || 'Could not load your rental info. Please try again shortly.');
