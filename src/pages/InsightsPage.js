@@ -244,7 +244,7 @@ export default function InsightsPage() {
 
             <div className="pd-card pd-ins-chart-card">
               <div className="pd-ins-chart-head">
-                <div className="pd-ins-chart-title">Cash flow, last {rangeMonths} months</div>
+                <div className="pd-ins-chart-title">Cash flow</div>
                 <div className="pd-ins-range-toggle">
                   {[3, 6, 12].map((n) => (
                     <button
