@@ -97,8 +97,9 @@ export default function InsightsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hoveredIdx, setHoveredIdx] = useState(null);
+  const [rangeMonths, setRangeMonths] = useState(6);
 
-  const loadInsights = useCallback(async () => {
+  const loadInsights = useCallback(async (months) => {
     try {
       const session = await getSession();
       if (!session) {
@@ -107,7 +108,7 @@ export default function InsightsPage() {
         return;
       }
       const backend = process.env.REACT_APP_BACKEND_URL;
-      const res = await fetch(`${backend}/api/insights/${session.user.id}`, {
+      const res = await fetch(`${backend}/api/insights/${session.user.id}?months=${months}`, {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       const data = await res.json();
@@ -125,8 +126,8 @@ export default function InsightsPage() {
   }, []);
 
   useEffect(() => {
-    loadInsights();
-  }, [loadInsights]);
+    loadInsights(rangeMonths);
+  }, [loadInsights, rangeMonths]);
 
   if (loading) {
     return (
@@ -243,7 +244,19 @@ export default function InsightsPage() {
 
             <div className="pd-card pd-ins-chart-card">
               <div className="pd-ins-chart-head">
-                <div className="pd-ins-chart-title">Cash flow, last 6 months</div>
+                <div className="pd-ins-chart-title">Cash flow, last {rangeMonths} months</div>
+                <div className="pd-ins-range-toggle">
+                  {[3, 6, 12].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      className={`pd-ins-range-btn${rangeMonths === n ? ' active' : ''}`}
+                      onClick={() => setRangeMonths(n)}
+                    >
+                      {n}mo
+                    </button>
+                  ))}
+                </div>
                 <div className="pd-ins-legend">
                   <span className="pd-ins-legend-item"><span className="pd-ins-swatch income" />Income</span>
                   <span className="pd-ins-legend-item"><span className="pd-ins-swatch expense" />Expenses</span>
