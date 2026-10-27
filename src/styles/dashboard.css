@@ -2342,11 +2342,11 @@
 }
 
 .pd-ins-swatch.income {
-  background: var(--pd-accent);
+  background: #2f8f52;
 }
 
 .pd-ins-swatch.expense {
-  background: var(--pd-accent-2);
+  background: #c23c54;
 }
 
 .pd-ins-svg {
@@ -2381,11 +2381,11 @@
 }
 
 .pd-ins-bar.income {
-  fill: var(--pd-accent);
+  fill: #2f8f52;
 }
 
 .pd-ins-bar.expense {
-  fill: var(--pd-accent-2);
+  fill: #c23c54;
 }
 
 .pd-ins-month-label {
@@ -2430,11 +2430,11 @@
 }
 
 .pd-ins-tooltip-row.income {
-  color: #f0d9a0;
+  color: #7dd99a;
 }
 
 .pd-ins-tooltip-row.expense {
-  color: #f0c48a;
+  color: #f28b9c;
 }
 
 .pd-ins-table-card {
