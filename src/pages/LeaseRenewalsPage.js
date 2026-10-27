@@ -125,14 +125,8 @@ export default function LeaseRenewalsPage() {
 
   return (
     <AppShell active="renewals">
-      <div className="pd-page-header" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div className="pd-page-header">
         <h1>Lease Renewals</h1>
-        <span
-          title="Quebec's TAL generally requires notice of a rent increase or lease change 3-6 months before a lease of 12+ months ends, or 1-2 months before a shorter fixed-term lease ends. Confirm the exact requirements for your situation before acting."
-          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 18, height: 18, borderRadius: '50%', border: '1.5px solid var(--pd-accent)', color: 'var(--pd-accent)', fontSize: 12, fontWeight: 700, cursor: 'help', flexShrink: 0 }}
-        >
-          i
-        </span>
       </div>
 
       {error && <div className="pd-alert-danger">{error}</div>}
@@ -151,6 +145,12 @@ export default function LeaseRenewalsPage() {
           >
             All leases with an end date
           </button>
+          <span className="pd-info-tip">
+            <span className="pd-info-icon">i</span>
+            <span className="pd-info-bubble">
+              Quebec's TAL generally requires notice of a rent increase or lease change 3-6 months before a lease of 12+ months ends, or 1-2 months before a shorter fixed-term lease ends. Confirm the exact requirements for your situation before acting.
+            </span>
+          </span>
         </div>
       </div>
 

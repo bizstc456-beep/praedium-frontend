@@ -2883,3 +2883,50 @@
 .pd-cancel-link:hover {
   color: var(--pd-accent);
 }
+.pd-info-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.pd-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--pd-accent);
+  color: var(--pd-accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: help;
+  flex-shrink: 0;
+}
+
+.pd-info-bubble {
+  position: absolute;
+  top: 26px;
+  left: 0;
+  width: 280px;
+  background: var(--pd-ink);
+  color: #fff;
+  font-size: 12.5px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.pd-info-tip:hover .pd-info-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
