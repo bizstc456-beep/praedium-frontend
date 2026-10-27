@@ -391,6 +391,31 @@ export default function PropertiesPage() {
     }
   };
 
+  const cancelLastPayment = async (tenantId) => {
+    if (!window.confirm("Cancel this tenant's most recently recorded payment?")) return;
+    setFormError('');
+    try {
+      const session = await getSession();
+      if (!session) {
+        setFormError('Please log in again.');
+        return;
+      }
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/payments/${tenantId}/latest`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to cancel payment');
+
+      setPaymentSuccess('Last payment canceled.');
+      await loadData();
+    } catch (err) {
+      setFormError(err.message || 'Failed to cancel payment.');
+    }
+  };
+
   if (loading) {
     return (
       <AppShell active="properties">
@@ -635,6 +660,7 @@ export default function PropertiesPage() {
                               <div className="pd-form-actions">
                                 <button type="submit" className="pd-btn pd-btn-primary">Record payment</button>
                                 <button type="button" className="pd-btn pd-btn-secondary" onClick={closePaymentForm}>Cancel</button>
+                                <button type="button" className="pd-btn pd-btn-danger-outline" onClick={() => cancelLastPayment(t.id)}>Cancel last payment</button>
                               </div>
                             </form>
                           </div>
