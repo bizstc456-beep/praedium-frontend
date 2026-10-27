@@ -9,7 +9,12 @@ const supabase = createClient(
 );
 
 function formatMoney(cents) {
-  return `$${((cents || 0) / 100).toFixed(2)}`;
+  const amount = (cents || 0) / 100;
+  const sign = amount < 0 ? '-' : '';
+  const abs = Math.abs(amount);
+  const parts = abs.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `${sign}${parts[0]},${parts[1]}$`;
 }
 
 function formatDate(value) {
