@@ -554,6 +554,7 @@
 .pd-select,
 .pd-textarea {
   width: 100%;
+  box-sizing: border-box;
   font: inherit;
   font-size: 16px;
   padding: 10px 12px;
@@ -2883,6 +2884,7 @@
 .pd-cancel-link:hover {
   color: var(--pd-accent);
 }
+
 .pd-info-tip {
   position: relative;
   display: inline-flex;
