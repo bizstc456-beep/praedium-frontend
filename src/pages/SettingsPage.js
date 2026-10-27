@@ -17,6 +17,7 @@ export default function SettingsPage() {
   const [loadingPhone, setLoadingPhone] = useState(true);
   const [savingPhone, setSavingPhone] = useState(false);
   const [phoneSaved, setPhoneSaved] = useState(false);
+  const [email, setEmail] = useState('');
   useEffect(() => {
     const loadAccount = async () => {
       try {
@@ -25,6 +26,7 @@ export default function SettingsPage() {
           setLoadingPhone(false);
           return;
         }
+        setEmail(session.user.email || '');
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
           headers: { Authorization: `Bearer ${session.access_token}` }
         });
@@ -140,7 +142,13 @@ export default function SettingsPage() {
             {error}
           </div>
         )}
-
+        <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24, marginBottom: 24 }}>
+          <h2 style={{ marginTop: 0, fontSize: 18 }}>Email</h2>
+          <p style={{ color: '#666' }}>
+            The email address associated with your Praedium account.
+          </p>
+          <p style={{ fontWeight: 600 }}>{email || '—'}</p>
+        </section>
         <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24, marginBottom: 24 }}>
           <h2 style={{ marginTop: 0, fontSize: 18 }}>Phone number</h2>
           <p style={{ color: '#666' }}>
