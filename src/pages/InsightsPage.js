@@ -158,8 +158,8 @@ export default function InsightsPage() {
     };
   });
 
-  const activeIdx = hoveredIdx !== null ? hoveredIdx : barGroups.length - 1;
-  const activeMonth = barGroups[activeIdx];
+  const activeIdx = hoveredIdx;
+  const activeMonth = hoveredIdx !== null ? barGroups[hoveredIdx] : null;
 
   // ---- Rail data ----
   const maxCategoryAmount = Math.max(1, ...expensesByCategory.map((c) => c.amount || 0));
