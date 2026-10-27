@@ -2997,3 +2997,92 @@
   background: #eeece4;
   color: #6b6354;
 }
+
+/* ---- Landlord mobile nav: hamburger + slide-in drawer ---- */
+.pd-mobile-bar {
+  display: none;
+}
+
+.pd-nav-backdrop {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .pd-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--pd-side-bg);
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+
+  .pd-shell-tenant .pd-mobile-bar {
+    display: none;
+  }
+
+  .pd-mobile-bar .pd-brand {
+    margin: 0;
+    padding: 0;
+  }
+
+  .pd-nav-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .pd-nav-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--pd-side-ink);
+    border-radius: 2px;
+  }
+
+  .pd-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 40;
+  }
+
+  .pd-shell:not(.pd-shell-tenant) .pd-side {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 78%;
+    max-width: 300px;
+    height: 100vh;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 20px 16px;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    z-index: 50;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  .pd-shell:not(.pd-shell-tenant) .pd-side.pd-side-open {
+    transform: translateX(0);
+  }
+
+  .pd-shell:not(.pd-shell-tenant) .pd-side .pd-brand {
+    display: none;
+  }
+
+  .pd-shell:not(.pd-shell-tenant) .pd-nav {
+    flex-direction: column;
+    flex-wrap: nowrap;
