@@ -145,7 +145,13 @@ export default function AdminDashboardPage() {
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '150ms' }}>
           <div className="k">Total Revenue</div>
           <div className="v">
-            <CountUp value={(stats.totalRevenue || 0) / 100} format={(n) => `$${n.toFixed(2)}`} />
+            <CountUp value={(stats.totalRevenue || 0) / 100} format={(n) => {
+              const sign = n < 0 ? '-' : '';
+              const abs = Math.abs(n);
+              const parts = abs.toFixed(2).split('.');
+              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+              return `${sign}${parts[0]},${parts[1]}$`;
+            }} />
           </div>
         </div>
       </div>
