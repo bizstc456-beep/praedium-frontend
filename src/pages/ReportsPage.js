@@ -22,8 +22,25 @@ function categoryLabel(value) {
   return EXPENSE_CATEGORIES.find((c) => c.value === value)?.label || 'Other';
 }
 
+function categoryBadgeClass(value) {
+  switch (value) {
+    case 'mortgage': return 'pd-cat-red';
+    case 'repairs': return 'pd-cat-green';
+    case 'taxes': return 'pd-cat-blue';
+    case 'utilities': return 'pd-cat-purple';
+    case 'insurance': return 'pd-cat-teal';
+    case 'management': return 'pd-cat-amber';
+    default: return 'pd-cat-gray';
+  }
+}
+
 function formatMoney(cents) {
-  return `$${((cents || 0) / 100).toFixed(2)}`;
+  const amount = (cents || 0) / 100;
+  const sign = amount < 0 ? '-' : '';
+  const abs = Math.abs(amount);
+  const parts = abs.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `${sign}${parts[0]},${parts[1]}$`;
 }
 
 function toISODate(d) {
@@ -70,6 +87,9 @@ export default function ReportsPage() {
 
   const [expenseFormOpen, setExpenseFormOpen] = useState(false);
   const [expenseForm, setExpenseForm] = useState(EMPTY_EXPENSE);
+  const [filterProperty, setFilterProperty] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterDate, setFilterDate] = useState('');
 
   const loadAll = useCallback(async (rangeStart, rangeEnd) => {
     try {
@@ -145,6 +165,13 @@ export default function ReportsPage() {
   };
 
   const propertyAddress = (id) => properties.find((p) => p.id === id)?.address || 'Unknown property';
+
+  const filteredExpenses = expenses.filter((e) => {
+    if (filterProperty && e.property_id !== filterProperty) return false;
+    if (filterCategory && e.category !== filterCategory) return false;
+    if (filterDate && e.expense_date !== filterDate) return false;
+    return true;
+  });
 
   // ---- expense form ----
 
@@ -381,6 +408,24 @@ export default function ReportsPage() {
           + Add expense
         </button>
       </div>
+      <div className="pd-filter-row" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
+        <select className="pd-select" style={{ maxWidth: 220 }} value={filterProperty} onChange={(e) => setFilterProperty(e.target.value)}>
+          <option value="">All properties</option>
+          {properties.map((p) => (
+            <option key={p.id} value={p.id}>{p.address}</option>
+          ))}
+        </select>
+        <select className="pd-select" style={{ maxWidth: 200 }} value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+          <option value="">All categories</option>
+          {EXPENSE_CATEGORIES.map((c) => (
+            <option key={c.value} value={c.value}>{c.label}</option>
+          ))}
+        </select>
+        <input type="date" className="pd-input" style={{ maxWidth: 170 }} value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+        {(filterProperty || filterCategory || filterDate) && (
+          <button type="button" className="pd-btn pd-btn-secondary" onClick={() => { setFilterProperty(''); setFilterCategory(''); setFilterDate(''); }}>Clear filters</button>
+        )}
+      </div>
       {properties.length === 0 && <p className="pd-empty">Add a property first to start logging expenses.</p>}
 
       {expenseFormOpen && (
@@ -454,8 +499,8 @@ export default function ReportsPage() {
         </div>
       )}
 
-      {expenses.length === 0 ? (
-        <p className="pd-empty">No expenses logged yet.</p>
+      {filteredExpenses.length === 0 ? (
+        <p className="pd-empty">{expenses.length === 0 ? 'No expenses logged yet.' : 'No expenses match your filters.'}</p>
       ) : (
         <div className="pd-table-wrap">
           <table className="pd-table pd-table-stack">
@@ -470,11 +515,11 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>
-              {expenses.map((e) => (
+              {filteredExpenses.map((e) => (
                 <tr key={e.id}>
                   <td data-label="Date">{e.expense_date}</td>
                   <td data-label="Property">{propertyAddress(e.property_id)}</td>
-                  <td data-label="Category"><span className="pd-badge neutral">{categoryLabel(e.category)}</span></td>
+                  <td data-label="Category"><span className={`pd-badge ${categoryBadgeClass(e.category)}`}>{categoryLabel(e.category)}</span></td>
                   <td data-label="Notes">{e.notes || '—'}</td>
                   <td data-label="Amount">{formatMoney(e.amount)}</td>
                   <td>

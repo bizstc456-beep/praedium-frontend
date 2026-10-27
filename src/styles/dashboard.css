@@ -2932,3 +2932,38 @@
   visibility: visible;
   transform: translateY(0);
 }
+
+.pd-badge.pd-cat-red {
+  background: #fce6ea;
+  color: #c23c54;
+}
+
+.pd-badge.pd-cat-green {
+  background: #e3f3e7;
+  color: #2f8f52;
+}
+
+.pd-badge.pd-cat-blue {
+  background: #e5eefc;
+  color: #2f66c2;
+}
+
+.pd-badge.pd-cat-purple {
+  background: #f1e8fb;
+  color: #7b3fc4;
+}
+
+.pd-badge.pd-cat-teal {
+  background: #e1f5f3;
+  color: #1f8f82;
+}
+
+.pd-badge.pd-cat-amber {
+  background: #fdf0da;
+  color: #b4780f;
+}
+
+.pd-badge.pd-cat-gray {
+  background: #eeece4;
+  color: #6b6354;
+}
