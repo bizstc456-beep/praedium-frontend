@@ -3085,4 +3085,10 @@
 
   .pd-shell:not(.pd-shell-tenant) .pd-nav {
     flex-direction: column;
-    flex-wrap: nowrap;
+    flex-wrap: nowrap;  }
+
+  .pd-shell:not(.pd-shell-tenant) .pd-signout {
+    margin-top: 16px;
+    margin-left: 0;
+  }
+}
