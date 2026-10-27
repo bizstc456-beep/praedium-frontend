@@ -18,6 +18,7 @@ const ADMIN_EMAILS = ['bizstc456@gmail.com'];
 export default function AppShell({ active, wide, children }) {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -30,24 +31,39 @@ export default function AppShell({ active, wide, children }) {
     await supabase.auth.signOut();
     navigate('/login');
   };
+  const closeNav = () => setNavOpen(false);
 
   const linkClass = (page) => (active === page ? 'pd-nav-link current' : 'pd-nav-link');
 
   return (
     <div className="pd-shell">
-      <aside className="pd-side">
+      <div className="pd-mobile-bar">
+        <div className="pd-brand">Praedium</div>
+        <button
+          type="button"
+          className="pd-nav-toggle"
+          aria-label="Toggle navigation menu"
+          onClick={() => setNavOpen((v) => !v)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </div>
+      {navOpen && <div className="pd-nav-backdrop" onClick={closeNav} />}
+      <aside className={`pd-side${navOpen ? ' pd-side-open' : ''}`}>
         <div className="pd-brand">Praedium</div>
         <nav className="pd-nav">
-          <Link to="/" className={linkClass('dashboard')}>Dashboard</Link>
-          <Link to="/insights" className={linkClass('insights')}>Insights</Link>
-          <Link to="/properties" className={linkClass('properties')}>Properties</Link>
-          <Link to="/reports" className={linkClass('reports')}>Reports</Link>
-          <Link to="/maintenance" className={linkClass('maintenance')}>Maintenance</Link>
-          <Link to="/renewals" className={linkClass('renewals')}>Lease Renewals</Link>
-          <Link to="/messages" className={linkClass('messages')}>Messages</Link>
-          <Link to="/payment" className={linkClass('billing')}>Billing</Link>
-          <Link to="/settings" className={linkClass('settings')}>Settings</Link>
-          {isAdmin && <Link to="/admin" className={linkClass('admin')}>Admin</Link>}
+          <Link to="/" className={linkClass('dashboard')} onClick={closeNav}>Dashboard</Link>
+          <Link to="/insights" className={linkClass('insights')} onClick={closeNav}>Insights</Link>
+          <Link to="/properties" className={linkClass('properties')} onClick={closeNav}>Properties</Link>
+          <Link to="/reports" className={linkClass('reports')} onClick={closeNav}>Reports</Link>
+          <Link to="/maintenance" className={linkClass('maintenance')} onClick={closeNav}>Maintenance</Link>
+          <Link to="/renewals" className={linkClass('renewals')} onClick={closeNav}>Lease Renewals</Link>
+          <Link to="/messages" className={linkClass('messages')} onClick={closeNav}>Messages</Link>
+          <Link to="/payment" className={linkClass('billing')} onClick={closeNav}>Billing</Link>
+          <Link to="/settings" className={linkClass('settings')} onClick={closeNav}>Settings</Link>
+          {isAdmin && <Link to="/admin" className={linkClass('admin')} onClick={closeNav}>Admin</Link>}
         </nav>
         <button onClick={handleLogout} className="pd-signout">Sign Out</button>
         <a href="mailto:support@praedium.pro" className="pd-support-link">Need help? Contact support</a>
