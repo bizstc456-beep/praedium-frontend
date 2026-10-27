@@ -36,6 +36,19 @@ function fillTemplate(template, tenant) {
   });
   return text;
 }
+function formatMessageDate(value) {
+  const d = new Date(value);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  let hours = d.getHours();
+  const minutes = d.getMinutes();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+  const minuteStr = minutes === 0 ? '' : `:${String(minutes).padStart(2, '0')}`;
+  return `${mm}/${dd}/${yyyy} ${hours}${minuteStr}${ampm}`;
+}
 
 export default function CommunicationCenterPage() {
   const [tenants, setTenants] = useState([]);
@@ -266,7 +279,7 @@ export default function CommunicationCenterPage() {
                       </span>
                     </td>
                     <td>{m.status}</td>
-                    <td>{new Date(m.created_at).toLocaleString()}</td>
+                    <td style={{ fontSize: 12.5, whiteSpace: 'nowrap' }}>{formatMessageDate(m.created_at)}</td>
                   </tr>
                 );
               })}
