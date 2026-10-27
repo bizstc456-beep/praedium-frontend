@@ -23,8 +23,10 @@ function categoryLabel(value) {
 }
 
 function formatMoney(cents) {
-  const dollars = (cents || 0) / 100;
-  return `$${dollars.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  const dollars = Math.round((cents || 0) / 100);
+  const sign = dollars < 0 ? '-' : '';
+  const formatted = Math.abs(dollars).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `${sign}${formatted}$`;
 }
 
 function formatCompact(dollars) {
