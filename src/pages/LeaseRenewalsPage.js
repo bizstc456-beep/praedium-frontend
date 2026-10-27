@@ -117,7 +117,6 @@ export default function LeaseRenewalsPage() {
       <AppShell active="renewals">
         <div className="pd-page-header">
           <h1>Lease Renewals</h1>
-          <p>Quebec TAL notice-window tracking for upcoming lease ends</p>
         </div>
         <p className="pd-empty">Loading...</p>
       </AppShell>
@@ -126,18 +125,17 @@ export default function LeaseRenewalsPage() {
 
   return (
     <AppShell active="renewals">
-      <div className="pd-page-header">
+      <div className="pd-page-header" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <h1>Lease Renewals</h1>
-        <p>Quebec TAL notice-window tracking for upcoming lease ends</p>
+        <span
+          title="Quebec's TAL generally requires notice of a rent increase or lease change 3-6 months before a lease of 12+ months ends, or 1-2 months before a shorter fixed-term lease ends. Confirm the exact requirements for your situation before acting."
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 18, height: 18, borderRadius: '50%', border: '1.5px solid var(--pd-accent)', color: 'var(--pd-accent)', fontSize: 12, fontWeight: 700, cursor: 'help', flexShrink: 0 }}
+        >
+          i
+        </span>
       </div>
 
       {error && <div className="pd-alert-danger">{error}</div>}
-
-      <div className="pd-alert-danger" style={{ background: 'var(--pd-accent-soft)', color: 'var(--pd-accent)', border: '1px solid rgba(156,107,29,0.3)' }}>
-        General reference only, not legal advice: Quebec's TAL generally requires notice of a rent
-        increase or lease change 3–6 months before a lease of 12+ months ends, or 1–2 months before
-        a shorter fixed-term lease ends. Confirm the exact requirements for your situation before acting.
-      </div>
 
       <div className="pd-card" style={{ marginBottom: 20 }}>
         <div className="pd-range-presets">
