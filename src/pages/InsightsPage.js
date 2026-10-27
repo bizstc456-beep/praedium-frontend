@@ -22,6 +22,30 @@ function categoryLabel(value) {
   return CATEGORY_LABELS[value] || 'Other';
 }
 
+function categoryBadgeClass(value) {
+  switch (value) {
+    case 'mortgage': return 'pd-cat-red';
+    case 'repairs': return 'pd-cat-green';
+    case 'taxes': return 'pd-cat-blue';
+    case 'utilities': return 'pd-cat-purple';
+    case 'insurance': return 'pd-cat-teal';
+    case 'management': return 'pd-cat-amber';
+    default: return 'pd-cat-gray';
+  }
+}
+
+function categoryColor(value) {
+  switch (value) {
+    case 'mortgage': return '#c23c54';
+    case 'repairs': return '#2f8f52';
+    case 'taxes': return '#2f66c2';
+    case 'utilities': return '#7b3fc4';
+    case 'insurance': return '#1f8f82';
+    case 'management': return '#b4780f';
+    default: return '#6b6354';
+  }
+}
+
 function formatMoney(cents) {
   const dollars = Math.round((cents || 0) / 100);
   const sign = dollars < 0 ? '-' : '';
@@ -329,10 +353,10 @@ export default function InsightsPage() {
               {sortedCategories.map((c) => (
                 <div className="pd-ins-cat-row" key={c.category}>
                   <div className="pd-ins-cat-top">
-                    <span>{categoryLabel(c.category)}</span>
+                    <span className={`pd-badge ${categoryBadgeClass(c.category)}`}>{categoryLabel(c.category)}</span>
                     <span className="pd-ins-cat-amount">{formatMoney(c.amount)}</span>
                   </div>
-                  <div className="pd-ins-meter"><span style={{ width: `${Math.max(4, ((c.amount || 0) / maxCategoryAmount) * 100)}%` }} /></div>
+                  <div className="pd-ins-meter"><span style={{ width: `${Math.max(4, ((c.amount || 0) / maxCategoryAmount) * 100)}%`, background: categoryColor(c.category) }} /></div>
                 </div>
               ))}
             </div>
