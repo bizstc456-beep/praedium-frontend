@@ -5,7 +5,8 @@ import CountUp from '../components/CountUp';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
+  process.env.REACT_APP_SUPABASE_ANON_KEY,
+  { auth: { storageKey: 'pd-landlord-auth' } }
 );
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
