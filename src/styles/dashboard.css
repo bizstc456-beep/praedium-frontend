@@ -577,6 +577,22 @@
   box-shadow: 0 0 0 3px var(--pd-accent-soft);
 }
 
+.pd-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 38px;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%238a7458' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 11px 7px;
+  cursor: pointer;
+}
+
+.pd-select:hover {
+  border-color: var(--pd-accent);
+}
+
 /* buttons */
 .pd-btn {
   display: inline-flex;

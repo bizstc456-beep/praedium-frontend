@@ -660,7 +660,7 @@ export default function PropertiesPage() {
                               <div className="pd-form-actions">
                                 <button type="submit" className="pd-btn pd-btn-primary">Record payment</button>
                                 <button type="button" className="pd-btn pd-btn-secondary" onClick={closePaymentForm}>Cancel</button>
-                                <button type="button" className="pd-btn pd-btn-danger-outline" onClick={() => cancelLastPayment(t.id)}>Cancel last payment</button>
+                                <button type="button" className="pd-btn pd-btn-danger" onClick={() => cancelLastPayment(t.id)}>Cancel last payment</button>
                               </div>
                             </form>
                           </div>
