@@ -245,21 +245,23 @@ export default function InsightsPage() {
             <div className="pd-card pd-ins-chart-card">
               <div className="pd-ins-chart-head">
                 <div className="pd-ins-chart-title">Cash flow</div>
-                <div className="pd-ins-range-toggle">
-                  {[3, 6, 12].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      className={`pd-ins-range-btn${rangeMonths === n ? ' active' : ''}`}
-                      onClick={() => setRangeMonths(n)}
-                    >
-                      {n}mo
-                    </button>
-                  ))}
-                </div>
-                <div className="pd-ins-legend">
-                  <span className="pd-ins-legend-item"><span className="pd-ins-swatch income" />Income</span>
-                  <span className="pd-ins-legend-item"><span className="pd-ins-swatch expense" />Expenses</span>
+                <div className="pd-ins-chart-controls">
+                  <div className="pd-ins-range-toggle">
+                    {[3, 6, 12].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        className={`pd-ins-range-btn${rangeMonths === n ? ' active' : ''}`}
+                        onClick={() => setRangeMonths(n)}
+                      >
+                        {n}mo
+                      </button>
+                    ))}
+                  </div>
+                  <div className="pd-ins-legend">
+                    <span className="pd-ins-legend-item"><span className="pd-ins-swatch income" />Income</span>
+                    <span className="pd-ins-legend-item"><span className="pd-ins-swatch expense" />Expenses</span>
+                  </div>
                 </div>
               </div>
 

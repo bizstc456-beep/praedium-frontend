@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 // keeps a row's primary buttons (Edit, Record payment, ...) from getting
 // crowded out by less-frequent ones (Documents, Delete).
 //
-// items: [{ label, onClick, danger?: bool }]
+// items: [{ label, onClick, danger?: bool, disabled?: bool, title?: string }]
 export default function KebabMenu({ items, label = 'More actions' }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -44,7 +44,10 @@ export default function KebabMenu({ items, label = 'More actions' }) {
               type="button"
               role="menuitem"
               className={`pd-kebab-item${item.danger ? ' danger' : ''}`}
+              disabled={item.disabled}
+              title={item.title}
               onClick={() => {
+                if (item.disabled) return;
                 setOpen(false);
                 item.onClick();
               }}

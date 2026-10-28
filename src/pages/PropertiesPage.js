@@ -561,6 +561,7 @@ export default function PropertiesPage() {
                               <div className="pd-unit-name">
                                 {t.name}{t.unit_label ? ` — ${t.unit_label}` : ''}
                                 {t.renewal_soon && <span className="pd-badge warn pd-unit-badge">Lease ends soon</span>}
+                                {t.auth_user_id && <span className="pd-badge good pd-unit-badge">Portal invited</span>}
                               </div>
                               <div className="pd-prow-city">
                                 {t.phone}{t.email ? ` · ${t.email}` : ''}
@@ -574,20 +575,14 @@ export default function PropertiesPage() {
                             <div className="pd-unit-actions">
                               <button className="pd-btn pd-btn-secondary" onClick={() => openEditTenantForm(t)}>Edit</button>
                               <button className="pd-btn pd-btn-primary" onClick={() => openPaymentForm(t)}>Record payment</button>
-                              {t.auth_user_id ? (
-                                <span className="pd-badge good">Portal invited</span>
-                              ) : (
-                                <button
-                                  className="pd-btn pd-btn-secondary"
-                                  onClick={() => inviteTenant(t)}
-                                  disabled={!t.email || inviteStatus[t.id]?.loading}
-                                  title={!t.email ? 'Add an email address first' : 'Send a portal invite email'}
-                                >
-                                  {inviteStatus[t.id]?.loading ? 'Inviting...' : 'Invite to Portal'}
-                                </button>
-                              )}
                               <KebabMenu
                                 items={[
+                                  ...(t.auth_user_id ? [] : [{
+                                    label: inviteStatus[t.id]?.loading ? 'Inviting...' : 'Invite to Portal',
+                                    onClick: () => inviteTenant(t),
+                                    disabled: !t.email || inviteStatus[t.id]?.loading,
+                                    title: !t.email ? 'Add an email address first' : 'Send a portal invite email',
+                                  }]),
                                   { label: docsOpenKey === tenantDocsKey ? 'Hide docs' : 'Documents', onClick: () => toggleDocs(tenantDocsKey) },
                                   { label: 'Delete tenant', onClick: () => deleteTenant(t), danger: true },
                                 ]}
