@@ -23,6 +23,7 @@ import LeaseRenewalsPage from './pages/LeaseRenewalsPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import NotFoundPage from './pages/NotFoundPage';
+import { ADMIN_EMAILS } from './utils/adminEmails';
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
   process.env.REACT_APP_SUPABASE_ANON_KEY,
@@ -38,6 +39,10 @@ function App() {
   const [user, setUser] = useState(null);
   const [tenantUser, setTenantUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // UI-only hint: which landing page "/" shows. Not a security boundary --
+  // see src/utils/adminEmails.js.
+  const isAdmin = Boolean(user && ADMIN_EMAILS.includes((user.email || '').toLowerCase()));
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -84,7 +89,8 @@ function App() {
         <Route path="/renewals" element={user ? <LeaseRenewalsPage /> : <Navigate to="/login" />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
-        <Route path="/" element={user ? <DashboardPage /> : <Navigate to="/login" />} />
+        <Route path="/" element={user ? (isAdmin ? <AdminDashboardPage /> : <DashboardPage />) : <Navigate to="/login" />} />
+        <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/login" />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>

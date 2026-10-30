@@ -14,11 +14,23 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const REASON_LABEL = {
   no_properties: 'No properties',
   payment_failed: 'Payment failed',
+  canceled: 'Canceled',
 };
 
 function shortDate(value) {
   if (!value) return '';
   return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Shared money formatter for every dollar stat on this page -- expects a
+// plain dollar amount (not cents).
+function formatCurrency(amount) {
+  const n = amount || 0;
+  const sign = n < 0 ? '-' : '';
+  const abs = Math.abs(n);
+  const parts = abs.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `${sign}${parts[0]},${parts[1]}$`;
 }
 
 // Turns a list of weekly signup counts into an SVG sparkline (area fill +
@@ -57,6 +69,15 @@ export default function AdminDashboardPage() {
     maintenanceOpen: 0,
     propertiesThisWeek: 0,
   });
+  const [subscription, setSubscription] = useState({
+    mrr: 0,
+    arr: 0,
+    atRiskRevenue: 0,
+    arpu: 0,
+    activeSubscriberCount: 0,
+    statusCounts: { none: 0, trialing: 0, active: 0, past_due: 0, canceled: 0 },
+    tierBreakdown: {},
+  });
   const [users, setUsers] = useState([]);
   const [signupsByWeek, setSignupsByWeek] = useState([]);
   const [needsAttention, setNeedsAttention] = useState([]);
@@ -64,6 +85,7 @@ export default function AdminDashboardPage() {
   const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     loadAdminData();
   }, []);
 
@@ -93,6 +115,7 @@ export default function AdminDashboardPage() {
       }
 
       setStats(data.stats);
+      if (data.subscription) setSubscription(data.subscription);
       setUsers(data.users || []);
       setSignupsByWeek(data.signupsByWeek || []);
       setNeedsAttention(data.needsAttention || []);
@@ -143,17 +166,68 @@ export default function AdminDashboardPage() {
           <div className="v"><CountUp value={stats.totalTenants} /></div>
         </div>
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '150ms' }}>
-          <div className="k">Total Revenue</div>
+          <div className="k">Rent Payments Processed</div>
           <div className="v">
-            <CountUp value={(stats.totalRevenue || 0) / 100} format={(n) => {
-              const sign = n < 0 ? '-' : '';
-              const abs = Math.abs(n);
-              const parts = abs.toFixed(2).split('.');
-              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-              return `${sign}${parts[0]},${parts[1]}$`;
-            }} />
+            <CountUp value={(stats.totalRevenue || 0) / 100} format={formatCurrency} />
           </div>
         </div>
+      </div>
+
+      <h2 className="pd-section-title">Subscription revenue</h2>
+      <div className="pd-statgrid">
+        <div className="pd-statcard pd-anim-in" style={{ animationDelay: '0ms' }}>
+          <div className="k">MRR</div>
+          <div className="v"><CountUp value={subscription.mrr} format={formatCurrency} /></div>
+        </div>
+        <div className="pd-statcard pd-anim-in" style={{ animationDelay: '50ms' }}>
+          <div className="k">ARR (est.)</div>
+          <div className="v"><CountUp value={subscription.arr} format={formatCurrency} /></div>
+        </div>
+        <div className="pd-statcard pd-anim-in" style={{ animationDelay: '100ms' }}>
+          <div className="k">At-risk revenue</div>
+          <div className="v"><CountUp value={subscription.atRiskRevenue} format={formatCurrency} /></div>
+        </div>
+        <div className="pd-statcard pd-anim-in" style={{ animationDelay: '150ms' }}>
+          <div className="k">Revenue per subscriber</div>
+          <div className="v"><CountUp value={subscription.arpu} format={formatCurrency} /></div>
+        </div>
+      </div>
+
+      <div className="pd-subs-overview pd-anim-in" style={{ animationDelay: '0ms' }}>
+        <span className="pd-badge good">Active {subscription.statusCounts.active}</span>
+        <span className="pd-badge warn">Trialing {subscription.statusCounts.trialing}</span>
+        <span className="pd-badge danger">Past due {subscription.statusCounts.past_due}</span>
+        <span className="pd-badge muted">Canceled {subscription.statusCounts.canceled}</span>
+        <span className="pd-badge neutral">Never subscribed {subscription.statusCounts.none}</span>
+      </div>
+
+      <h2 className="pd-section-title">Subscribers by plan</h2>
+      <div className="pd-tier-grid">
+        {Object.entries(subscription.tierBreakdown).map(([key, tier]) => {
+          const tierTotal = (tier.trialing || 0) + (tier.active || 0) + (tier.past_due || 0);
+          const maxTotal = Math.max(
+            1,
+            ...Object.values(subscription.tierBreakdown).map(
+              (t) => (t.trialing || 0) + (t.active || 0) + (t.past_due || 0)
+            )
+          );
+          return (
+            <div className="pd-tier-card" key={key}>
+              <div className="pd-tier-card-head">
+                <span className="pd-tier-card-label">{tier.label}</span>
+                <span className="pd-tier-card-total">{tierTotal}</span>
+              </div>
+              <div className="pd-tier-bar-track">
+                <div className="pd-tier-bar-fill" style={{ width: `${(tierTotal / maxTotal) * 100}%` }} />
+              </div>
+              <div className="pd-tier-card-detail">
+                <span>{tier.active || 0} active</span>
+                <span>{tier.trialing || 0} trialing</span>
+                <span>{tier.past_due || 0} past due</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="pd-dash-grid">
@@ -226,12 +300,15 @@ export default function AdminDashboardPage() {
                     : null;
                   const detail = n.reason === 'payment_failed'
                     ? `Subscription past due since ${shortDate(n.since)}`
-                    : `Signed up ${daysAgo} day${daysAgo === 1 ? '' : 's'} ago, onboarding stalled`;
+                    : n.reason === 'canceled'
+                      ? `Subscription canceled`
+                      : `Signed up ${daysAgo} day${daysAgo === 1 ? '' : 's'} ago, onboarding stalled`;
+                  const badgeClass = n.reason === 'payment_failed' ? 'danger' : n.reason === 'canceled' ? 'muted' : 'warn';
                   return (
                     <div className="pd-attention-row" key={`${n.email}-${i}`}>
                       <div className="pd-attention-head">
                         <span className="pd-attention-email">{n.email}</span>
-                        <span className={`pd-badge ${n.reason === 'payment_failed' ? 'danger' : 'warn'}`}>
+                        <span className={`pd-badge ${badgeClass}`}>
                           {REASON_LABEL[n.reason] || n.reason}
                         </span>
                       </div>

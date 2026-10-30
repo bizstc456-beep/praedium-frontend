@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { ADMIN_EMAILS } from '../utils/adminEmails';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -8,10 +9,6 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_ANON_KEY,
   { auth: { storageKey: 'pd-landlord-auth' } }
 );
-
-// UI-only hint to show the Admin link. This is NOT a security boundary --
-// /admin itself is enforced server-side by the backend's admin allowlist.
-const ADMIN_EMAILS = ['bizstc456@gmail.com'];
 
 // Shared sidebar layout for the logged-in app. Wrap a page's content with
 // <AppShell active="dashboard">...</AppShell> to get the nav + sign out.
@@ -104,7 +101,13 @@ export default function AppShell({ active, wide, children }) {
       <aside className={`pd-side${navOpen ? ' pd-side-open' : ''}`}>
         <div className="pd-brand">Praedium</div>
         <nav className="pd-nav">
-          <Link to="/" className={linkClass('dashboard')} onClick={closeNav}>Dashboard</Link>
+          {isAdmin && (
+            <>
+              <Link to="/admin" className={linkClass('admin')} onClick={closeNav}>Admin</Link>
+              <div className="pd-nav-section-label">Landlord view</div>
+            </>
+          )}
+          <Link to={isAdmin ? '/dashboard' : '/'} className={linkClass('dashboard')} onClick={closeNav}>Dashboard</Link>
           <Link to="/insights" className={linkClass('insights')} onClick={closeNav}>Insights</Link>
           <Link to="/properties" className={linkClass('properties')} onClick={closeNav}>Properties</Link>
           <Link to="/reports" className={linkClass('reports')} onClick={closeNav}>Reports</Link>
@@ -113,7 +116,6 @@ export default function AppShell({ active, wide, children }) {
           <Link to="/messages" className={linkClass('messages')} onClick={closeNav}>Messages</Link>
           <Link to="/payment" className={linkClass('billing')} onClick={closeNav}>Billing</Link>
           <Link to="/settings" className={linkClass('settings')} onClick={closeNav}>Settings</Link>
-          {isAdmin && <Link to="/admin" className={linkClass('admin')} onClick={closeNav}>Admin</Link>}
         </nav>
         <button onClick={handleLogout} className="pd-signout">Sign Out</button>
         <a href="mailto:support@praedium.pro" className="pd-support-link">Need help? Contact support</a>
