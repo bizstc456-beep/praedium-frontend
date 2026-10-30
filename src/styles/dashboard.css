@@ -948,6 +948,15 @@
   line-height: 1.5;
 }
 
+.pd-faq-item p a {
+  color: var(--pd-accent);
+  text-decoration: none;
+}
+
+.pd-faq-item p a:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 640px) {
   .pd-shell {
     flex-direction: column;

@@ -308,6 +308,13 @@ export default function PaymentPage() {
             <h3>What payment methods do you accept?</h3>
             <p>We accept all major credit and debit cards via Stripe.</p>
           </div>
+          <div className="pd-faq-item">
+            <h3>What if I need help?</h3>
+            <p>
+              Email <a href="mailto:support@praedium.pro">support@praedium.pro</a> — it's actively
+              monitored, and getting back to you quickly is something we take seriously.
+            </p>
+          </div>
         </div>
       </div>
     </AppShell>
