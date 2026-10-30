@@ -31,7 +31,7 @@ function formatDisplay(value) {
 // A calendar date picker: year navigation on top, a scrollable month list
 // down the left side, and a day grid on the right. The selected day gets
 // a gold ring so it's unmistakable which date is picked.
-export default function DatePicker({ value, onChange, placeholder = 'Select date' }) {
+export default function DatePicker({ id, value, onChange, placeholder = 'Select date' }) {
   const today = new Date();
   const parsed = parseValue(value);
   const [open, setOpen] = useState(false);
@@ -85,7 +85,10 @@ export default function DatePicker({ value, onChange, placeholder = 'Select date
     <div className="pd-datepicker" ref={ref}>
       <button
         type="button"
+        id={id}
         className="pd-input pd-datepicker-trigger"
+        aria-haspopup="dialog"
+        aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
         {value ? formatDisplay(value) : <span className="pd-datepicker-placeholder">{placeholder}</span>}

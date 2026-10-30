@@ -201,8 +201,9 @@ export default function CommunicationCenterPage() {
             {sendError && <div className="pd-alert">{sendError}</div>}
             {sendSuccess && <p className="pd-success-text">{sendSuccess}</p>}
             <div className="pd-field">
-              <label>Tenant</label>
+              <label htmlFor="comms-tenant">Tenant</label>
               <select
+                id="comms-tenant"
                 className="pd-select"
                 value={selectedTenantId}
                 onChange={(e) => setSelectedTenantId(e.target.value)}
@@ -233,8 +234,9 @@ export default function CommunicationCenterPage() {
               </div>
             )}
             <div className="pd-field">
-              <label>Message</label>
+              <label htmlFor="comms-message">Message</label>
               <textarea
+                id="comms-message"
                 className="pd-textarea"
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}

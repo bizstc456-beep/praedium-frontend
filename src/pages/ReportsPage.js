@@ -331,9 +331,9 @@ export default function ReportsPage() {
           </div>
           {preset === 'custom' && (
             <div className="pd-range-custom">
-              <input className="pd-input" type="date" value={start} onChange={(e) => setStart(e.target.value)} />
+              <input aria-label="Custom range start date" className="pd-input" type="date" value={start} onChange={(e) => setStart(e.target.value)} />
               <span>to</span>
-              <input className="pd-input" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
+              <input aria-label="Custom range end date" className="pd-input" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
               <button className="pd-btn pd-btn-primary" onClick={applyCustomRange}>Apply</button>
             </div>
           )}
@@ -409,19 +409,19 @@ export default function ReportsPage() {
         </button>
       </div>
       <div className="pd-filter-row" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
-        <select className="pd-select" style={{ maxWidth: 220 }} value={filterProperty} onChange={(e) => setFilterProperty(e.target.value)}>
+        <select aria-label="Filter by property" className="pd-select" style={{ maxWidth: 220 }} value={filterProperty} onChange={(e) => setFilterProperty(e.target.value)}>
           <option value="">All properties</option>
           {properties.map((p) => (
             <option key={p.id} value={p.id}>{p.address}</option>
           ))}
         </select>
-        <select className="pd-select" style={{ maxWidth: 200 }} value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+        <select aria-label="Filter by category" className="pd-select" style={{ maxWidth: 200 }} value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
           <option value="">All categories</option>
           {EXPENSE_CATEGORIES.map((c) => (
             <option key={c.value} value={c.value}>{c.label}</option>
           ))}
         </select>
-        <input type="date" className="pd-input" style={{ maxWidth: 170 }} value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+        <input aria-label="Filter by date" type="date" className="pd-input" style={{ maxWidth: 170 }} value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
         {(filterProperty || filterCategory || filterDate) && (
           <button type="button" className="pd-btn pd-btn-secondary" onClick={() => { setFilterProperty(''); setFilterCategory(''); setFilterDate(''); }}>Clear filters</button>
         )}
@@ -435,8 +435,9 @@ export default function ReportsPage() {
           <form onSubmit={submitExpense}>
             <div className="pd-form-row">
               <div className="pd-field">
-                <label>Property</label>
+                <label htmlFor="expense-property">Property</label>
                 <select
+                  id="expense-property"
                   className="pd-select"
                   value={expenseForm.property_id}
                   onChange={(e) => setExpenseForm({ ...expenseForm, property_id: e.target.value })}
@@ -447,8 +448,9 @@ export default function ReportsPage() {
                 </select>
               </div>
               <div className="pd-field">
-                <label>Category</label>
+                <label htmlFor="expense-category">Category</label>
                 <select
+                  id="expense-category"
                   className="pd-select"
                   value={expenseForm.category}
                   onChange={(e) => setExpenseForm({ ...expenseForm, category: e.target.value })}
@@ -461,8 +463,9 @@ export default function ReportsPage() {
             </div>
             <div className="pd-form-row">
               <div className="pd-field">
-                <label>Amount ($)</label>
+                <label htmlFor="expense-amount">Amount ($)</label>
                 <input
+                  id="expense-amount"
                   className="pd-input"
                   type="number"
                   step="0.01"
@@ -473,8 +476,9 @@ export default function ReportsPage() {
                 />
               </div>
               <div className="pd-field">
-                <label>Date</label>
+                <label htmlFor="expense-date">Date</label>
                 <input
+                  id="expense-date"
                   className="pd-input"
                   type="date"
                   value={expenseForm.expense_date}
@@ -483,8 +487,9 @@ export default function ReportsPage() {
               </div>
             </div>
             <div className="pd-field">
-              <label>Notes (optional)</label>
+              <label htmlFor="expense-notes">Notes (optional)</label>
               <input
+                id="expense-notes"
                 className="pd-input"
                 value={expenseForm.notes}
                 onChange={(e) => setExpenseForm({ ...expenseForm, notes: e.target.value })}

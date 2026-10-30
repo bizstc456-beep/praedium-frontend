@@ -624,8 +624,9 @@ export default function PropertiesPage() {
                             <form onSubmit={submitPaymentForm}>
                               <div className="pd-form-row">
                                 <div className="pd-field">
-                                  <label>Amount ($)</label>
+                                  <label htmlFor="payment-amount">Amount ($)</label>
                                   <input
+                                    id="payment-amount"
                                     className="pd-input"
                                     type="number"
                                     step="0.01"
@@ -635,8 +636,9 @@ export default function PropertiesPage() {
                                   />
                                 </div>
                                 <div className="pd-field">
-                                  <label>Date</label>
+                                  <label htmlFor="payment-date">Date</label>
                                   <input
+                                    id="payment-date"
                                     className="pd-input"
                                     type="date"
                                     value={paymentForm.payment_date}
@@ -644,8 +646,9 @@ export default function PropertiesPage() {
                                   />
                                 </div>
                                 <div className="pd-field">
-                                  <label>Method</label>
+                                  <label htmlFor="payment-method">Method</label>
                                   <select
+                                    id="payment-method"
                                     className="pd-select"
                                     value={paymentForm.payment_method}
                                     onChange={(e) => setPaymentForm({ ...paymentForm, payment_method: e.target.value })}
@@ -683,28 +686,28 @@ function PropertyForm({ form, setForm, onSubmit, onCancel }) {
     <form onSubmit={onSubmit}>
       <div className="pd-form-row">
         <div className="pd-field">
-          <label>Address</label>
-          <input className="pd-input" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="245 Rue Principale" />
+          <label htmlFor="property-address">Address</label>
+          <input id="property-address" className="pd-input" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="245 Rue Principale" />
         </div>
         <div className="pd-field">
-          <label>City</label>
-          <input className="pd-input" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Saint-Constant" />
-        </div>
-      </div>
-      <div className="pd-form-row">
-        <div className="pd-field">
-          <label>Province</label>
-          <input className="pd-input" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} />
-        </div>
-        <div className="pd-field">
-          <label>Postal code</label>
-          <input className="pd-input" value={form.postal_code} onChange={(e) => setForm({ ...form, postal_code: e.target.value })} placeholder="J5A 2G9" />
+          <label htmlFor="property-city">City</label>
+          <input id="property-city" className="pd-input" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Saint-Constant" />
         </div>
       </div>
       <div className="pd-form-row">
         <div className="pd-field">
-          <label>Type</label>
-          <select className="pd-select" value={form.property_type} onChange={(e) => setForm({ ...form, property_type: e.target.value })}>
+          <label htmlFor="property-province">Province</label>
+          <input id="property-province" className="pd-input" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} />
+        </div>
+        <div className="pd-field">
+          <label htmlFor="property-postal-code">Postal code</label>
+          <input id="property-postal-code" className="pd-input" value={form.postal_code} onChange={(e) => setForm({ ...form, postal_code: e.target.value })} placeholder="J5A 2G9" />
+        </div>
+      </div>
+      <div className="pd-form-row">
+        <div className="pd-field">
+          <label htmlFor="property-type">Type</label>
+          <select id="property-type" className="pd-select" value={form.property_type} onChange={(e) => setForm({ ...form, property_type: e.target.value })}>
             <option value="single-family">Single-family</option>
             <option value="duplex">Duplex</option>
             <option value="triplex">Triplex</option>
@@ -714,17 +717,17 @@ function PropertyForm({ form, setForm, onSubmit, onCancel }) {
           </select>
         </div>
         <div className="pd-field">
-          <label>Bedrooms</label>
-          <input className="pd-input" type="number" min="0" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} />
+          <label htmlFor="property-bedrooms">Bedrooms</label>
+          <input id="property-bedrooms" className="pd-input" type="number" min="0" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} />
         </div>
         <div className="pd-field">
-          <label>Bathrooms</label>
-          <input className="pd-input" type="number" min="0" step="0.5" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} />
+          <label htmlFor="property-bathrooms">Bathrooms</label>
+          <input id="property-bathrooms" className="pd-input" type="number" min="0" step="0.5" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} />
         </div>
       </div>
       <div className="pd-field">
-        <label>Notes</label>
-        <textarea className="pd-textarea" rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Anything worth remembering about this property" />
+        <label htmlFor="property-notes">Notes</label>
+        <textarea id="property-notes" className="pd-textarea" rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Anything worth remembering about this property" />
       </div>
       <div className="pd-form-actions">
         <button type="submit" className="pd-btn pd-btn-primary">Save property</button>
@@ -739,36 +742,36 @@ function TenantForm({ form, setForm, onSubmit, onCancel }) {
     <form onSubmit={onSubmit}>
       <div className="pd-form-row">
         <div className="pd-field">
-          <label>Tenant name</label>
-          <input className="pd-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <label htmlFor="tenant-name">Tenant name</label>
+          <input id="tenant-name" className="pd-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         </div>
         <div className="pd-field">
-          <label>Unit (optional)</label>
-          <input className="pd-input" value={form.unit_label} onChange={(e) => setForm({ ...form, unit_label: e.target.value })} placeholder="Unit 2" />
-        </div>
-      </div>
-      <div className="pd-form-row">
-        <div className="pd-field">
-          <label>Phone</label>
-          <input className="pd-input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+15145551234" />
-        </div>
-        <div className="pd-field">
-          <label>Email (optional)</label>
-          <input className="pd-input" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          <label htmlFor="tenant-unit">Unit (optional)</label>
+          <input id="tenant-unit" className="pd-input" value={form.unit_label} onChange={(e) => setForm({ ...form, unit_label: e.target.value })} placeholder="Unit 2" />
         </div>
       </div>
       <div className="pd-form-row">
         <div className="pd-field">
-          <label>Monthly rent ($)</label>
-          <input className="pd-input" type="number" step="0.01" min="0" value={form.rent_amount} onChange={(e) => setForm({ ...form, rent_amount: e.target.value })} placeholder="1850.00" />
+          <label htmlFor="tenant-phone">Phone</label>
+          <input id="tenant-phone" className="pd-input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+15145551234" />
         </div>
         <div className="pd-field">
-          <label>Lease start</label>
-          <DatePicker value={form.lease_start_date} onChange={(d) => setForm({ ...form, lease_start_date: d })} />
+          <label htmlFor="tenant-email">Email (optional)</label>
+          <input id="tenant-email" className="pd-input" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+        </div>
+      </div>
+      <div className="pd-form-row">
+        <div className="pd-field">
+          <label htmlFor="tenant-rent">Monthly rent ($)</label>
+          <input id="tenant-rent" className="pd-input" type="number" step="0.01" min="0" value={form.rent_amount} onChange={(e) => setForm({ ...form, rent_amount: e.target.value })} placeholder="1850.00" />
         </div>
         <div className="pd-field">
-          <label>Lease end</label>
-          <DatePicker value={form.lease_end_date} onChange={(d) => setForm({ ...form, lease_end_date: d })} />
+          <label htmlFor="tenant-lease-start">Lease start</label>
+          <DatePicker id="tenant-lease-start" value={form.lease_start_date} onChange={(d) => setForm({ ...form, lease_start_date: d })} />
+        </div>
+        <div className="pd-field">
+          <label htmlFor="tenant-lease-end">Lease end</label>
+          <DatePicker id="tenant-lease-end" value={form.lease_end_date} onChange={(d) => setForm({ ...form, lease_end_date: d })} />
         </div>
       </div>
       <div className="pd-form-actions">

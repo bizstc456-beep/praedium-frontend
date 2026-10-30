@@ -53,8 +53,9 @@ export default function ForgotPasswordPage() {
           <form onSubmit={handleSubmit}>
             {error && <div className="pd-alert-danger">{error}</div>}
             <div className="pd-field">
-              <label>Email</label>
+              <label htmlFor="forgot-password-email">Email</label>
               <input
+                id="forgot-password-email"
                 className="pd-input"
                 type="email"
                 value={email}

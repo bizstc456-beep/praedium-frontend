@@ -139,8 +139,9 @@ export default function TenantMaintenancePage() {
           <form onSubmit={submitRequest}>
             {formError && <div className="pd-alert-danger">{formError}</div>}
             <div className="pd-field">
-              <label>Title</label>
+              <label htmlFor="maint-title">Title</label>
               <input
+                id="maint-title"
                 className="pd-input"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -149,8 +150,9 @@ export default function TenantMaintenancePage() {
               />
             </div>
             <div className="pd-field">
-              <label>Details (optional)</label>
+              <label htmlFor="maint-details">Details (optional)</label>
               <textarea
+                id="maint-details"
                 className="pd-input"
                 rows={4}
                 value={description}
@@ -159,8 +161,9 @@ export default function TenantMaintenancePage() {
               />
             </div>
             <div className="pd-field">
-              <label>Photo (optional)</label>
+              <label htmlFor="maint-photo">Photo (optional)</label>
               <input
+                id="maint-photo"
                 ref={fileInputRef}
                 className="pd-input"
                 type="file"

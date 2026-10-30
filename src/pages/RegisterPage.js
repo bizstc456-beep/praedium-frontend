@@ -84,8 +84,9 @@ export default function RegisterPage() {
         <form onSubmit={handleRegister}>
           {error && <div className="pd-alert-danger">{error}</div>}
           <div className="pd-field">
-            <label>Full name</label>
+            <label htmlFor="register-name">Full name</label>
             <input
+              id="register-name"
               className="pd-input"
               type="text"
               value={name}
@@ -95,8 +96,9 @@ export default function RegisterPage() {
             />
           </div>
           <div className="pd-field">
-            <label>Phone</label>
+            <label htmlFor="register-phone">Phone</label>
             <input
+              id="register-phone"
               className="pd-input"
               type="tel"
               value={phone}
@@ -105,8 +107,9 @@ export default function RegisterPage() {
             />
           </div>
           <div className="pd-field">
-            <label>Email</label>
+            <label htmlFor="register-email">Email</label>
             <input
+              id="register-email"
               className="pd-input"
               type="email"
               value={email}
@@ -116,8 +119,9 @@ export default function RegisterPage() {
             />
           </div>
           <div className="pd-field">
-            <label>Password</label>
+            <label htmlFor="register-password">Password</label>
             <input
+              id="register-password"
               className="pd-input"
               type="password"
               value={password}
@@ -127,8 +131,9 @@ export default function RegisterPage() {
             />
           </div>
           <div className="pd-field">
-            <label>Confirm password</label>
+            <label htmlFor="register-confirm-password">Confirm password</label>
             <input
+              id="register-confirm-password"
               className="pd-input"
               type="password"
               value={confirmPassword}

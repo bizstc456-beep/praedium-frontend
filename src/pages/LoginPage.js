@@ -42,8 +42,9 @@ export default function LoginPage() {
         <form onSubmit={handleLogin}>
           {error && <div className="pd-alert-danger">{error}</div>}
           <div className="pd-field">
-            <label>Email</label>
+            <label htmlFor="login-email">Email</label>
             <input
+              id="login-email"
               className="pd-input"
               type="email"
               value={email}
@@ -54,10 +55,11 @@ export default function LoginPage() {
           </div>
           <div className="pd-field">
             <div className="pd-field-label-row">
-              <label>Password</label>
+              <label htmlFor="login-password">Password</label>
               <Link to="/forgot-password">Forgot password?</Link>
             </div>
             <input
+              id="login-password"
               className="pd-input"
               type="password"
               value={password}

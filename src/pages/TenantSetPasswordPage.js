@@ -76,8 +76,9 @@ export default function TenantSetPasswordPage() {
           <form onSubmit={handleSetPassword}>
             {error && <div className="pd-alert-danger">{error}</div>}
             <div className="pd-field">
-              <label>New password</label>
+              <label htmlFor="tenant-set-password-new">New password</label>
               <input
+                id="tenant-set-password-new"
                 className="pd-input"
                 type="password"
                 value={password}
@@ -88,8 +89,9 @@ export default function TenantSetPasswordPage() {
               />
             </div>
             <div className="pd-field">
-              <label>Confirm password</label>
+              <label htmlFor="tenant-set-password-confirm">Confirm password</label>
               <input
+                id="tenant-set-password-confirm"
                 className="pd-input"
                 type="password"
                 value={confirmPassword}

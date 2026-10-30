@@ -88,8 +88,9 @@ export default function ResetPasswordPage() {
           <form onSubmit={handleReset}>
             {error && <div className="pd-alert-danger">{error}</div>}
             <div className="pd-field">
-              <label>New password</label>
+              <label htmlFor="reset-password-new">New password</label>
               <input
+                id="reset-password-new"
                 className="pd-input"
                 type="password"
                 value={password}
@@ -100,8 +101,9 @@ export default function ResetPasswordPage() {
               />
             </div>
             <div className="pd-field">
-              <label>Confirm new password</label>
+              <label htmlFor="reset-password-confirm">Confirm new password</label>
               <input
+                id="reset-password-confirm"
                 className="pd-input"
                 type="password"
                 value={confirmPassword}
