@@ -77,6 +77,7 @@ export default function PrivacyPolicyPage() {
             <li>Supabase, for storage</li>
             <li>Stripe, for payments</li>
             <li>Twilio, for SMS</li>
+            <li>Sentry, for error monitoring</li>
             <li>Anthropic (Claude), which drafts the text of some automated messages — it sees the tenant's name and payment amount for that purpose only</li>
             <li>Railway and Vercel, for hosting</li>
           </ul>

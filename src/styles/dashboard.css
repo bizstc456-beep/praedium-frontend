@@ -147,6 +147,42 @@
   max-width: 1200px;
 }
 
+.pd-trial-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--pd-warn-soft);
+  border: 1px solid var(--pd-warn);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin: 0 0 22px;
+  font-family: "Public Sans", sans-serif;
+}
+
+.pd-trial-banner-text {
+  color: var(--pd-warn);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.pd-trial-banner-cta {
+  flex-shrink: 0;
+  background: var(--pd-warn);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 7px 16px;
+  border-radius: 7px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pd-trial-banner-cta:hover {
+  opacity: 0.88;
+}
+
 .pd-state {
   padding: 60px 32px;
   color: var(--pd-ink2);
