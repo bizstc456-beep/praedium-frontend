@@ -18,6 +18,8 @@ export default function SettingsPage() {
   const [savingPhone, setSavingPhone] = useState(false);
   const [phoneSaved, setPhoneSaved] = useState(false);
   const [email, setEmail] = useState('');
+  const [sendingReset, setSendingReset] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   useEffect(() => {
     const loadAccount = async () => {
       try {
@@ -70,6 +72,28 @@ export default function SettingsPage() {
       setSavingPhone(false);
     }
   };
+  const handleSendPasswordReset = async () => {
+    setError('');
+    setResetSent(false);
+    setSendingReset(true);
+    try {
+      if (!email) {
+        alert('Please log in first');
+        return;
+      }
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setResetSent(true);
+    } catch (err) {
+      console.error('Password reset error:', err);
+      setError('Something went wrong sending the reset email. Please try again or contact support.');
+    } finally {
+      setSendingReset(false);
+    }
+  };
+
   const handleExport = async () => {
     setError('');
     setExporting(true);
@@ -197,6 +221,32 @@ export default function SettingsPage() {
                 </span>
               )}
             </>
+          )}
+        </section>
+        <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24, marginBottom: 24 }}>
+          <h2 style={{ marginTop: 0, fontSize: 18 }}>Password</h2>
+          <p style={{ color: '#666' }}>
+            Send yourself a link by email to set a new password.
+          </p>
+          <button
+            onClick={handleSendPasswordReset}
+            disabled={sendingReset}
+            style={{
+              background: '#1f2937',
+              color: 'white',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 20px',
+              cursor: sendingReset ? 'default' : 'pointer',
+              opacity: sendingReset ? 0.6 : 1
+            }}
+          >
+            {sendingReset ? 'Sending...' : 'Change password'}
+          </button>
+          {resetSent && (
+            <p style={{ color: '#1a7f37', marginTop: 12, fontWeight: 500 }}>
+              Check your inbox at {email} for a link to set a new password.
+            </p>
           )}
         </section>
         <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24, marginBottom: 24 }}>
