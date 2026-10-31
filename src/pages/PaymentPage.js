@@ -312,7 +312,7 @@ export default function PaymentPage() {
             <h3>What if I need help?</h3>
             <p>
               Email <a href="mailto:support@praedium.pro">support@praedium.pro</a> — it's actively
-              monitored, and getting back to you quickly is something we take seriously.
+              monitored, and we aim to respond within 24 hours.
             </p>
           </div>
         </div>
