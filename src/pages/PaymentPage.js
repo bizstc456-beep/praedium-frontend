@@ -55,6 +55,9 @@ export default function PaymentPage() {
   const [user, setUser] = useState(null);
   const [plan, setPlan] = useState(null);
   const [loadingTier, setLoadingTier] = useState(null);
+  const [showCancelFeedback, setShowCancelFeedback] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelFeedback, setCancelFeedback] = useState('');
 
   useEffect(() => {
     getUserAndPlan();
@@ -148,7 +151,10 @@ export default function PaymentPage() {
   };
 
   const handleCancel = async () => {
-    if (!window.confirm('Cancel your subscription? You will keep full access until the end of your current billing period.')) return;
+    if (!cancelReason) {
+      alert('Please choose a reason so we know how to improve.');
+      return;
+    }
     setLoadingTier('cancel');
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -156,13 +162,20 @@ export default function PaymentPage() {
         `${process.env.REACT_APP_BACKEND_URL}/api/billing/cancel`,
         {
           method: 'POST',
-          headers: { Authorization: `Bearer ${session.access_token}` },
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ reason: cancelReason, feedback: cancelFeedback }),
         }
       );
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || 'Failed to cancel subscription');
       }
+      setShowCancelFeedback(false);
+      setCancelReason('');
+      setCancelFeedback('');
       await getUserAndPlan();
     } catch (error) {
       console.error('Cancel subscription error:', error);
@@ -232,13 +245,59 @@ export default function PaymentPage() {
                   {loadingTier === 'resume' ? 'Processing...' : 'Resume subscription'}
                 </button>
               </div>
+            ) : showCancelFeedback ? (
+              <div className="pd-cancel-feedback">
+                <p className="pd-cancel-feedback-title">Before you go, what's the main reason?</p>
+                <div className="pd-field">
+                  <label htmlFor="cancel-reason">Reason</label>
+                  <select
+                    id="cancel-reason"
+                    className="pd-select"
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                  >
+                    <option value="">Select a reason...</option>
+                    <option value="Too expensive">Too expensive</option>
+                    <option value="Missing features I need">Missing features I need</option>
+                    <option value="Switching to another tool">Switching to another tool</option>
+                    <option value="Not using it enough">Not using it enough</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="pd-field">
+                  <label htmlFor="cancel-feedback">Anything you'd like to share? (optional)</label>
+                  <textarea
+                    id="cancel-feedback"
+                    className="pd-textarea"
+                    value={cancelFeedback}
+                    onChange={(e) => setCancelFeedback(e.target.value)}
+                    placeholder="What could we have done better?"
+                  />
+                </div>
+                <div className="pd-cancel-feedback-actions">
+                  <button
+                    className="pd-btn pd-btn-danger"
+                    onClick={handleCancel}
+                    disabled={loadingTier !== null}
+                  >
+                    {loadingTier === 'cancel' ? 'Processing...' : 'Confirm cancellation'}
+                  </button>
+                  <button
+                    className="pd-btn pd-btn-text"
+                    onClick={() => { setShowCancelFeedback(false); setCancelReason(''); setCancelFeedback(''); }}
+                    disabled={loadingTier !== null}
+                  >
+                    Never mind
+                  </button>
+                </div>
+              </div>
             ) : (
               <button
                 className="pd-btn pd-btn-text pd-cancel-link"
-                onClick={handleCancel}
+                onClick={() => setShowCancelFeedback(true)}
                 disabled={loadingTier !== null}
               >
-                {loadingTier === 'cancel' ? 'Processing...' : 'Cancel subscription'}
+                Cancel subscription
               </button>
             )}
           </>

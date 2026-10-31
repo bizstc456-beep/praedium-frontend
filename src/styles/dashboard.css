@@ -3056,6 +3056,30 @@
   color: var(--pd-accent);
 }
 
+.pd-cancel-feedback {
+  border: 1px solid var(--pd-line);
+  border-radius: 12px;
+  background: var(--pd-card);
+  padding: 16px;
+  margin-top: 8px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pd-cancel-feedback-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.pd-cancel-feedback-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .pd-info-tip {
   position: relative;
   display: inline-flex;
