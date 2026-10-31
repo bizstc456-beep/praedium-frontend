@@ -118,7 +118,7 @@ export default function AppShell({ active, wide, children }) {
           <Link to="/settings" className={linkClass('settings')} onClick={closeNav}>Settings</Link>
         </nav>
         <button onClick={handleLogout} className="pd-signout">Sign Out</button>
-        <a href="mailto:support@praedium.pro" className="pd-support-link">Need help? Contact support</a>
+        <Link to="/help" className="pd-support-link" onClick={closeNav}>Need help? Visit the help center</Link>
       </aside>
       <main className={`pd-main${wide ? ' pd-main-wide' : ''}`}>
         {trialCountdown && (

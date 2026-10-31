@@ -23,6 +23,7 @@ import LeaseRenewalsPage from './pages/LeaseRenewalsPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import NotFoundPage from './pages/NotFoundPage';
+import HelpPage from './pages/HelpPage';
 import { ADMIN_EMAILS } from './utils/adminEmails';
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -91,6 +92,7 @@ function App() {
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/" element={user ? (isAdmin ? <AdminDashboardPage /> : <DashboardPage />) : <Navigate to="/login" />} />
         <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/login" />} />
+        <Route path="/help" element={user ? <HelpPage /> : <Navigate to="/login" />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
