@@ -138,6 +138,54 @@
   color: var(--pd-side-ink);
 }
 
+/* EN/FR language toggle. Default styling suits a light card/background
+   (auth pages, Settings, the first-use modal); .pd-lang-toggle-side is a
+   variant for use inside the dark sidebar. */
+.pd-lang-toggle {
+  display: inline-flex;
+  border: 1px solid var(--pd-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pd-lang-option {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: var(--pd-ink2);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.pd-lang-option + .pd-lang-option {
+  border-left: 1px solid var(--pd-line);
+}
+
+.pd-lang-option.current {
+  background: var(--pd-accent-soft);
+  color: var(--pd-accent);
+}
+
+.pd-lang-toggle-side {
+  border-color: var(--pd-side-line);
+}
+
+.pd-lang-toggle-side .pd-lang-option {
+  color: var(--pd-side-ink2);
+}
+
+.pd-lang-toggle-side .pd-lang-option + .pd-lang-option {
+  border-left-color: var(--pd-side-line);
+}
+
+.pd-lang-toggle-side .pd-lang-option.current {
+  background: var(--pd-side-current-bg);
+  color: var(--pd-side-ink);
+}
+
 .pd-support-link {
   margin-top: 10px;
   padding: 0 12px;
@@ -1737,6 +1785,17 @@
   box-shadow: 0 30px 60px -20px rgba(21, 15, 34, 0.5);
 }
 
+.pd-auth-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.pd-auth-top-row .pd-auth-brand {
+  margin-bottom: 0;
+}
+
 .pd-auth-brand {
   display: flex;
   align-items: center;
@@ -3256,4 +3315,48 @@
     margin-top: 16px;
     margin-left: 0;
   }
+}
+/* First-use language prompt */
+.pd-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 7, 4, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.pd-modal {
+  border: 1px solid var(--pd-line);
+  border-radius: 16px;
+  background: var(--pd-card);
+  padding: 28px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.pd-lang-modal-title {
+  margin: 0 0 10px;
+  font-size: 19px;
+  line-height: 1.35;
+  color: var(--pd-ink);
+}
+
+.pd-lang-modal-sub {
+  margin: 0 0 20px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--pd-ink2);
+}
+
+.pd-lang-modal-options {
+  display: flex;
+  gap: 10px;
+}
+
+.pd-lang-modal-options .pd-btn {
+  flex: 1;
 }
