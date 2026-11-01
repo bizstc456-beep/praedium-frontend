@@ -177,7 +177,8 @@
 }
 
 .pd-lang-toggle-side {
-  border-color: var(--pd-side-line);
+  align-self: flex-start;
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
 .pd-lang-toggle-side .pd-lang-option {
@@ -185,7 +186,7 @@
 }
 
 .pd-lang-toggle-side .pd-lang-option + .pd-lang-option {
-  border-left-color: var(--pd-side-line);
+  border-left-color: rgba(255, 255, 255, 0.22);
 }
 
 .pd-lang-toggle-side .pd-lang-option.current {
