@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
+import KebabMenu from '../components/KebabMenu';
+import DatePicker from '../components/DatePicker';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
+  process.env.REACT_APP_SUPABASE_ANON_KEY,
+  { auth: { storageKey: 'pd-landlord-auth' } }
 );
 
 const EMPTY_PROPERTY = {
@@ -19,8 +23,15 @@ const EMPTY_TENANT = {
 
 const EMPTY_PAYMENT = { amount: '', payment_date: '', payment_method: 'e-transfer' };
 
+const PROPERTY_TYPES = ['single-family', 'duplex', 'triplex', 'fourplex', 'condo', 'other'];
+
 function formatMoney(cents) {
-  return `$${((cents || 0) / 100).toFixed(2)}`;
+  const amount = (cents || 0) / 100;
+  const sign = amount < 0 ? '-' : '';
+  const abs = Math.abs(amount);
+  const parts = abs.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `${sign}${parts[0]},${parts[1]}$`;
 }
 
 function toDateInputValue(value) {
@@ -28,7 +39,13 @@ function toDateInputValue(value) {
   return new Date(value).toISOString().slice(0, 10);
 }
 
+async function getSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session;
+}
+
 export default function PropertiesPage() {
+  const { t } = useTranslation();
   const [properties, setProperties] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,20 +62,35 @@ export default function PropertiesPage() {
   const [paymentForm, setPaymentForm] = useState(EMPTY_PAYMENT);
   const [paymentSuccess, setPaymentSuccess] = useState('');
 
+  // Which "Documents" panel is expanded -- 'property-<id>' or 'tenant-<id>'.
+  // Only one open at a time keeps the page from getting cluttered.
+  const [docsOpenKey, setDocsOpenKey] = useState(null);
+
+  // Per-tenant "Invite to Portal" status: { [tenantId]: { loading?, error?, success? } }
+  const [inviteStatus, setInviteStatus] = useState({});
+
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    return session;
-  };
+  // Deep link from the dashboard's "+ Add property" quick action
+  // (?new=1) -- opens the form once, then cleans the URL so a refresh
+  // doesn't reopen it.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('new') === '1') {
+      openNewPropertyForm();
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadData = async () => {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('properties.pleaseLogIn'));
         return;
       }
 
@@ -80,17 +112,21 @@ export default function PropertiesPage() {
       setTenants(tenantsData.tenants || []);
     } catch (err) {
       console.error('Error loading properties:', err);
-      setError('Could not load your properties. Please try again shortly.');
+      setError(t('properties.couldNotLoad'));
     } finally {
       setLoading(false);
     }
   };
 
-  const tenantsByProperty = tenants.reduce((acc, t) => {
-    if (!acc[t.property_id]) acc[t.property_id] = [];
-    acc[t.property_id].push(t);
+  const tenantsByProperty = tenants.reduce((acc, tenant) => {
+    if (!acc[tenant.property_id]) acc[tenant.property_id] = [];
+    acc[tenant.property_id].push(tenant);
     return acc;
   }, {});
+
+  const toggleDocs = (key) => {
+    setDocsOpenKey((current) => (current === key ? null : key));
+  };
 
   // ---- property form ----
 
@@ -125,14 +161,14 @@ export default function PropertiesPage() {
     setFormError('');
 
     if (!propertyForm.address.trim() || !propertyForm.city.trim()) {
-      setFormError('Address and city are required.');
+      setFormError(t('properties.addressCityRequired'));
       return;
     }
 
     try {
       const session = await getSession();
       if (!session) {
-        setFormError('Please log in again.');
+        setFormError(t('properties.pleaseLogIn'));
         return;
       }
 
@@ -155,12 +191,37 @@ export default function PropertiesPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to save property');
+      if (!res.ok) throw new Error(data.error || t('properties.failedToSaveProperty'));
 
       closePropertyForm();
       await loadData();
     } catch (err) {
-      setFormError(err.message || 'Failed to save property.');
+      setFormError(err.message || t('properties.failedToSaveProperty'));
+    }
+  };
+
+  const deleteProperty = async (p) => {
+    const unitCount = (tenantsByProperty[p.id] || []).length;
+    const warning = unitCount
+      ? t('properties.deletePropertyConfirmWithTenants', { address: p.address, count: unitCount })
+      : t('properties.deletePropertyConfirmNoTenants', { address: p.address });
+    if (!window.confirm(warning)) return;
+
+    try {
+      const session = await getSession();
+      if (!session) {
+        setError(t('properties.pleaseLogIn'));
+        return;
+      }
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/properties/${p.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t('properties.failedToDeleteProperty'));
+      await loadData();
+    } catch (err) {
+      setError(err.message || t('properties.failedToDeleteProperty'));
     }
   };
 
@@ -172,18 +233,18 @@ export default function PropertiesPage() {
     setTenantFormOpen({ propertyId });
   };
 
-  const openEditTenantForm = (t) => {
+  const openEditTenantForm = (tenant) => {
     setFormError('');
     setTenantForm({
-      name: t.name || '',
-      email: t.email || '',
-      phone: t.phone || '',
-      unit_label: t.unit_label || '',
-      rent_amount: t.rent_amount ? (t.rent_amount / 100).toFixed(2) : '',
-      lease_start_date: toDateInputValue(t.lease_start_date),
-      lease_end_date: toDateInputValue(t.lease_end_date),
+      name: tenant.name || '',
+      email: tenant.email || '',
+      phone: tenant.phone || '',
+      unit_label: tenant.unit_label || '',
+      rent_amount: tenant.rent_amount ? (tenant.rent_amount / 100).toFixed(2) : '',
+      lease_start_date: toDateInputValue(tenant.lease_start_date),
+      lease_end_date: toDateInputValue(tenant.lease_end_date),
     });
-    setTenantFormOpen({ propertyId: t.property_id, tenantId: t.id });
+    setTenantFormOpen({ propertyId: tenant.property_id, tenantId: tenant.id });
   };
 
   const closeTenantForm = () => {
@@ -196,14 +257,14 @@ export default function PropertiesPage() {
     setFormError('');
 
     if (!tenantForm.name.trim() || !tenantForm.phone.trim()) {
-      setFormError('Name and phone are required.');
+      setFormError(t('properties.nameAndPhoneRequired'));
       return;
     }
 
     try {
       const session = await getSession();
       if (!session) {
-        setFormError('Please log in again.');
+        setFormError(t('properties.pleaseLogIn'));
         return;
       }
 
@@ -228,27 +289,70 @@ export default function PropertiesPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to save tenant');
+      if (!res.ok) throw new Error(data.error || t('properties.failedToSaveTenant'));
 
       closeTenantForm();
       await loadData();
     } catch (err) {
-      setFormError(err.message || 'Failed to save tenant.');
+      setFormError(err.message || t('properties.failedToSaveTenant'));
+    }
+  };
+
+  const deleteTenant = async (tenant) => {
+    const warning = t('properties.deleteTenantConfirm', { name: tenant.name });
+    if (!window.confirm(warning)) return;
+
+    try {
+      const session = await getSession();
+      if (!session) {
+        setError(t('properties.pleaseLogIn'));
+        return;
+      }
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenants/${tenant.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t('properties.failedToDeleteTenant'));
+      await loadData();
+    } catch (err) {
+      setError(err.message || t('properties.failedToDeleteTenant'));
+    }
+  };
+
+  const inviteTenant = async (tenant) => {
+    setInviteStatus((s) => ({ ...s, [tenant.id]: { loading: true } }));
+    try {
+      const session = await getSession();
+      if (!session) {
+        setInviteStatus((s) => ({ ...s, [tenant.id]: { error: t('properties.pleaseLogIn') } }));
+        return;
+      }
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenants/${tenant.id}/invite`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t('properties.failedToSendInvite'));
+      setInviteStatus((s) => ({ ...s, [tenant.id]: { success: true } }));
+      await loadData();
+    } catch (err) {
+      setInviteStatus((s) => ({ ...s, [tenant.id]: { error: err.message || t('properties.failedToSendInvite') } }));
     }
   };
 
   // ---- payment form ----
 
-  const openPaymentForm = (t) => {
+  const openPaymentForm = (tenant) => {
     setFormError('');
     setPaymentSuccess('');
-    const defaultAmount = (t.pending_amount > 0 ? t.pending_amount : t.rent_amount) || 0;
+    const defaultAmount = (tenant.pending_amount > 0 ? tenant.pending_amount : tenant.rent_amount) || 0;
     setPaymentForm({
       amount: (defaultAmount / 100).toFixed(2),
       payment_date: new Date().toISOString().slice(0, 10),
       payment_method: 'e-transfer',
     });
-    setPaymentFormOpen(t.id);
+    setPaymentFormOpen(tenant.id);
   };
 
   const closePaymentForm = () => {
@@ -261,14 +365,14 @@ export default function PropertiesPage() {
     setFormError('');
 
     if (!paymentForm.amount || Number(paymentForm.amount) <= 0) {
-      setFormError('Enter a payment amount.');
+      setFormError(t('properties.enterPaymentAmount'));
       return;
     }
 
     try {
       const session = await getSession();
       if (!session) {
-        setFormError('Please log in again.');
+        setFormError(t('properties.pleaseLogIn'));
         return;
       }
 
@@ -286,20 +390,45 @@ export default function PropertiesPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to record payment');
+      if (!res.ok) throw new Error(data.error || t('properties.failedToRecordPayment'));
 
-      setPaymentSuccess('Payment recorded.');
+      setPaymentSuccess(t('properties.paymentRecorded'));
       setPaymentFormOpen(null);
       await loadData();
     } catch (err) {
-      setFormError(err.message || 'Failed to record payment.');
+      setFormError(err.message || t('properties.failedToRecordPayment'));
+    }
+  };
+
+  const cancelLastPayment = async (tenantId) => {
+    if (!window.confirm(t('properties.cancelLastPaymentConfirm'))) return;
+    setFormError('');
+    try {
+      const session = await getSession();
+      if (!session) {
+        setFormError(t('properties.pleaseLogIn'));
+        return;
+      }
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/payments/${tenantId}/latest`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t('properties.failedToCancelPayment'));
+
+      setPaymentSuccess(t('properties.lastPaymentCanceled'));
+      await loadData();
+    } catch (err) {
+      setFormError(err.message || t('properties.failedToCancelPayment'));
     }
   };
 
   if (loading) {
     return (
       <AppShell active="properties">
-        <div className="rf-state"><p>Loading your properties...</p></div>
+        <div className="pd-state"><p>{t('properties.loadingProperties')}</p></div>
       </AppShell>
     );
   }
@@ -307,27 +436,27 @@ export default function PropertiesPage() {
   if (error) {
     return (
       <AppShell active="properties">
-        <div className="rf-state"><p>{error}</p></div>
+        <div className="pd-state"><p>{error}</p></div>
       </AppShell>
     );
   }
 
   return (
     <AppShell active="properties">
-      <div className="rf-page-header rf-page-header-row">
+      <div className="pd-page-header pd-page-header-row">
         <div>
-          <h1>Properties</h1>
-          <p>Add your buildings, their units, and the tenants renting them</p>
+          <h1>{t('properties.pageTitle')}</h1>
+          <p>{t('properties.pageSubtitle')}</p>
         </div>
-        <button className="rf-btn rf-btn-primary" onClick={openNewPropertyForm}>+ Add property</button>
+        <button className="pd-btn pd-btn-primary" onClick={openNewPropertyForm}>{t('properties.addProperty')}</button>
       </div>
 
-      {paymentSuccess && <p className="rf-success-text">{paymentSuccess}</p>}
+      {paymentSuccess && <p className="pd-success-text">{paymentSuccess}</p>}
 
       {propertyFormOpen === 'new' && (
-        <div className="rf-card">
-          <h2 className="rf-section-title">New property</h2>
-          {formError && <div className="rf-alert">{formError}</div>}
+        <div className="pd-card">
+          <h2 className="pd-section-title">{t('properties.newProperty')}</h2>
+          {formError && <div className="pd-alert">{formError}</div>}
           <PropertyForm
             form={propertyForm}
             setForm={setPropertyForm}
@@ -338,246 +467,480 @@ export default function PropertiesPage() {
       )}
 
       {properties.length === 0 ? (
-        <p className="rf-empty">You haven't added any properties yet. Click "Add property" to get started.</p>
+        <p className="pd-empty">{t('properties.noPropertiesYet')}</p>
       ) : (
-        properties.map((p) => (
-          <div className="rf-property-card" key={p.id}>
-            {propertyFormOpen === p.id ? (
-              <>
-                <h2 className="rf-section-title">Edit property</h2>
-                {formError && <div className="rf-alert">{formError}</div>}
-                <PropertyForm
-                  form={propertyForm}
-                  setForm={setPropertyForm}
-                  onSubmit={submitPropertyForm}
-                  onCancel={closePropertyForm}
-                />
-              </>
-            ) : (
-              <div className="rf-property-head">
-                <div>
-                  <div className="rf-prow-addr">{p.address}</div>
-                  <div className="rf-prow-city">
-                    {p.city}{p.property_type ? ` · ${p.property_type}` : ''}
-                    {p.bedrooms ? ` · ${p.bedrooms} bed` : ''}{p.bathrooms ? ` / ${p.bathrooms} bath` : ''}
+        properties.map((p) => {
+          const propertyDocsKey = `property-${p.id}`;
+          return (
+            <div className="pd-property-card" key={p.id}>
+              {propertyFormOpen === p.id ? (
+                <>
+                  <h2 className="pd-section-title">{t('properties.editProperty')}</h2>
+                  {formError && <div className="pd-alert">{formError}</div>}
+                  <PropertyForm
+                    form={propertyForm}
+                    setForm={setPropertyForm}
+                    onSubmit={submitPropertyForm}
+                    onCancel={closePropertyForm}
+                  />
+                </>
+              ) : (
+                <div className="pd-property-head">
+                  <div>
+                    <div className="pd-prow-addr">{p.address}</div>
+                    <div className="pd-prow-city">
+                      {p.city}{p.property_type ? ` · ${t(`properties.propertyTypes.${p.property_type}`)}` : ''}
+                      {p.bedrooms ? ` · ${t('properties.bedCount', { count: p.bedrooms })}` : ''}{p.bathrooms ? ` / ${t('properties.bathCount', { count: p.bathrooms })}` : ''}
+                    </div>
+                    {p.notes && <div className="pd-property-notes">{p.notes}</div>}
                   </div>
-                  {p.notes && <div className="rf-property-notes">{p.notes}</div>}
+                  <div className="pd-property-actions">
+                    <button className="pd-btn pd-btn-secondary" onClick={() => openEditPropertyForm(p)}>{t('properties.edit')}</button>
+                    <button className="pd-btn pd-btn-primary" onClick={() => openNewTenantForm(p.id)}>{t('properties.addTenant')}</button>
+                    <KebabMenu
+                      items={[
+                        { label: docsOpenKey === propertyDocsKey ? t('properties.hideDocuments') : t('properties.documents'), onClick: () => toggleDocs(propertyDocsKey) },
+                        { label: t('properties.deletePropertyMenu'), onClick: () => deleteProperty(p), danger: true },
+                      ]}
+                    />
+                  </div>
                 </div>
-                <div className="rf-property-actions">
-                  <button className="rf-btn rf-btn-secondary" onClick={() => openEditPropertyForm(p)}>Edit</button>
-                  <button className="rf-btn rf-btn-primary" onClick={() => openNewTenantForm(p.id)}>+ Add tenant</button>
+              )}
+
+              {docsOpenKey === propertyDocsKey && (
+                <div className="pd-nested-card">
+                  <div className="pd-panel-head">
+                    <h2 className="pd-section-title">{t('properties.propertyDocumentsTitle')}</h2>
+                    <button
+                      type="button"
+                      className="pd-panel-close"
+                      aria-label={t('properties.closeDocuments')}
+                      onClick={() => toggleDocs(propertyDocsKey)}
+                    >
+                      &times;
+                    </button>
+                  </div>
+                  <p className="pd-empty" style={{ marginTop: -8, marginBottom: 10 }}>
+                    {t('properties.propertyDocumentsDescription')}
+                  </p>
+                  <DocumentsPanel entityType="property" entityId={p.id} />
                 </div>
-              </div>
-            )}
+              )}
 
-            {tenantFormOpen?.propertyId === p.id && !tenantFormOpen.tenantId && (
-              <div className="rf-card rf-nested-card">
-                <h2 className="rf-section-title">New tenant</h2>
-                {formError && <div className="rf-alert">{formError}</div>}
-                <TenantForm
-                  form={tenantForm}
-                  setForm={setTenantForm}
-                  onSubmit={submitTenantForm}
-                  onCancel={closeTenantForm}
-                />
-              </div>
-            )}
+              {tenantFormOpen?.propertyId === p.id && !tenantFormOpen.tenantId && (
+                <div className="pd-card pd-nested-card">
+                  <h2 className="pd-section-title">{t('properties.newTenant')}</h2>
+                  {formError && <div className="pd-alert">{formError}</div>}
+                  <TenantForm
+                    form={tenantForm}
+                    setForm={setTenantForm}
+                    onSubmit={submitTenantForm}
+                    onCancel={closeTenantForm}
+                  />
+                </div>
+              )}
 
-            {(tenantsByProperty[p.id] || []).length === 0 ? (
-              <p className="rf-empty">No tenants yet for this property.</p>
-            ) : (
-              <div className="rf-unit-list">
-                {tenantsByProperty[p.id].map((t) => (
-                  <React.Fragment key={t.id}>
-                    {tenantFormOpen?.tenantId === t.id ? (
-                      <div className="rf-card rf-nested-card">
-                        <h2 className="rf-section-title">Edit tenant</h2>
-                        {formError && <div className="rf-alert">{formError}</div>}
-                        <TenantForm
-                          form={tenantForm}
-                          setForm={setTenantForm}
-                          onSubmit={submitTenantForm}
-                          onCancel={closeTenantForm}
-                        />
-                      </div>
-                    ) : (
-                      <div className="rf-unit-row">
-                        <div className="rf-unit-info">
-                          <div className="rf-unit-name">
-                            {t.name}{t.unit_label ? ` — ${t.unit_label}` : ''}
-                            {t.renewal_soon && <span className="rf-badge warn rf-unit-badge">Lease ends soon</span>}
+              {(tenantsByProperty[p.id] || []).length === 0 ? (
+                <p className="pd-empty">{t('properties.noTenantsYet')}</p>
+              ) : (
+                <div className="pd-unit-list">
+                  {tenantsByProperty[p.id].map((tenant) => {
+                    const tenantDocsKey = `tenant-${tenant.id}`;
+                    return (
+                      <React.Fragment key={tenant.id}>
+                        {tenantFormOpen?.tenantId === tenant.id ? (
+                          <div className="pd-card pd-nested-card">
+                            <h2 className="pd-section-title">{t('properties.editTenant')}</h2>
+                            {formError && <div className="pd-alert">{formError}</div>}
+                            <TenantForm
+                              form={tenantForm}
+                              setForm={setTenantForm}
+                              onSubmit={submitTenantForm}
+                              onCancel={closeTenantForm}
+                            />
                           </div>
-                          <div className="rf-prow-city">
-                            {t.phone}{t.email ? ` · ${t.email}` : ''}
-                            {t.lease_end_date ? ` · lease ends ${toDateInputValue(t.lease_end_date)}` : ''}
-                          </div>
-                        </div>
-                        <div className="rf-prow-rent">{formatMoney(t.rent_amount)}/mo</div>
-                        <span className={`rf-dot-status ${t.status === 'paid' ? 'good' : 'warn'}`}>
-                          {t.status === 'paid' ? 'Paid' : `${formatMoney(t.pending_amount)} pending`}
-                        </span>
-                        <div className="rf-unit-actions">
-                          <button className="rf-btn rf-btn-secondary" onClick={() => openEditTenantForm(t)}>Edit</button>
-                          <button className="rf-btn rf-btn-primary" onClick={() => openPaymentForm(t)}>Record payment</button>
-                        </div>
-                      </div>
-                    )}
-
-                    {paymentFormOpen === t.id && (
-                      <div className="rf-card rf-nested-card">
-                        <h2 className="rf-section-title">Record a payment &mdash; {t.name}</h2>
-                        {formError && <div className="rf-alert">{formError}</div>}
-                        <form onSubmit={submitPaymentForm}>
-                          <div className="rf-form-row">
-                            <div className="rf-field">
-                              <label>Amount ($)</label>
-                              <input
-                                className="rf-input"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={paymentForm.amount}
-                                onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
+                        ) : (
+                          <div className="pd-unit-row">
+                            <div className="pd-unit-info">
+                              <div className="pd-unit-name">
+                                {tenant.name}{tenant.unit_label ? ` — ${tenant.unit_label}` : ''}
+                                {tenant.renewal_soon && <span className="pd-badge warn pd-unit-badge">{t('properties.leaseEndsSoon')}</span>}
+                                {tenant.auth_user_id && <span className="pd-badge good pd-unit-badge">{t('properties.portalInvited')}</span>}
+                              </div>
+                              <div className="pd-prow-city">
+                                {tenant.phone}{tenant.email ? ` · ${tenant.email}` : ''}
+                                {tenant.lease_end_date ? ` · ${t('properties.leaseEndsOn', { date: toDateInputValue(tenant.lease_end_date) })}` : ''}
+                              </div>
+                            </div>
+                            <div className="pd-prow-rent">{formatMoney(tenant.rent_amount)}{t('properties.perMonth')}</div>
+                            <span className={`pd-dot-status ${tenant.status === 'paid' ? 'good' : 'warn'}`}>
+                              {tenant.status === 'paid' ? t('properties.paid') : t('properties.pendingAmount', { amount: formatMoney(tenant.pending_amount) })}
+                            </span>
+                            <div className="pd-unit-actions">
+                              <button className="pd-btn pd-btn-secondary" onClick={() => openEditTenantForm(tenant)}>{t('properties.edit')}</button>
+                              <button className="pd-btn pd-btn-primary" onClick={() => openPaymentForm(tenant)}>{t('properties.recordPayment')}</button>
+                              <KebabMenu
+                                items={[
+                                  ...(tenant.auth_user_id ? [] : [{
+                                    label: inviteStatus[tenant.id]?.loading ? t('properties.inviting') : t('properties.inviteToPortal'),
+                                    onClick: () => inviteTenant(tenant),
+                                    disabled: !tenant.email || inviteStatus[tenant.id]?.loading,
+                                    title: !tenant.email ? t('properties.addEmailFirst') : t('properties.sendPortalInvite'),
+                                  }]),
+                                  { label: docsOpenKey === tenantDocsKey ? t('properties.hideDocs') : t('properties.documents'), onClick: () => toggleDocs(tenantDocsKey) },
+                                  { label: t('properties.deleteTenantMenu'), onClick: () => deleteTenant(tenant), danger: true },
+                                ]}
                               />
                             </div>
-                            <div className="rf-field">
-                              <label>Date</label>
-                              <input
-                                className="rf-input"
-                                type="date"
-                                value={paymentForm.payment_date}
-                                onChange={(e) => setPaymentForm({ ...paymentForm, payment_date: e.target.value })}
-                              />
-                            </div>
-                            <div className="rf-field">
-                              <label>Method</label>
-                              <select
-                                className="rf-select"
-                                value={paymentForm.payment_method}
-                                onChange={(e) => setPaymentForm({ ...paymentForm, payment_method: e.target.value })}
+                            {inviteStatus[tenant.id]?.error && (
+                              <div className="pd-alert-danger" style={{ marginTop: 8 }}>{inviteStatus[tenant.id].error}</div>
+                            )}
+                            {inviteStatus[tenant.id]?.success && (
+                              <div className="pd-alert-success" style={{ marginTop: 8 }}>{t('properties.inviteSentTo', { email: tenant.email })}</div>
+                            )}
+                          </div>
+                        )}
+
+                        {docsOpenKey === tenantDocsKey && (
+                          <div className="pd-nested-card">
+                            <div className="pd-panel-head">
+                              <h2 className="pd-section-title">{t('properties.tenantDocumentsTitle', { name: tenant.name })}</h2>
+                              <button
+                                type="button"
+                                className="pd-panel-close"
+                                aria-label={t('properties.closeDocuments')}
+                                onClick={() => toggleDocs(tenantDocsKey)}
                               >
-                                <option value="e-transfer">E-transfer</option>
-                                <option value="cheque">Cheque</option>
-                                <option value="cash">Cash</option>
-                                <option value="card">Card</option>
-                              </select>
+                                &times;
+                              </button>
                             </div>
+                            <p className="pd-empty" style={{ marginTop: -8, marginBottom: 10 }}>
+                              {t('properties.tenantDocumentsDescription')}
+                            </p>
+                            <DocumentsPanel entityType="tenant" entityId={tenant.id} />
                           </div>
-                          <div className="rf-form-actions">
-                            <button type="submit" className="rf-btn rf-btn-primary">Record payment</button>
-                            <button type="button" className="rf-btn rf-btn-secondary" onClick={closePaymentForm}>Cancel</button>
+                        )}
+
+                        {paymentFormOpen === tenant.id && (
+                          <div className="pd-card pd-nested-card">
+                            <h2 className="pd-section-title">{t('properties.recordPaymentTitle', { name: tenant.name })}</h2>
+                            {formError && <div className="pd-alert">{formError}</div>}
+                            <form onSubmit={submitPaymentForm}>
+                              <div className="pd-form-row">
+                                <div className="pd-field">
+                                  <label htmlFor="payment-amount">{t('properties.fieldAmount')}</label>
+                                  <input
+                                    id="payment-amount"
+                                    className="pd-input"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={paymentForm.amount}
+                                    onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
+                                  />
+                                </div>
+                                <div className="pd-field">
+                                  <label htmlFor="payment-date">{t('properties.fieldDate')}</label>
+                                  <input
+                                    id="payment-date"
+                                    className="pd-input"
+                                    type="date"
+                                    value={paymentForm.payment_date}
+                                    onChange={(e) => setPaymentForm({ ...paymentForm, payment_date: e.target.value })}
+                                  />
+                                </div>
+                                <div className="pd-field">
+                                  <label htmlFor="payment-method">{t('properties.fieldMethod')}</label>
+                                  <select
+                                    id="payment-method"
+                                    className="pd-select"
+                                    value={paymentForm.payment_method}
+                                    onChange={(e) => setPaymentForm({ ...paymentForm, payment_method: e.target.value })}
+                                  >
+                                    <option value="e-transfer">{t('properties.paymentMethods.eTransfer')}</option>
+                                    <option value="cheque">{t('properties.paymentMethods.cheque')}</option>
+                                    <option value="cash">{t('properties.paymentMethods.cash')}</option>
+                                    <option value="card">{t('properties.paymentMethods.card')}</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="pd-form-actions">
+                                <button type="submit" className="pd-btn pd-btn-primary">{t('properties.recordPayment')}</button>
+                                <button type="button" className="pd-btn pd-btn-secondary" onClick={closePaymentForm}>{t('properties.cancel')}</button>
+                                <button type="button" className="pd-btn pd-btn-danger" onClick={() => cancelLastPayment(tenant.id)}>{t('properties.cancelLastPayment')}</button>
+                              </div>
+                            </form>
                           </div>
-                        </form>
-                      </div>
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-            )}
-          </div>
-        ))
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })
       )}
     </AppShell>
   );
 }
 
 function PropertyForm({ form, setForm, onSubmit, onCancel }) {
+  const { t } = useTranslation();
   return (
     <form onSubmit={onSubmit}>
-      <div className="rf-form-row">
-        <div className="rf-field">
-          <label>Address</label>
-          <input className="rf-input" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="245 Rue Principale" />
+      <div className="pd-form-row">
+        <div className="pd-field">
+          <label htmlFor="property-address">{t('properties.fieldAddress')}</label>
+          <input id="property-address" className="pd-input" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="245 Rue Principale" />
         </div>
-        <div className="rf-field">
-          <label>City</label>
-          <input className="rf-input" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Saint-Constant" />
-        </div>
-      </div>
-      <div className="rf-form-row">
-        <div className="rf-field">
-          <label>Province</label>
-          <input className="rf-input" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} />
-        </div>
-        <div className="rf-field">
-          <label>Postal code</label>
-          <input className="rf-input" value={form.postal_code} onChange={(e) => setForm({ ...form, postal_code: e.target.value })} placeholder="J5A 2G9" />
+        <div className="pd-field">
+          <label htmlFor="property-city">{t('properties.fieldCity')}</label>
+          <input id="property-city" className="pd-input" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Saint-Constant" />
         </div>
       </div>
-      <div className="rf-form-row">
-        <div className="rf-field">
-          <label>Type</label>
-          <select className="rf-select" value={form.property_type} onChange={(e) => setForm({ ...form, property_type: e.target.value })}>
-            <option value="single-family">Single-family</option>
-            <option value="duplex">Duplex</option>
-            <option value="triplex">Triplex</option>
-            <option value="fourplex">Fourplex</option>
-            <option value="condo">Condo</option>
-            <option value="other">Other</option>
+      <div className="pd-form-row">
+        <div className="pd-field">
+          <label htmlFor="property-province">{t('properties.fieldProvince')}</label>
+          <input id="property-province" className="pd-input" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} />
+        </div>
+        <div className="pd-field">
+          <label htmlFor="property-postal-code">{t('properties.fieldPostalCode')}</label>
+          <input id="property-postal-code" className="pd-input" value={form.postal_code} onChange={(e) => setForm({ ...form, postal_code: e.target.value })} placeholder="J5A 2G9" />
+        </div>
+      </div>
+      <div className="pd-form-row">
+        <div className="pd-field">
+          <label htmlFor="property-type">{t('properties.fieldType')}</label>
+          <select id="property-type" className="pd-select" value={form.property_type} onChange={(e) => setForm({ ...form, property_type: e.target.value })}>
+            {PROPERTY_TYPES.map((type) => (
+              <option key={type} value={type}>{t(`properties.propertyTypes.${type}`)}</option>
+            ))}
           </select>
         </div>
-        <div className="rf-field">
-          <label>Bedrooms</label>
-          <input className="rf-input" type="number" min="0" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} />
+        <div className="pd-field">
+          <label htmlFor="property-bedrooms">{t('properties.fieldBedrooms')}</label>
+          <input id="property-bedrooms" className="pd-input" type="number" min="0" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} />
         </div>
-        <div className="rf-field">
-          <label>Bathrooms</label>
-          <input className="rf-input" type="number" min="0" step="0.5" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} />
+        <div className="pd-field">
+          <label htmlFor="property-bathrooms">{t('properties.fieldBathrooms')}</label>
+          <input id="property-bathrooms" className="pd-input" type="number" min="0" step="0.5" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} />
         </div>
       </div>
-      <div className="rf-field">
-        <label>Notes</label>
-        <textarea className="rf-textarea" rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Anything worth remembering about this property" />
+      <div className="pd-field">
+        <label htmlFor="property-notes">{t('properties.fieldNotes')}</label>
+        <textarea id="property-notes" className="pd-textarea" rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder={t('properties.notesPlaceholder')} />
       </div>
-      <div className="rf-form-actions">
-        <button type="submit" className="rf-btn rf-btn-primary">Save property</button>
-        <button type="button" className="rf-btn rf-btn-secondary" onClick={onCancel}>Cancel</button>
+      <div className="pd-form-actions">
+        <button type="submit" className="pd-btn pd-btn-primary">{t('properties.saveProperty')}</button>
+        <button type="button" className="pd-btn pd-btn-secondary" onClick={onCancel}>{t('properties.cancel')}</button>
       </div>
     </form>
   );
 }
 
 function TenantForm({ form, setForm, onSubmit, onCancel }) {
+  const { t } = useTranslation();
   return (
     <form onSubmit={onSubmit}>
-      <div className="rf-form-row">
-        <div className="rf-field">
-          <label>Tenant name</label>
-          <input className="rf-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+      <div className="pd-form-row">
+        <div className="pd-field">
+          <label htmlFor="tenant-name">{t('properties.fieldTenantName')}</label>
+          <input id="tenant-name" className="pd-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         </div>
-        <div className="rf-field">
-          <label>Unit (optional)</label>
-          <input className="rf-input" value={form.unit_label} onChange={(e) => setForm({ ...form, unit_label: e.target.value })} placeholder="Unit 2" />
-        </div>
-      </div>
-      <div className="rf-form-row">
-        <div className="rf-field">
-          <label>Phone</label>
-          <input className="rf-input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+15145551234" />
-        </div>
-        <div className="rf-field">
-          <label>Email (optional)</label>
-          <input className="rf-input" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+        <div className="pd-field">
+          <label htmlFor="tenant-unit">{t('properties.fieldUnit')}</label>
+          <input id="tenant-unit" className="pd-input" value={form.unit_label} onChange={(e) => setForm({ ...form, unit_label: e.target.value })} placeholder={t('properties.unitPlaceholder')} />
         </div>
       </div>
-      <div className="rf-form-row">
-        <div className="rf-field">
-          <label>Monthly rent ($)</label>
-          <input className="rf-input" type="number" step="0.01" min="0" value={form.rent_amount} onChange={(e) => setForm({ ...form, rent_amount: e.target.value })} placeholder="1850.00" />
+      <div className="pd-form-row">
+        <div className="pd-field">
+          <label htmlFor="tenant-phone">{t('properties.fieldPhone')}</label>
+          <input id="tenant-phone" className="pd-input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+15145551234" />
         </div>
-        <div className="rf-field">
-          <label>Lease start</label>
-          <input className="rf-input" type="date" value={form.lease_start_date} onChange={(e) => setForm({ ...form, lease_start_date: e.target.value })} />
-        </div>
-        <div className="rf-field">
-          <label>Lease end</label>
-          <input className="rf-input" type="date" value={form.lease_end_date} onChange={(e) => setForm({ ...form, lease_end_date: e.target.value })} />
+        <div className="pd-field">
+          <label htmlFor="tenant-email">{t('properties.fieldEmail')}</label>
+          <input id="tenant-email" className="pd-input" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </div>
       </div>
-      <div className="rf-form-actions">
-        <button type="submit" className="rf-btn rf-btn-primary">Save tenant</button>
-        <button type="button" className="rf-btn rf-btn-secondary" onClick={onCancel}>Cancel</button>
+      <div className="pd-form-row">
+        <div className="pd-field">
+          <label htmlFor="tenant-rent">{t('properties.fieldMonthlyRent')}</label>
+          <input id="tenant-rent" className="pd-input" type="number" step="0.01" min="0" value={form.rent_amount} onChange={(e) => setForm({ ...form, rent_amount: e.target.value })} placeholder="1850.00" />
+        </div>
+        <div className="pd-field">
+          <label htmlFor="tenant-lease-start">{t('properties.fieldLeaseStart')}</label>
+          <DatePicker id="tenant-lease-start" value={form.lease_start_date} onChange={(d) => setForm({ ...form, lease_start_date: d })} />
+        </div>
+        <div className="pd-field">
+          <label htmlFor="tenant-lease-end">{t('properties.fieldLeaseEnd')}</label>
+          <DatePicker id="tenant-lease-end" value={form.lease_end_date} onChange={(d) => setForm({ ...form, lease_end_date: d })} />
+        </div>
+      </div>
+      <div className="pd-form-actions">
+        <button type="submit" className="pd-btn pd-btn-primary">{t('properties.saveTenant')}</button>
+        <button type="button" className="pd-btn pd-btn-secondary" onClick={onCancel}>{t('properties.cancel')}</button>
       </div>
     </form>
+  );
+}
+
+const DOC_CATEGORY_VALUES = ['lease', 'id', 'insurance', 'inspection', 'other'];
+
+function docIconLabel(mimeType) {
+  if (!mimeType) return 'F';
+  if (mimeType.includes('pdf')) return 'PDF';
+  if (mimeType.includes('image')) return 'IMG';
+  return 'DOC';
+}
+
+function formatFileSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// Self-contained upload/list/delete panel for one tenant's or one property's
+// documents. Mounted only while its "Documents" toggle is open, which is
+// also what triggers the initial load.
+function DocumentsPanel({ entityType, entityId }) {
+  const { t } = useTranslation();
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [category, setCategory] = useState('other');
+  const fileInputRef = React.useRef(null);
+
+  useEffect(() => {
+    loadDocuments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityType, entityId]);
+
+  const loadDocuments = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const session = await getSession();
+      if (!session) {
+        setError(t('properties.pleaseLogIn'));
+        return;
+      }
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/documents/${entityType}/${entityId}`,
+        { headers: { Authorization: `Bearer ${session.access_token}` } }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t('properties.failedToLoadDocuments'));
+      setDocuments(data.documents || []);
+    } catch (err) {
+      setError(err.message || t('properties.failedToLoadDocuments'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) {
+      setError(t('properties.chooseFileFirst'));
+      return;
+    }
+
+    setUploading(true);
+    setError('');
+    try {
+      const session = await getSession();
+      if (!session) {
+        setError(t('properties.pleaseLogIn'));
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', category);
+      formData.append(entityType === 'tenant' ? 'tenant_id' : 'property_id', entityId);
+
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/documents/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t('properties.uploadFailed'));
+
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      await loadDocuments();
+    } catch (err) {
+      setError(err.message || t('properties.uploadFailed'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (doc) => {
+    if (!window.confirm(t('properties.deleteDocumentConfirm', { fileName: doc.file_name }))) return;
+    try {
+      const session = await getSession();
+      if (!session) {
+        setError(t('properties.pleaseLogIn'));
+        return;
+      }
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/documents/${doc.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t('properties.failedToDeleteDocument'));
+      await loadDocuments();
+    } catch (err) {
+      setError(err.message || t('properties.failedToDeleteDocument'));
+    }
+  };
+
+  return (
+    <div>
+      {error && <div className="pd-alert">{error}</div>}
+
+      {loading ? (
+        <p className="pd-empty">{t('properties.loadingDocuments')}</p>
+      ) : documents.length === 0 ? (
+        <p className="pd-empty">{t('properties.noDocumentsYet')}</p>
+      ) : (
+        <div className="pd-doc-list">
+          {documents.map((doc) => (
+            <div className="pd-doc-row" key={doc.id}>
+              <div className="pd-doc-info">
+                <div className="pd-doc-icon">{docIconLabel(doc.mime_type)}</div>
+                <div>
+                  <a className="pd-doc-name" href={doc.url} target="_blank" rel="noopener noreferrer">
+                    {doc.file_name}
+                  </a>
+                  <div className="pd-doc-meta">
+                    {t(`properties.docCategories.${doc.category || 'other'}`)}
+                    {doc.file_size ? ` · ${formatFileSize(doc.file_size)}` : ''}
+                  </div>
+                </div>
+              </div>
+              <button className="pd-btn pd-btn-danger" onClick={() => handleDelete(doc)}>{t('properties.deleteDocument')}</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <form onSubmit={handleUpload} className="pd-doc-upload-row">
+        <input type="file" ref={fileInputRef} />
+        <select className="pd-doc-category-select" value={category} onChange={(e) => setCategory(e.target.value)}>
+          {DOC_CATEGORY_VALUES.map((value) => (
+            <option key={value} value={value}>{t(`properties.docCategories.${value}`)}</option>
+          ))}
+        </select>
+        <button type="submit" className="pd-btn pd-btn-secondary" disabled={uploading}>
+          {uploading ? t('properties.uploading') : t('properties.upload')}
+        </button>
+      </form>
+    </div>
   );
 }
