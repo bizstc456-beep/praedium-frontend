@@ -171,8 +171,10 @@ export default function AppShell({ active, wide, children }) {
           <Link to="/payment" className={linkClass('billing')} onClick={closeNav}>{t('nav.billing')}</Link>
           <Link to="/settings" className={linkClass('settings')} onClick={closeNav}>{t('nav.settings')}</Link>
         </nav>
-        <LanguageToggle className="pd-lang-toggle-side" onChange={handleLanguageSelect} />
-        <button onClick={handleLogout} className="pd-signout">{t('nav.signOut')}</button>
+        <div className="pd-side-bottom">
+          <LanguageToggle className="pd-lang-toggle-side" onChange={handleLanguageSelect} />
+          <button onClick={handleLogout} className="pd-signout">{t('nav.signOut')}</button>
+        </div>
         <Link to="/help" className="pd-support-link" onClick={closeNav}>{t('nav.helpLink')}</Link>
       </aside>
       <main className={`pd-main${wide ? ' pd-main-wide' : ''}`}>

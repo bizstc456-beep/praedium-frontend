@@ -119,8 +119,15 @@
   border-top: 1px solid var(--pd-side-line);
 }
 
-.pd-signout {
+.pd-side-bottom {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pd-signout {
+  margin-top: 0;
   padding: 10px 12px;
   border-radius: 9px;
   border: 1px solid var(--pd-side-line);
@@ -1140,9 +1147,11 @@
     flex-wrap: wrap;
   }
 
-  .pd-signout {
+  .pd-side-bottom {
     margin-top: 0;
     margin-left: auto;
+    flex-direction: row;
+    align-items: center;
   }
 
   .pd-main {
@@ -3311,8 +3320,8 @@
     flex-direction: column;
     flex-wrap: nowrap;  }
 
-  .pd-shell:not(.pd-shell-tenant) .pd-signout {
-    margin-top: 16px;
+  .pd-shell:not(.pd-shell-tenant) .pd-side-bottom {
+    margin-top: auto;
     margin-left: 0;
   }
 }

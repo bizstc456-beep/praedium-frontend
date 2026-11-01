@@ -80,8 +80,10 @@ export default function TenantShell({ active, children }) {
           <Link to="/tenant" className={linkClass('rental')}>{t('tenantNav.myRental')}</Link>
           <Link to="/tenant/maintenance" className={linkClass('maintenance')}>{t('tenantNav.maintenance')}</Link>
         </nav>
-        <LanguageToggle className="pd-lang-toggle-side" onChange={handleLanguageSelect} />
-        <button onClick={handleLogout} className="pd-signout">{t('tenantNav.signOut')}</button>
+        <div className="pd-side-bottom">
+          <LanguageToggle className="pd-lang-toggle-side" onChange={handleLanguageSelect} />
+          <button onClick={handleLogout} className="pd-signout">{t('tenantNav.signOut')}</button>
+        </div>
         <a href="mailto:support@praedium.pro" className="pd-support-link">{t('tenantNav.helpLink')}</a>
       </aside>
       <main className="pd-main">{children}</main>
