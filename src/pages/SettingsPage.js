@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AppShell from '../components/AppShell';
+import LanguageToggle from '../components/LanguageToggle';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -9,6 +11,7 @@ const supabase = createClient(
 );
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const [exporting, setExporting] = useState(false);
   const [requesting, setRequesting] = useState(false);
   const [deletionStatus, setDeletionStatus] = useState(null);
@@ -20,6 +23,8 @@ export default function SettingsPage() {
   const [email, setEmail] = useState('');
   const [sendingReset, setSendingReset] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [savingLanguage, setSavingLanguage] = useState(false);
+  const [languageSaved, setLanguageSaved] = useState(false);
   useEffect(() => {
     const loadAccount = async () => {
       try {
@@ -50,7 +55,7 @@ export default function SettingsPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        alert('Please log in first');
+        alert(t('settings.pleaseLogIn'));
         return;
       }
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
@@ -62,12 +67,12 @@ export default function SettingsPage() {
         body: JSON.stringify({ phone })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to save phone number');
+      if (!response.ok) throw new Error(data.error || t('settings.savePhoneFailed'));
       setPhone(data.phone || '');
       setPhoneSaved(true);
     } catch (err) {
       console.error('Save phone error:', err);
-      setError(err.message || 'Something went wrong saving your phone number. Please try again or contact support.');
+      setError(err.message || t('settings.savePhoneGenericError'));
     } finally {
       setSavingPhone(false);
     }
@@ -78,7 +83,7 @@ export default function SettingsPage() {
     setSendingReset(true);
     try {
       if (!email) {
-        alert('Please log in first');
+        alert(t('settings.pleaseLogIn'));
         return;
       }
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -88,9 +93,34 @@ export default function SettingsPage() {
       setResetSent(true);
     } catch (err) {
       console.error('Password reset error:', err);
-      setError('Something went wrong sending the reset email. Please try again or contact support.');
+      setError(t('settings.passwordResetError'));
     } finally {
       setSendingReset(false);
+    }
+  };
+
+  const handleLanguageChange = async (lang) => {
+    setError('');
+    setLanguageSaved(false);
+    setSavingLanguage(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ preferred_language: lang })
+      });
+      if (!response.ok) throw new Error(t('settings.saveLanguageFailed'));
+      setLanguageSaved(true);
+    } catch (err) {
+      console.error('Save language error:', err);
+      setError(t('settings.saveLanguageFailed'));
+    } finally {
+      setSavingLanguage(false);
     }
   };
 
@@ -100,7 +130,7 @@ export default function SettingsPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        alert('Please log in first');
+        alert(t('settings.pleaseLogIn'));
         return;
       }
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account/export`, {
@@ -118,16 +148,14 @@ export default function SettingsPage() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Export error:', err);
-      setError('Something went wrong generating your export. Please try again or contact support.');
+      setError(t('settings.exportError'));
     } finally {
       setExporting(false);
     }
   };
 
   const handleDeleteRequest = async () => {
-    const confirmed = window.confirm(
-      'This will request deletion of your Praedium account. Our team will review and action it within the grace period, rather than deleting instantly. Continue?'
-    );
+    const confirmed = window.confirm(t('settings.deleteConfirm'));
     if (!confirmed) return;
 
     setError('');
@@ -135,7 +163,7 @@ export default function SettingsPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        alert('Please log in first');
+        alert(t('settings.pleaseLogIn'));
         return;
       }
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account/delete-request`, {
@@ -143,11 +171,11 @@ export default function SettingsPage() {
         headers: { Authorization: `Bearer ${session.access_token}` }
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to submit deletion request');
+      if (!response.ok) throw new Error(data.error || t('settings.deleteRequestFailed'));
       setDeletionStatus(data);
     } catch (err) {
       console.error('Delete request error:', err);
-      setError('Something went wrong submitting your deletion request. Please try again or contact support.');
+      setError(t('settings.deleteRequestError'));
     } finally {
       setRequesting(false);
     }
@@ -156,9 +184,9 @@ export default function SettingsPage() {
   return (
     <AppShell active="settings">
       <div style={{ maxWidth: 640 }}>
-        <h1 style={{ marginBottom: 8 }}>Settings</h1>
+        <h1 style={{ marginBottom: 8 }}>{t('settings.title')}</h1>
         <p style={{ color: '#666', marginBottom: 32 }}>
-          Manage your Praedium account data.
+          {t('settings.subtitle')}
         </p>
 
         {error && (
@@ -167,20 +195,32 @@ export default function SettingsPage() {
           </div>
         )}
         <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24, marginBottom: 24 }}>
-          <h2 style={{ marginTop: 0, fontSize: 18 }}>Email</h2>
+          <h2 style={{ marginTop: 0, fontSize: 18 }}>{t('settings.emailSectionTitle')}</h2>
           <p style={{ color: '#666' }}>
-            The email address associated with your Praedium account.
+            {t('settings.emailSectionDescription')}
           </p>
           <p style={{ fontWeight: 600 }}>{email || '—'}</p>
         </section>
         <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24, marginBottom: 24 }}>
-          <h2 style={{ marginTop: 0, fontSize: 18 }}>Phone number</h2>
+          <h2 style={{ marginTop: 0, fontSize: 18 }}>{t('settings.languageSectionTitle')}</h2>
           <p style={{ color: '#666' }}>
-            Used to text you an alert when a tenant's rent is late. We'll never
-            use it for anything else.
+            {t('settings.languageSectionDescription')}
+          </p>
+          <LanguageToggle onChange={handleLanguageChange} />
+          {savingLanguage && <span style={{ color: '#999', marginLeft: 12 }}>{t('settings.saving')}</span>}
+          {languageSaved && !savingLanguage && (
+            <span style={{ color: '#1a7f37', marginLeft: 12, fontWeight: 500 }}>
+              {t('settings.saved')}
+            </span>
+          )}
+        </section>
+        <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24, marginBottom: 24 }}>
+          <h2 style={{ marginTop: 0, fontSize: 18 }}>{t('settings.phoneSectionTitle')}</h2>
+          <p style={{ color: '#666' }}>
+            {t('settings.phoneSectionDescription')}
           </p>
           {loadingPhone ? (
-            <p style={{ color: '#999' }}>Loading...</p>
+            <p style={{ color: '#999' }}>{t('settings.loading')}</p>
           ) : (
             <>
               <input
@@ -213,20 +253,20 @@ export default function SettingsPage() {
                   opacity: savingPhone ? 0.6 : 1
                 }}
               >
-                {savingPhone ? 'Saving...' : 'Save phone number'}
+                {savingPhone ? t('settings.saving') : t('settings.savePhoneButton')}
               </button>
               {phoneSaved && (
                 <span style={{ color: '#1a7f37', marginLeft: 12, fontWeight: 500 }}>
-                  Saved
+                  {t('settings.saved')}
                 </span>
               )}
             </>
           )}
         </section>
         <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24, marginBottom: 24 }}>
-          <h2 style={{ marginTop: 0, fontSize: 18 }}>Password</h2>
+          <h2 style={{ marginTop: 0, fontSize: 18 }}>{t('settings.passwordSectionTitle')}</h2>
           <p style={{ color: '#666' }}>
-            Send yourself a link by email to set a new password.
+            {t('settings.passwordSectionDescription')}
           </p>
           <button
             onClick={handleSendPasswordReset}
@@ -241,20 +281,18 @@ export default function SettingsPage() {
               opacity: sendingReset ? 0.6 : 1
             }}
           >
-            {sendingReset ? 'Sending...' : 'Change password'}
+            {sendingReset ? t('settings.sending') : t('settings.changePasswordButton')}
           </button>
           {resetSent && (
             <p style={{ color: '#1a7f37', marginTop: 12, fontWeight: 500 }}>
-              Check your inbox at {email} for a link to set a new password.
+              {t('settings.resetSentMessage', { email })}
             </p>
           )}
         </section>
         <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24, marginBottom: 24 }}>
-          <h2 style={{ marginTop: 0, fontSize: 18 }}>Export your data</h2>
+          <h2 style={{ marginTop: 0, fontSize: 18 }}>{t('settings.exportSectionTitle')}</h2>
           <p style={{ color: '#666' }}>
-            Download a copy of the personal data Praedium holds about your account
-            -- your profile, plan and SMS history. This does not include your
-            properties, tenants or leases.
+            {t('settings.exportSectionDescription')}
           </p>
           <button
             onClick={handleExport}
@@ -269,23 +307,21 @@ export default function SettingsPage() {
               opacity: exporting ? 0.6 : 1
             }}
           >
-            {exporting ? 'Preparing export...' : 'Export my data'}
+            {exporting ? t('settings.preparingExport') : t('settings.exportButton')}
           </button>
         </section>
 
         <section style={{ border: '1px solid #e2e2e2', borderRadius: 12, padding: 24 }}>
-          <h2 style={{ marginTop: 0, fontSize: 18 }}>Delete your account</h2>
+          <h2 style={{ marginTop: 0, fontSize: 18 }}>{t('settings.deleteSectionTitle')}</h2>
           <p style={{ color: '#666' }}>
-            Request deletion of your Praedium account. This does not delete your
-            account immediately -- our team reviews every request and will follow
-            up with you before anything is permanently removed.
+            {t('settings.deleteSectionDescription')}
           </p>
 
           {deletionStatus ? (
             <div style={{ color: '#1f2937', fontWeight: 500 }}>
               {deletionStatus.already_requested
-                ? `Deletion already requested on ${new Date(deletionStatus.deletion_requested_at).toLocaleDateString()}. We'll be in touch.`
-                : `Deletion requested on ${new Date(deletionStatus.deletion_requested_at).toLocaleDateString()}. We'll be in touch.`}
+                ? t('settings.deletionAlreadyRequested', { date: new Date(deletionStatus.deletion_requested_at).toLocaleDateString() })
+                : t('settings.deletionRequested', { date: new Date(deletionStatus.deletion_requested_at).toLocaleDateString() })}
             </div>
           ) : (
             <button
@@ -301,7 +337,7 @@ export default function SettingsPage() {
                 opacity: requesting ? 0.6 : 1
               }}
             >
-              {requesting ? 'Submitting request...' : 'Request account deletion'}
+              {requesting ? t('settings.submittingRequest') : t('settings.deleteRequestButton')}
             </button>
           )}
         </section>

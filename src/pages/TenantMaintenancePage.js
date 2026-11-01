@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import TenantShell from '../components/TenantShell';
 
@@ -8,7 +9,6 @@ const supabase = createClient(
   { auth: { storageKey: 'pd-tenant-auth' } }
 );
 
-const STATUS_LABEL = { open: 'Open', in_progress: 'In progress', resolved: 'Resolved' };
 const STATUS_BADGE = { open: 'warn', in_progress: 'neutral', resolved: 'good' };
 const MAX_PHOTO_BYTES = 15 * 1024 * 1024;
 
@@ -22,6 +22,7 @@ async function getSession() {
 }
 
 export default function TenantMaintenancePage() {
+  const { t } = useTranslation();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -33,25 +34,32 @@ export default function TenantMaintenancePage() {
   const [photo, setPhoto] = useState(null);
   const fileInputRef = useRef(null);
 
+  const STATUS_LABEL = {
+    open: t('tenantMaintenance.statusOpen'),
+    in_progress: t('tenantMaintenance.statusInProgress'),
+    resolved: t('tenantMaintenance.statusResolved'),
+  };
+
   const loadRequests = useCallback(async () => {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('tenantMaintenance.pleaseLogInAgain'));
         return;
       }
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/maintenance`, {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to load maintenance requests');
+      if (!res.ok) throw new Error(data.error || t('tenantMaintenance.loadFailed'));
       setRequests(data.requests || []);
     } catch (err) {
       console.error('Error loading maintenance requests:', err);
-      setError('Could not load your maintenance requests. Please try again shortly.');
+      setError(t('tenantMaintenance.loadError'));
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -65,7 +73,7 @@ export default function TenantMaintenancePage() {
       return;
     }
     if (file.size > MAX_PHOTO_BYTES) {
-      setFormError('That photo is too large (max 15MB). Please choose a smaller one.');
+      setFormError(t('tenantMaintenance.photoTooLarge'));
       if (fileInputRef.current) fileInputRef.current.value = '';
       setPhoto(null);
       return;
@@ -78,14 +86,14 @@ export default function TenantMaintenancePage() {
     e.preventDefault();
     setFormError('');
     if (!title.trim()) {
-      setFormError('Give your request a short title.');
+      setFormError(t('tenantMaintenance.titleRequired'));
       return;
     }
     setSubmitting(true);
     try {
       const session = await getSession();
       if (!session) {
-        setFormError('Please log in again.');
+        setFormError(t('tenantMaintenance.pleaseLogInAgain'));
         return;
       }
 
@@ -105,7 +113,7 @@ export default function TenantMaintenancePage() {
         body: formData,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to submit request');
+      if (!res.ok) throw new Error(data.error || t('tenantMaintenance.submitFailed'));
       setTitle('');
       setDescription('');
       setPhoto(null);
@@ -113,7 +121,7 @@ export default function TenantMaintenancePage() {
       setFormOpen(false);
       await loadRequests();
     } catch (err) {
-      setFormError(err.message || 'Failed to submit request.');
+      setFormError(err.message || t('tenantMaintenance.submitFailedFallback'));
     } finally {
       setSubmitting(false);
     }
@@ -123,11 +131,11 @@ export default function TenantMaintenancePage() {
     <TenantShell active="maintenance">
       <div className="pd-page-header pd-page-header-row">
         <div>
-          <h1>Maintenance</h1>
-          <p>Submit a request and track its status</p>
+          <h1>{t('tenantMaintenance.title')}</h1>
+          <p>{t('tenantMaintenance.subtitle')}</p>
         </div>
         <button className="pd-btn pd-btn-primary" onClick={() => setFormOpen((v) => !v)}>
-          {formOpen ? 'Cancel' : 'New request'}
+          {formOpen ? t('tenantMaintenance.cancelButton') : t('tenantMaintenance.newRequestButton')}
         </button>
       </div>
 
@@ -135,33 +143,33 @@ export default function TenantMaintenancePage() {
 
       {formOpen && (
         <div className="pd-card" style={{ marginBottom: 24 }}>
-          <h2 className="pd-section-title">New maintenance request</h2>
+          <h2 className="pd-section-title">{t('tenantMaintenance.newRequestFormTitle')}</h2>
           <form onSubmit={submitRequest}>
             {formError && <div className="pd-alert-danger">{formError}</div>}
             <div className="pd-field">
-              <label htmlFor="maint-title">Title</label>
+              <label htmlFor="maint-title">{t('tenantMaintenance.titleLabel')}</label>
               <input
                 id="maint-title"
                 className="pd-input"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Leaking kitchen faucet"
+                placeholder={t('tenantMaintenance.titlePlaceholder')}
                 required
               />
             </div>
             <div className="pd-field">
-              <label htmlFor="maint-details">Details (optional)</label>
+              <label htmlFor="maint-details">{t('tenantMaintenance.detailsLabel')}</label>
               <textarea
                 id="maint-details"
                 className="pd-input"
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Anything that would help your landlord understand the issue"
+                placeholder={t('tenantMaintenance.detailsPlaceholder')}
               />
             </div>
             <div className="pd-field">
-              <label htmlFor="maint-photo">Photo (optional)</label>
+              <label htmlFor="maint-photo">{t('tenantMaintenance.photoLabel')}</label>
               <input
                 id="maint-photo"
                 ref={fileInputRef}
@@ -172,36 +180,36 @@ export default function TenantMaintenancePage() {
               />
               {photo && (
                 <div className="pd-prow-city" style={{ marginTop: 4 }}>
-                  {photo.name} selected
+                  {t('tenantMaintenance.photoSelected', { name: photo.name })}
                 </div>
               )}
             </div>
             <button type="submit" className="pd-btn pd-btn-primary" disabled={submitting}>
-              {submitting ? 'Submitting...' : 'Submit request'}
+              {submitting ? t('tenantMaintenance.submitting') : t('tenantMaintenance.submitRequestButton')}
             </button>
           </form>
         </div>
       )}
 
       {loading ? (
-        <p className="pd-empty">Loading...</p>
+        <p className="pd-empty">{t('tenantMaintenance.loading')}</p>
       ) : requests.length === 0 ? (
-        <p className="pd-empty">You haven't submitted any maintenance requests yet.</p>
+        <p className="pd-empty">{t('tenantMaintenance.emptyState')}</p>
       ) : (
         <div className="pd-table-wrap">
           <table className="pd-table pd-table-stack">
             <thead>
               <tr>
-                <th>Request</th>
-                <th>Photo</th>
-                <th>Submitted</th>
-                <th>Status</th>
+                <th>{t('tenantMaintenance.columnRequest')}</th>
+                <th>{t('tenantMaintenance.columnPhoto')}</th>
+                <th>{t('tenantMaintenance.columnSubmitted')}</th>
+                <th>{t('tenantMaintenance.columnStatus')}</th>
               </tr>
             </thead>
             <tbody>
               {requests.map((r) => (
                 <tr key={r.id}>
-                  <td data-label="Request">
+                  <td data-label={t('tenantMaintenance.columnRequest')}>
                     <div style={{ textAlign: 'left' }}>
                       <div style={{ fontWeight: 600 }}>{r.title}</div>
                       {r.description && (
@@ -209,12 +217,12 @@ export default function TenantMaintenancePage() {
                       )}
                     </div>
                   </td>
-                  <td data-label="Photo">
+                  <td data-label={t('tenantMaintenance.columnPhoto')}>
                     {r.photo_url ? (
                       <a href={r.photo_url} target="_blank" rel="noopener noreferrer">
                         <img
                           src={r.photo_url}
-                          alt="Maintenance issue"
+                          alt={t('tenantMaintenance.photoAlt')}
                           style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }}
                         />
                       </a>
@@ -222,8 +230,8 @@ export default function TenantMaintenancePage() {
                       <span className="pd-prow-city">—</span>
                     )}
                   </td>
-                  <td data-label="Submitted">{formatDate(r.created_at)}</td>
-                  <td data-label="Status"><span className={`pd-badge ${STATUS_BADGE[r.status] || 'neutral'}`}>{STATUS_LABEL[r.status] || r.status}</span></td>
+                  <td data-label={t('tenantMaintenance.columnSubmitted')}>{formatDate(r.created_at)}</td>
+                  <td data-label={t('tenantMaintenance.columnStatus')}><span className={`pd-badge ${STATUS_BADGE[r.status] || 'neutral'}`}>{STATUS_LABEL[r.status] || r.status}</span></td>
                 </tr>
               ))}
             </tbody>

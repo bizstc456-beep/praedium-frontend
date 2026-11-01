@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../components/LanguageToggle';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -14,6 +16,7 @@ const supabase = createClient(
 // PASSWORD_RECOVERY auth event -- that's our signal that it's safe to show
 // the "set a new password" form and call updateUser().
 export default function ResetPasswordPage() {
+  const { t } = useTranslation();
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -38,11 +41,11 @@ export default function ResetPasswordPage() {
     e.preventDefault();
     setError('');
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('resetPassword.passwordTooShort'));
       return;
     }
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('resetPassword.passwordsDontMatch'));
       return;
     }
     setLoading(true);
@@ -67,7 +70,7 @@ export default function ResetPasswordPage() {
         setTimeout(() => navigate(destination), 2000);
       }
     } catch (err) {
-      setError('An error occurred');
+      setError(t('resetPassword.genericError'));
     } finally {
       setLoading(false);
     }
@@ -76,19 +79,22 @@ export default function ResetPasswordPage() {
   return (
     <div className="pd-auth-page">
       <div className="pd-auth-card">
-        <div className="pd-auth-brand">Praedium</div>
+        <div className="pd-auth-top-row">
+          <div className="pd-auth-brand">Praedium</div>
+          <LanguageToggle />
+        </div>
         <div className="pd-auth-header">
-          <h1>Set a new password</h1>
-          <p>Choose a new password for your account.</p>
+          <h1>{t('resetPassword.title')}</h1>
+          <p>{t('resetPassword.subtitle')}</p>
         </div>
 
         {success ? (
-          <div className="pd-auth-footer">Password updated — taking you to your dashboard...</div>
+          <div className="pd-auth-footer">{t('resetPassword.successMessage')}</div>
         ) : ready ? (
           <form onSubmit={handleReset}>
             {error && <div className="pd-alert-danger">{error}</div>}
             <div className="pd-field">
-              <label htmlFor="reset-password-new">New password</label>
+              <label htmlFor="reset-password-new">{t('resetPassword.newPasswordLabel')}</label>
               <input
                 id="reset-password-new"
                 className="pd-input"
@@ -101,7 +107,7 @@ export default function ResetPasswordPage() {
               />
             </div>
             <div className="pd-field">
-              <label htmlFor="reset-password-confirm">Confirm new password</label>
+              <label htmlFor="reset-password-confirm">{t('resetPassword.confirmPasswordLabel')}</label>
               <input
                 id="reset-password-confirm"
                 className="pd-input"
@@ -114,16 +120,16 @@ export default function ResetPasswordPage() {
               />
             </div>
             <button type="submit" className="pd-btn pd-btn-primary pd-btn-block" disabled={loading}>
-              {loading ? 'Updating...' : 'Update password'}
+              {loading ? t('resetPassword.updating') : t('resetPassword.updatePassword')}
             </button>
           </form>
         ) : (
           <div>
             <div className="pd-alert-danger">
-              This link is invalid or has expired.
+              {t('resetPassword.linkInvalid')}
             </div>
             <div className="pd-auth-footer">
-              <p><Link to="/forgot-password">Request a new reset link</Link></p>
+              <p><Link to="/forgot-password">{t('resetPassword.requestNewLink')}</Link></p>
             </div>
           </div>
         )}

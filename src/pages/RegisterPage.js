@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../components/LanguageToggle';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -10,6 +12,7 @@ const supabase = createClient(
 );
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -25,17 +28,17 @@ export default function RegisterPage() {
     setError('');
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('register.passwordTooShort'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('register.passwordsDontMatch'));
       return;
     }
 
     if (!agreedToTerms) {
-      setError('Please agree to the Terms of Service and Privacy Policy to continue');
+      setError(t('register.mustAgreeToTerms'));
       return;
     }
 
@@ -54,7 +57,7 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Could not create your account');
+        setError(data.error || t('register.couldNotCreateAccount'));
         return;
       }
 
@@ -67,7 +70,7 @@ export default function RegisterPage() {
         navigate('/');
       }
     } catch (err) {
-      setError('An error occurred');
+      setError(t('register.genericError'));
     } finally {
       setLoading(false);
     }
@@ -76,27 +79,30 @@ export default function RegisterPage() {
   return (
     <div className="pd-auth-page">
       <div className="pd-auth-card">
-        <div className="pd-auth-brand">Praedium</div>
+        <div className="pd-auth-top-row">
+          <div className="pd-auth-brand">Praedium</div>
+          <LanguageToggle />
+        </div>
         <div className="pd-auth-header">
-          <h1>Create your account</h1>
-          <p>Start your 30-day free trial — no charge today.</p>
+          <h1>{t('register.createAccount')}</h1>
+          <p>{t('register.trialSubtitle')}</p>
         </div>
         <form onSubmit={handleRegister}>
           {error && <div className="pd-alert-danger">{error}</div>}
           <div className="pd-field">
-            <label htmlFor="register-name">Full name</label>
+            <label htmlFor="register-name">{t('register.fullNameLabel')}</label>
             <input
               id="register-name"
               className="pd-input"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Jane Landlord"
+              placeholder={t('register.fullNamePlaceholder')}
               required
             />
           </div>
           <div className="pd-field">
-            <label htmlFor="register-phone">Phone</label>
+            <label htmlFor="register-phone">{t('register.phoneLabel')}</label>
             <input
               id="register-phone"
               className="pd-input"
@@ -107,19 +113,19 @@ export default function RegisterPage() {
             />
           </div>
           <div className="pd-field">
-            <label htmlFor="register-email">Email</label>
+            <label htmlFor="register-email">{t('register.emailLabel')}</label>
             <input
               id="register-email"
               className="pd-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              placeholder={t('register.emailPlaceholder')}
               required
             />
           </div>
           <div className="pd-field">
-            <label htmlFor="register-password">Password</label>
+            <label htmlFor="register-password">{t('register.passwordLabel')}</label>
             <input
               id="register-password"
               className="pd-input"
@@ -131,7 +137,7 @@ export default function RegisterPage() {
             />
           </div>
           <div className="pd-field">
-            <label htmlFor="register-confirm-password">Confirm password</label>
+            <label htmlFor="register-confirm-password">{t('register.confirmPasswordLabel')}</label>
             <input
               id="register-confirm-password"
               className="pd-input"
@@ -150,20 +156,20 @@ export default function RegisterPage() {
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
               />
               <span>
-                I agree to the{' '}
-                <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</Link>
-                {' '}and{' '}
-                <Link to="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>
+                {t('register.agreeTo')}{' '}
+                <Link to="/terms" target="_blank" rel="noopener noreferrer">{t('register.termsOfService')}</Link>
+                {' '}{t('register.and')}{' '}
+                <Link to="/privacy" target="_blank" rel="noopener noreferrer">{t('register.privacyPolicy')}</Link>
               </span>
             </label>
           </div>
           <button type="submit" className="pd-btn pd-btn-primary pd-btn-block" disabled={loading || !agreedToTerms}>
-            {loading ? 'Creating account...' : 'Sign up'}
+            {loading ? t('register.creatingAccount') : t('register.signUp')}
           </button>
         </form>
         <div className="pd-auth-footer">
-          <p>Already have an account? <Link to="/login">Sign in</Link></p>
-          <p className="pd-auth-support">Need help? <a href="mailto:support@praedium.pro">Contact support</a></p>
+          <p>{t('register.alreadyHaveAccount')} <Link to="/login">{t('register.signIn')}</Link></p>
+          <p className="pd-auth-support">{t('register.needHelp')} <a href="mailto:support@praedium.pro">{t('register.contactSupport')}</a></p>
         </div>
       </div>
     </div>

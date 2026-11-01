@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
 import TenantShell from '../components/TenantShell';
 
 const supabase = createClient(
@@ -23,6 +24,7 @@ function formatDate(value) {
 }
 
 export default function TenantPortalPage() {
+  const { t } = useTranslation();
   const [tenant, setTenant] = useState(null);
   const [property, setProperty] = useState(null);
   const [payments, setPayments] = useState([]);
@@ -38,7 +40,7 @@ export default function TenantPortalPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('tenantPortal.pleaseLogIn'));
         return;
       }
       const backend = process.env.REACT_APP_BACKEND_URL;
@@ -51,15 +53,15 @@ export default function TenantPortalPage() {
       const meData = await meRes.json();
       const paymentsData = await paymentsRes.json();
 
-      if (!meRes.ok) throw new Error(meData.error || 'Failed to load your rental info');
-      if (!paymentsRes.ok) throw new Error(paymentsData.error || 'Failed to load your payment history');
+      if (!meRes.ok) throw new Error(meData.error || t('tenantPortal.loadRentalInfoFailed'));
+      if (!paymentsRes.ok) throw new Error(paymentsData.error || t('tenantPortal.loadPaymentHistoryFailed'));
 
       setTenant(meData.tenant);
       setProperty(meData.property);
       setPayments(paymentsData.payments || []);
     } catch (err) {
       console.error('Error loading tenant portal:', err);
-      setError(err.message || 'Could not load your rental info. Please try again shortly.');
+      setError(err.message || t('tenantPortal.loadGenericError'));
     } finally {
       setLoading(false);
     }
@@ -69,9 +71,9 @@ export default function TenantPortalPage() {
     return (
       <TenantShell active="rental">
         <div className="pd-page-header">
-          <h1>My Rental</h1>
+          <h1>{t('tenantPortal.title')}</h1>
         </div>
-        <p className="pd-empty">Loading...</p>
+        <p className="pd-empty">{t('tenantPortal.loading')}</p>
       </TenantShell>
     );
   }
@@ -79,51 +81,51 @@ export default function TenantPortalPage() {
   return (
     <TenantShell active="rental">
       <div className="pd-page-header">
-        <h1>My Rental</h1>
-        <p>{property ? property.address : 'Your lease details'}</p>
+        <h1>{t('tenantPortal.title')}</h1>
+        <p>{property ? property.address : t('tenantPortal.subtitleFallback')}</p>
       </div>
 
       {error && <div className="pd-alert-danger">{error}</div>}
       {tenant && (
         <>
           <div className="pd-chips">
-            <div className="pd-chip"><b>{formatMoney(tenant.rent_amount)}</b><span>monthly rent</span></div>
+            <div className="pd-chip"><b>{formatMoney(tenant.rent_amount)}</b><span>{t('tenantPortal.monthlyRent')}</span></div>
 
-            <div className="pd-chip"><b>{formatDate(tenant.lease_end_date)}</b><span>lease ends</span></div>
+            <div className="pd-chip"><b>{formatDate(tenant.lease_end_date)}</b><span>{t('tenantPortal.leaseEnds')}</span></div>
           </div>
 
           <div className="pd-card" style={{ marginBottom: 24 }}>
-            <h2 className="pd-section-title">Lease details</h2>
+            <h2 className="pd-section-title">{t('tenantPortal.leaseDetailsTitle')}</h2>
             <div className="pd-prow-city">
-              Unit: {tenant.unit_label || '—'}<br />
-              Lease start: {formatDate(tenant.lease_start_date)}<br />
-              Lease end: {formatDate(tenant.lease_end_date)}
+              {t('tenantPortal.unitLabel')}: {tenant.unit_label || '—'}<br />
+              {t('tenantPortal.leaseStartLabel')}: {formatDate(tenant.lease_start_date)}<br />
+              {t('tenantPortal.leaseEndLabel')}: {formatDate(tenant.lease_end_date)}
             </div>
           </div>
 
-          <h2 className="pd-section-title">Payment history</h2>
+          <h2 className="pd-section-title">{t('tenantPortal.paymentHistoryTitle')}</h2>
           {payments.length === 0 ? (
-            <p className="pd-empty">No payments recorded yet.</p>
+            <p className="pd-empty">{t('tenantPortal.noPayments')}</p>
           ) : (
             <div className="pd-table-wrap">
               <table className="pd-table pd-table-stack">
                 <thead>
                   <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Method</th>
-                    <th>Status</th>
+                    <th>{t('tenantPortal.columnDate')}</th>
+                    <th>{t('tenantPortal.columnAmount')}</th>
+                    <th>{t('tenantPortal.columnMethod')}</th>
+                    <th>{t('tenantPortal.columnStatus')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {payments.map((p) => (
                     <tr key={p.id}>
-                      <td data-label="Date">{formatDate(p.payment_date || p.created_at)}</td>
-                      <td data-label="Amount">{formatMoney(p.amount)}</td>
-                      <td data-label="Method">{p.payment_method || '-'}</td>
-                      <td data-label="Status">
+                      <td data-label={t('tenantPortal.columnDate')}>{formatDate(p.payment_date || p.created_at)}</td>
+                      <td data-label={t('tenantPortal.columnAmount')}>{formatMoney(p.amount)}</td>
+                      <td data-label={t('tenantPortal.columnMethod')}>{p.payment_method || '-'}</td>
+                      <td data-label={t('tenantPortal.columnStatus')}>
                         <span className={`pd-badge ${p.status === 'paid' ? 'good' : 'warn'}`}>
-                          {p.status === 'paid' ? 'Paid' : p.status}
+                          {p.status === 'paid' ? t('tenantPortal.statusPaid') : p.status}
                         </span>
                       </td>
                     </tr>

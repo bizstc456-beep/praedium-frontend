@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../components/LanguageToggle';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -10,6 +12,7 @@ const supabase = createClient(
 );
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,7 +28,7 @@ export default function LoginPage() {
       if (error) setError(error.message);
       else navigate('/');
     } catch (err) {
-      setError('An error occurred');
+      setError(t('login.genericError'));
     } finally {
       setLoading(false);
     }
@@ -34,29 +37,32 @@ export default function LoginPage() {
   return (
     <div className="pd-auth-page">
       <div className="pd-auth-card">
-        <div className="pd-auth-brand">Praedium</div>
+        <div className="pd-auth-top-row">
+          <div className="pd-auth-brand">Praedium</div>
+          <LanguageToggle />
+        </div>
         <div className="pd-auth-header">
-          <h1>Welcome back</h1>
-          <p>Sign in to your landlord dashboard.</p>
+          <h1>{t('login.welcomeBack')}</h1>
+          <p>{t('login.subtitle')}</p>
         </div>
         <form onSubmit={handleLogin}>
           {error && <div className="pd-alert-danger">{error}</div>}
           <div className="pd-field">
-            <label htmlFor="login-email">Email</label>
+            <label htmlFor="login-email">{t('login.emailLabel')}</label>
             <input
               id="login-email"
               className="pd-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              placeholder={t('login.emailPlaceholder')}
               required
             />
           </div>
           <div className="pd-field">
             <div className="pd-field-label-row">
-              <label htmlFor="login-password">Password</label>
-              <Link to="/forgot-password">Forgot password?</Link>
+              <label htmlFor="login-password">{t('login.passwordLabel')}</label>
+              <Link to="/forgot-password">{t('login.forgotPassword')}</Link>
             </div>
             <input
               id="login-password"
@@ -69,12 +75,12 @@ export default function LoginPage() {
             />
           </div>
           <button type="submit" className="pd-btn pd-btn-primary pd-btn-block" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? t('login.signingIn') : t('login.signIn')}
           </button>
         </form>
         <div className="pd-auth-footer">
-          <p>Don't have an account? <Link to="/register">Sign up</Link></p>
-          <p className="pd-auth-support">Need help? <a href="mailto:support@praedium.pro">Contact support</a></p>
+          <p>{t('login.noAccount')} <Link to="/register">{t('login.signUp')}</Link></p>
+          <p className="pd-auth-support">{t('login.needHelp')} <a href="mailto:support@praedium.pro">{t('login.contactSupport')}</a></p>
         </div>
       </div>
     </div>

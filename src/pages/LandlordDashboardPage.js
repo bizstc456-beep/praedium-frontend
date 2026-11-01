@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import CountUp from '../components/CountUp';
@@ -23,8 +24,8 @@ function formatMoney(cents) {
   return formatDollars((cents || 0) / 100);
 }
 
-function shortName(fullName) {
-  if (!fullName) return 'A tenant';
+function shortName(fullName, fallback) {
+  if (!fullName) return fallback;
   const parts = fullName.trim().split(/\s+/);
   if (parts.length === 1) return parts[0];
   return `${parts[0]} ${parts[parts.length - 1][0]}.`;
@@ -53,6 +54,7 @@ function readOnboardingDismissed(userId) {
 }
 
 export default function LandlordDashboardPage() {
+  const { t } = useTranslation();
   const [summary, setSummary] = useState(null);
   const [properties, setProperties] = useState([]);
   const [renewalsSoon, setRenewalsSoon] = useState([]);
@@ -67,13 +69,14 @@ export default function LandlordDashboardPage() {
 
   useEffect(() => {
     loadDashboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadDashboard = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('dashboard.pleaseLogInAgain'));
         return;
       }
 
@@ -109,14 +112,14 @@ export default function LandlordDashboardPage() {
         .catch(() => { });
     } catch (err) {
       console.error('Error loading dashboard:', err);
-      setError('Could not load your dashboard. Please try again shortly.');
+      setError(t('dashboard.loadError'));
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return <div className="pd-state"><p>Loading your dashboard...</p></div>;
+    return <div className="pd-state"><p>{t('dashboard.loadingMessage')}</p></div>;
   }
 
   if (error) {
@@ -128,21 +131,26 @@ export default function LandlordDashboardPage() {
   const monthLabel = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   const tenantNameById = {};
-  tenants.forEach((t) => { tenantNameById[t.id] = t.name; });
+  tenants.forEach((tn) => { tenantNameById[tn.id] = tn.name; });
 
   const paymentActivity = payments
     .filter((p) => p.status === 'paid')
     .map((p) => ({
       key: `payment-${p.id}`,
       dot: 'good',
-      text: `${shortName(tenantNameById[p.tenant_id])} paid ${formatMoney(p.amount)}`,
+      text: t('dashboard.paymentActivityText', {
+        name: shortName(tenantNameById[p.tenant_id], t('dashboard.tenantFallback')),
+        amount: formatMoney(p.amount),
+      }),
       date: p.payment_date || p.created_at,
     }));
 
   const maintenanceActivity = maintenanceRequests.map((r) => ({
     key: `maint-${r.id}`,
     dot: 'accent',
-    text: `New maintenance request — ${r.properties?.address || 'a property'}`,
+    text: t('dashboard.maintenanceActivityText', {
+      address: r.properties?.address || t('dashboard.propertyFallback'),
+    }),
     date: r.created_at,
   }));
 
@@ -168,23 +176,23 @@ export default function LandlordDashboardPage() {
   const onboardingSteps = [
     {
       key: 'property',
-      label: 'Add your first property',
+      label: t('dashboard.onboardingAddProperty'),
       done: properties.length > 0,
-      cta: 'Add property',
+      cta: t('dashboard.onboardingAddPropertyCta'),
       to: '/properties?new=1',
     },
     {
       key: 'tenant',
-      label: 'Add your first tenant',
+      label: t('dashboard.onboardingAddTenant'),
       done: tenants.length > 0,
-      cta: 'Add tenant',
+      cta: t('dashboard.onboardingAddTenantCta'),
       to: '/properties',
     },
     {
       key: 'payment',
-      label: 'Record your first payment',
+      label: t('dashboard.onboardingRecordPayment'),
       done: (summary.total_collected_this_month || 0) > 0,
-      cta: 'Record payment',
+      cta: t('dashboard.onboardingRecordPaymentCta'),
       to: '/properties',
     },
   ];
@@ -208,14 +216,14 @@ export default function LandlordDashboardPage() {
             <div className="pd-onboarding pd-anim-in">
               <div className="pd-onboarding-head">
                 <div className="pd-onboarding-title">
-                  <span>Getting started</span>
-                  <span className="pd-onboarding-progress">{onboardingDoneCount} of {onboardingSteps.length}</span>
+                  <span>{t('dashboard.gettingStarted')}</span>
+                  <span className="pd-onboarding-progress">{t('dashboard.onboardingProgress', { done: onboardingDoneCount, total: onboardingSteps.length })}</span>
                 </div>
                 <button
                   type="button"
                   className="pd-onboarding-close"
                   onClick={dismissOnboarding}
-                  aria-label="Dismiss getting started checklist"
+                  aria-label={t('dashboard.dismissOnboardingAriaLabel')}
                 >
                   &times;
                 </button>
@@ -245,7 +253,7 @@ export default function LandlordDashboardPage() {
             </div>
           )}
 
-          <p className="pd-greet">Overview &middot; {monthLabel}</p>
+          <p className="pd-greet">{t('dashboard.greetOverview', { month: monthLabel })}</p>
 
           <div className="pd-hero">
             <span className="pd-hero-num">
@@ -254,17 +262,17 @@ export default function LandlordDashboardPage() {
                 format={(n) => formatDollars(n)}
               />
             </span>
-            <span className="pd-hero-label">collected this month</span>
+            <span className="pd-hero-label">{t('dashboard.collectedThisMonth')}</span>
           </div>
 
           <div className="pd-chips">
             <div className="pd-chip">
               <b><CountUp value={summary.total_properties} /></b>
-              <span>properties</span>
+              <span>{t('dashboard.chipProperties')}</span>
             </div>
             <div className="pd-chip">
               <b><CountUp value={summary.total_tenants} /></b>
-              <span>tenants</span>
+              <span>{t('dashboard.chipTenants')}</span>
             </div>
             <div className="pd-chip">
               <b>
@@ -273,17 +281,17 @@ export default function LandlordDashboardPage() {
                   format={(n) => formatDollars(n)}
                 />
               </b>
-              <span>pending</span>
+              <span>{t('dashboard.chipPending')}</span>
             </div>
           </div>
 
           {hasPending && (
             <div className="pd-banner">
               <div>
-                <div className="pd-banner-title">You have {formatMoney(summary.pending_amount)} pending this month</div>
-                <div className="pd-banner-sub">Check the properties below for who's behind, then follow up from Messages.</div>
+                <div className="pd-banner-title">{t('dashboard.bannerPendingTitle', { amount: formatMoney(summary.pending_amount) })}</div>
+                <div className="pd-banner-sub">{t('dashboard.bannerPendingSub')}</div>
               </div>
-              <Link to="/messages" className="pd-banner-btn">Go to Messages</Link>
+              <Link to="/messages" className="pd-banner-btn">{t('dashboard.goToMessages')}</Link>
             </div>
           )}
 
@@ -291,25 +299,24 @@ export default function LandlordDashboardPage() {
             <div className="pd-banner">
               <div>
                 <div className="pd-banner-title">
-                  {renewalsSoon.length === 1 ? 'A lease ends' : `${renewalsSoon.length} leases end`} within 90 days
+                  {t('dashboard.bannerRenewalTitle', { count: renewalsSoon.length })}
                 </div>
                 <div className="pd-banner-sub">
-                  {renewalsSoon.map((t) => t.name).join(', ')} &mdash; Quebec's TAL notice window is open, so send any
-                  rent-increase or non-renewal notice now.
+                  {t('dashboard.bannerRenewalSub', { names: renewalsSoon.map((tn) => tn.name).join(', ') })}
                 </div>
               </div>
-              <Link to="/properties" className="pd-banner-btn">Go to Properties</Link>
+              <Link to="/properties" className="pd-banner-btn">{t('dashboard.goToProperties')}</Link>
             </div>
           )}
 
           <div className="pd-page-header-row">
-            <h2 className="pd-section-title" style={{ margin: 0 }}>Your properties</h2>
-            <Link to="/properties" className="pd-btn pd-btn-secondary">Manage properties</Link>
+            <h2 className="pd-section-title" style={{ margin: 0 }}>{t('dashboard.yourPropertiesTitle')}</h2>
+            <Link to="/properties" className="pd-btn pd-btn-secondary">{t('dashboard.managePropertiesCta')}</Link>
           </div>
 
           {properties.length === 0 ? (
             <p className="pd-empty">
-              You haven't added any properties yet. <Link to="/properties">Add your first property</Link> to get started.
+              {t('dashboard.noPropertiesPrefix')} <Link to="/properties">{t('dashboard.noPropertiesLinkText')}</Link> {t('dashboard.noPropertiesSuffix')}
             </p>
           ) : (
             <div className="pd-plist">
@@ -320,12 +327,12 @@ export default function LandlordDashboardPage() {
                     <div>
                       <div className="pd-prow-addr">{p.address}</div>
                       <div className="pd-prow-city">
-                        {p.city}{unitCount ? ` · ${unitCount} unit${unitCount === 1 ? '' : 's'}` : ''}
+                        {p.city}{unitCount ? ` · ${t('dashboard.unitCount', { count: unitCount })}` : ''}
                       </div>
                     </div>
-                    <div className="pd-prow-rent">{formatMoney(p.collected_this_month + p.pending_amount)}/mo</div>
+                    <div className="pd-prow-rent">{t('dashboard.perMonth', { amount: formatMoney(p.collected_this_month + p.pending_amount) })}</div>
                     <span className={`pd-dot-status ${p.status === 'paid' ? 'good' : 'warn'}`}>
-                      {p.status === 'paid' ? 'Paid' : `${formatMoney(p.pending_amount)} pending`}
+                      {p.status === 'paid' ? t('dashboard.statusPaid') : t('dashboard.statusPendingAmount', { amount: formatMoney(p.pending_amount) })}
                     </span>
                   </div>
                 );
@@ -336,19 +343,19 @@ export default function LandlordDashboardPage() {
 
         <div className="pd-rail">
           <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '0ms' }}>
-            <div className="pd-rail-card-title">Quick actions</div>
+            <div className="pd-rail-card-title">{t('dashboard.quickActionsTitle')}</div>
             <div className="pd-quick-actions">
-              <Link to="/properties?new=1" className="pd-quick-action">+ Add property</Link>
-              <Link to="/properties" className="pd-quick-action">Record payment</Link>
-              <Link to="/properties" className="pd-quick-action">Invite tenant</Link>
-              <Link to="/reports?new=1" className="pd-quick-action">Log expense</Link>
+              <Link to="/properties?new=1" className="pd-quick-action">{t('dashboard.quickActionAddProperty')}</Link>
+              <Link to="/properties" className="pd-quick-action">{t('dashboard.quickActionRecordPayment')}</Link>
+              <Link to="/properties" className="pd-quick-action">{t('dashboard.quickActionInviteTenant')}</Link>
+              <Link to="/reports?new=1" className="pd-quick-action">{t('dashboard.quickActionLogExpense')}</Link>
             </div>
           </div>
 
           <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '70ms' }}>
-            <div className="pd-rail-card-title">Recent activity</div>
+            <div className="pd-rail-card-title">{t('dashboard.recentActivityTitle')}</div>
             {recentActivity.length === 0 ? (
-              <p className="pd-rail-empty">Nothing yet this month.</p>
+              <p className="pd-rail-empty">{t('dashboard.recentActivityEmpty')}</p>
             ) : (
               <div className="pd-activity-list">
                 {recentActivity.map((a) => (
@@ -364,22 +371,22 @@ export default function LandlordDashboardPage() {
 
           <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '140ms' }}>
             <div className="pd-rail-card-head">
-              <span className="pd-rail-card-title">Maintenance</span>
-              <Link to="/maintenance" className="pd-rail-view-all">View all</Link>
+              <span className="pd-rail-card-title">{t('dashboard.maintenanceTitle')}</span>
+              <Link to="/maintenance" className="pd-rail-view-all">{t('dashboard.viewAll')}</Link>
             </div>
             <div className="pd-rail-count">
               <b>{openMaintenance.length}</b>
-              <span>open request{openMaintenance.length === 1 ? '' : 's'}</span>
+              <span>{t('dashboard.openRequestsCount', { count: openMaintenance.length })}</span>
             </div>
             {maintenancePreview.length === 0 ? (
-              <p className="pd-rail-empty">Nothing open right now.</p>
+              <p className="pd-rail-empty">{t('dashboard.maintenanceEmptyNow')}</p>
             ) : (
               <div className="pd-rail-mini-list">
                 {maintenancePreview.map((r) => (
                   <div className="pd-rail-mini-row" key={r.id}>
                     <span>{r.title}{r.tenants?.unit_label ? ` — ${r.tenants.unit_label}` : ''}</span>
                     <span className={`pd-badge ${r.status === 'open' ? 'warn pd-badge-pulse' : 'neutral'}`}>
-                      {r.status === 'open' ? 'Open' : 'In progress'}
+                      {r.status === 'open' ? t('dashboard.maintenanceStatusOpen') : t('dashboard.maintenanceStatusInProgress')}
                     </span>
                   </div>
                 ))}
@@ -389,18 +396,18 @@ export default function LandlordDashboardPage() {
 
           <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '210ms' }}>
             <div className="pd-rail-card-head">
-              <span className="pd-rail-card-title">Lease renewals</span>
-              <Link to="/renewals" className="pd-rail-view-all">View all</Link>
+              <span className="pd-rail-card-title">{t('dashboard.leaseRenewalsTitle')}</span>
+              <Link to="/renewals" className="pd-rail-view-all">{t('dashboard.viewAll')}</Link>
             </div>
             {renewalPreview.length === 0 ? (
-              <p className="pd-rail-empty">No renewal windows open right now.</p>
+              <p className="pd-rail-empty">{t('dashboard.leaseRenewalsEmpty')}</p>
             ) : (
               <div className="pd-rail-mini-list">
                 {renewalPreview.map((r) => (
                   <div className="pd-rail-mini-row" key={r.tenant_id}>
-                    <span>{shortName(r.tenant_name)} &mdash; ends {shortDate(r.lease_end_date)}</span>
+                    <span>{t('dashboard.leaseRenewalRow', { name: shortName(r.tenant_name, t('dashboard.tenantFallback')), date: shortDate(r.lease_end_date) })}</span>
                     <span className={`pd-badge ${r.status === 'in_window' ? 'warn' : 'muted'}`}>
-                      {r.status === 'in_window' ? 'Window open' : 'Upcoming'}
+                      {r.status === 'in_window' ? t('dashboard.renewalStatusWindowOpen') : t('dashboard.renewalStatusUpcoming')}
                     </span>
                   </div>
                 ))}

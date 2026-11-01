@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 
@@ -9,22 +10,22 @@ const supabase = createClient(
 );
 
 const STATUSES = [
-  { value: 'open', label: 'Open', badge: 'warn' },
-  { value: 'in_progress', label: 'In progress', badge: 'neutral' },
-  { value: 'resolved', label: 'Resolved', badge: 'good' },
+  { value: 'open', badge: 'warn' },
+  { value: 'in_progress', badge: 'neutral' },
+  { value: 'resolved', badge: 'good' },
 ];
 
 // Keep in sync with VENDOR_TRADES in the backend.
 const VENDOR_TRADES = [
-  { value: 'general', label: 'General maintenance' },
-  { value: 'plumbing', label: 'Plumbing' },
-  { value: 'electrical', label: 'Electrical' },
-  { value: 'hvac', label: 'HVAC' },
-  { value: 'cleaning', label: 'Cleaning' },
-  { value: 'landscaping', label: 'Landscaping' },
-  { value: 'pest_control', label: 'Pest control' },
-  { value: 'locksmith', label: 'Locksmith' },
-  { value: 'other', label: 'Other' },
+  'general',
+  'plumbing',
+  'electrical',
+  'hvac',
+  'cleaning',
+  'landscaping',
+  'pest_control',
+  'locksmith',
+  'other',
 ];
 
 const EMPTY_VENDOR = { trade: 'general', name: '', phone: '', email: '' };
@@ -33,8 +34,9 @@ function statusMeta(value) {
   return STATUSES.find((s) => s.value === value) || STATUSES[0];
 }
 
-function tradeLabel(value) {
-  return VENDOR_TRADES.find((t) => t.value === value)?.label || 'General maintenance';
+function tradeLabel(value, t) {
+  const trade = VENDOR_TRADES.includes(value) ? value : 'general';
+  return t(`maintenance.trade.${trade}`);
 }
 
 function formatDate(value) {
@@ -81,6 +83,7 @@ function TrashIcon() {
 }
 
 export default function MaintenancePage() {
+  const { t } = useTranslation();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -99,7 +102,7 @@ export default function MaintenancePage() {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('maintenance.pleaseLogInAgain'));
         return;
       }
       const res = await fetch(
@@ -107,14 +110,15 @@ export default function MaintenancePage() {
         { headers: { Authorization: `Bearer ${session.access_token}` } }
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to load maintenance requests');
+      if (!res.ok) throw new Error(data.error || t('maintenance.loadRequestsFailed'));
       setRequests(data.requests || []);
     } catch (err) {
       console.error('Error loading maintenance requests:', err);
-      setError('Could not load maintenance requests. Please try again shortly.');
+      setError(t('maintenance.loadRequestsError'));
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadVendors = useCallback(async () => {
@@ -126,14 +130,15 @@ export default function MaintenancePage() {
         { headers: { Authorization: `Bearer ${session.access_token}` } }
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to load vendors');
+      if (!res.ok) throw new Error(data.error || t('maintenance.loadVendorsFailed'));
       setVendors(data.vendors || []);
     } catch (err) {
       console.error('Error loading vendors:', err);
-      setVendorError('Could not load your vendors. Please try again shortly.');
+      setVendorError(t('maintenance.loadVendorsError'));
     } finally {
       setVendorsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -147,7 +152,7 @@ export default function MaintenancePage() {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('maintenance.pleaseLogInAgain'));
         return;
       }
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/maintenance/${request.id}`, {
@@ -159,10 +164,10 @@ export default function MaintenancePage() {
         body: JSON.stringify({ status }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to update request');
+      if (!res.ok) throw new Error(data.error || t('maintenance.updateRequestFailed'));
       setRequests((prev) => prev.map((r) => (r.id === request.id ? { ...r, status } : r)));
     } catch (err) {
-      setError(err.message || 'Failed to update request.');
+      setError(err.message || t('maintenance.updateRequestError'));
     } finally {
       setUpdatingId(null);
     }
@@ -193,11 +198,11 @@ export default function MaintenancePage() {
     setVendorError('');
 
     if (!vendorForm.name.trim()) {
-      setVendorError('Enter a name.');
+      setVendorError(t('maintenance.enterName'));
       return;
     }
     if (!vendorForm.phone.trim()) {
-      setVendorError('Enter a phone number.');
+      setVendorError(t('maintenance.enterPhone'));
       return;
     }
 
@@ -205,7 +210,7 @@ export default function MaintenancePage() {
     try {
       const session = await getSession();
       if (!session) {
-        setVendorError('Please log in again.');
+        setVendorError(t('maintenance.pleaseLogInAgain'));
         return;
       }
       const url = editingVendorId
@@ -220,23 +225,23 @@ export default function MaintenancePage() {
         body: JSON.stringify(vendorForm),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to save vendor');
+      if (!res.ok) throw new Error(data.error || t('maintenance.saveVendorFailed'));
       closeVendorForm();
       await loadVendors();
     } catch (err) {
-      setVendorError(err.message || 'Failed to save vendor.');
+      setVendorError(err.message || t('maintenance.saveVendorError'));
     } finally {
       setSavingVendor(false);
     }
   };
 
   const deleteVendor = async (vendor) => {
-    if (!window.confirm(`Remove ${vendor.name} from your vendors?`)) return;
+    if (!window.confirm(t('maintenance.confirmRemoveVendor', { name: vendor.name }))) return;
     setVendorError('');
     try {
       const session = await getSession();
       if (!session) {
-        setVendorError('Please log in again.');
+        setVendorError(t('maintenance.pleaseLogInAgain'));
         return;
       }
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/vendors/${vendor.id}`, {
@@ -244,10 +249,10 @@ export default function MaintenancePage() {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to delete vendor');
+      if (!res.ok) throw new Error(data.error || t('maintenance.deleteVendorFailed'));
       await loadVendors();
     } catch (err) {
-      setVendorError(err.message || 'Failed to delete vendor.');
+      setVendorError(err.message || t('maintenance.deleteVendorError'));
     }
   };
 
@@ -258,17 +263,17 @@ export default function MaintenancePage() {
   const vendorsPanel = (
     <div className="pd-card pd-vend-card">
       <div className="pd-vend-head">
-        <div className="pd-vend-title">Your vendors</div>
-        <p className="pd-vend-sub">Your go-to people for maintenance jobs — one tap away when a request comes in.</p>
+        <div className="pd-vend-title">{t('maintenance.yourVendorsTitle')}</div>
+        <p className="pd-vend-sub">{t('maintenance.yourVendorsSub')}</p>
       </div>
 
       {vendorError && <div className="pd-alert-danger" style={{ marginBottom: 12 }}>{vendorError}</div>}
 
       {vendorsLoading ? (
-        <p className="pd-empty" style={{ padding: '12px 0' }}>Loading...</p>
+        <p className="pd-empty" style={{ padding: '12px 0' }}>{t('maintenance.loading')}</p>
       ) : vendors.length === 0 && !vendorFormOpen ? (
         <p className="pd-empty" style={{ padding: '12px 0' }}>
-          No vendors added yet. Add your go-to plumber, electrician, or cleaner so they're one tap away.
+          {t('maintenance.noVendorsYet')}
         </p>
       ) : (
         <div className="pd-vend-list">
@@ -277,7 +282,7 @@ export default function MaintenancePage() {
               <div className="pd-vend-row-main">
                 <div className="pd-vend-row-top">
                   <span className="pd-vend-name">{v.name}</span>
-                  <span className="pd-badge neutral pd-vend-tag">{tradeLabel(v.trade)}</span>
+                  <span className="pd-badge neutral pd-vend-tag">{tradeLabel(v.trade, t)}</span>
                 </div>
                 <div className="pd-vend-contact">
                   <span><PhoneIcon /> {v.phone}</span>
@@ -289,8 +294,8 @@ export default function MaintenancePage() {
                   type="button"
                   className="pd-vend-icon-btn"
                   onClick={() => openEditVendor(v)}
-                  title="Edit vendor"
-                  aria-label={`Edit ${v.name}`}
+                  title={t('maintenance.editVendorTitle')}
+                  aria-label={t('maintenance.editVendorAria', { name: v.name })}
                 >
                   <PencilIcon />
                 </button>
@@ -298,8 +303,8 @@ export default function MaintenancePage() {
                   type="button"
                   className="pd-vend-icon-btn danger"
                   onClick={() => deleteVendor(v)}
-                  title="Remove vendor"
-                  aria-label={`Remove ${v.name}`}
+                  title={t('maintenance.removeVendorTitle')}
+                  aria-label={t('maintenance.removeVendorAria', { name: v.name })}
                 >
                   <TrashIcon />
                 </button>
@@ -312,55 +317,55 @@ export default function MaintenancePage() {
       {vendorFormOpen ? (
         <form className="pd-vend-form" onSubmit={submitVendor}>
           <div className="pd-field">
-            <label htmlFor="vend-trade">Type of work</label>
+            <label htmlFor="vend-trade">{t('maintenance.typeOfWork')}</label>
             <select
               id="vend-trade"
               className="pd-select"
               value={vendorForm.trade}
               onChange={(e) => setVendorForm({ ...vendorForm, trade: e.target.value })}
             >
-              {VENDOR_TRADES.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
+              {VENDOR_TRADES.map((trade) => (
+                <option key={trade} value={trade}>{t(`maintenance.trade.${trade}`)}</option>
               ))}
             </select>
           </div>
           <div className="pd-field">
-            <label htmlFor="vend-name">Name</label>
+            <label htmlFor="vend-name">{t('maintenance.nameLabel')}</label>
             <input
               id="vend-name"
               className="pd-input"
               value={vendorForm.name}
               onChange={(e) => setVendorForm({ ...vendorForm, name: e.target.value })}
-              placeholder="Mike Tremblay"
+              placeholder={t('maintenance.namePlaceholder')}
             />
           </div>
           <div className="pd-field">
-            <label htmlFor="vend-phone">Phone</label>
+            <label htmlFor="vend-phone">{t('maintenance.phoneLabel')}</label>
             <input
               id="vend-phone"
               className="pd-input"
               value={vendorForm.phone}
               onChange={(e) => setVendorForm({ ...vendorForm, phone: e.target.value })}
-              placeholder="(514) 555-0142"
+              placeholder={t('maintenance.phonePlaceholder')}
             />
           </div>
           <div className="pd-field" style={{ marginBottom: 14 }}>
-            <label htmlFor="vend-email">Email (optional)</label>
+            <label htmlFor="vend-email">{t('maintenance.emailOptionalLabel')}</label>
             <input
               id="vend-email"
               className="pd-input"
               type="email"
               value={vendorForm.email}
               onChange={(e) => setVendorForm({ ...vendorForm, email: e.target.value })}
-              placeholder="mike@email.com"
+              placeholder={t('maintenance.emailPlaceholder')}
             />
           </div>
           <div className="pd-actions">
             <button type="button" className="pd-btn pd-btn-secondary" onClick={closeVendorForm} disabled={savingVendor}>
-              Cancel
+              {t('maintenance.cancel')}
             </button>
             <button type="submit" className="pd-btn pd-btn-primary" disabled={savingVendor}>
-              {savingVendor ? 'Saving...' : editingVendorId ? 'Update vendor' : 'Save vendor'}
+              {savingVendor ? t('maintenance.saving') : editingVendorId ? t('maintenance.updateVendor') : t('maintenance.saveVendor')}
             </button>
           </div>
         </form>
@@ -371,7 +376,7 @@ export default function MaintenancePage() {
           onClick={openAddVendor}
           style={{ marginTop: vendors.length ? 14 : 0 }}
         >
-          + Add a vendor
+          {t('maintenance.addVendor')}
         </button>
       )}
     </div>
@@ -381,10 +386,10 @@ export default function MaintenancePage() {
     return (
       <AppShell active="maintenance" wide>
         <div className="pd-page-header">
-          <h1>Maintenance</h1>
-          <p>Requests your tenants have submitted through their portal</p>
+          <h1>{t('maintenance.pageTitle')}</h1>
+          <p>{t('maintenance.pageSubtitle')}</p>
         </div>
-        <p className="pd-empty">Loading...</p>
+        <p className="pd-empty">{t('maintenance.loading')}</p>
       </AppShell>
     );
   }
@@ -392,8 +397,8 @@ export default function MaintenancePage() {
   return (
     <AppShell active="maintenance" wide>
       <div className="pd-page-header">
-        <h1>Maintenance</h1>
-        <p>Requests your tenants have submitted through their portal</p>
+        <h1>{t('maintenance.pageTitle')}</h1>
+        <p>{t('maintenance.pageSubtitle')}</p>
       </div>
 
       {error && <div className="pd-alert-danger">{error}</div>}
@@ -406,13 +411,13 @@ export default function MaintenancePage() {
                 className={`pd-btn ${filter === 'open' ? 'pd-btn-primary' : 'pd-btn-secondary'}`}
                 onClick={() => setFilter('open')}
               >
-                Open &amp; in progress
+                {t('maintenance.openInProgress')}
               </button>
               <button
                 className={`pd-btn ${filter === 'all' ? 'pd-btn-primary' : 'pd-btn-secondary'}`}
                 onClick={() => setFilter('all')}
               >
-                All requests
+                {t('maintenance.allRequests')}
               </button>
             </div>
           </div>
@@ -420,20 +425,20 @@ export default function MaintenancePage() {
           {visibleRequests.length === 0 ? (
             <p className="pd-empty">
               {requests.length === 0
-                ? 'No maintenance requests yet. Once you invite tenants to their portal, requests they submit will show up here.'
-                : 'Nothing open right now.'}
+                ? t('maintenance.noRequestsYet')
+                : t('maintenance.nothingOpen')}
             </p>
           ) : (
             <div className="pd-table-wrap">
               <table className="pd-table">
                 <thead>
                   <tr>
-                    <th>Property</th>
-                    <th>Tenant</th>
-                    <th>Request</th>
-                    <th>Photo</th>
-                    <th>Submitted</th>
-                    <th>Status</th>
+                    <th>{t('maintenance.tableProperty')}</th>
+                    <th>{t('maintenance.tableTenant')}</th>
+                    <th>{t('maintenance.tableRequest')}</th>
+                    <th>{t('maintenance.tablePhoto')}</th>
+                    <th>{t('maintenance.tableSubmitted')}</th>
+                    <th>{t('maintenance.tableStatus')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -457,7 +462,7 @@ export default function MaintenancePage() {
                             <a href={r.photo_url} target="_blank" rel="noopener noreferrer">
                               <img
                                 src={r.photo_url}
-                                alt="Maintenance issue"
+                                alt={t('maintenance.maintenanceIssueAlt')}
                                 style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }}
                               />
                             </a>
@@ -468,7 +473,7 @@ export default function MaintenancePage() {
                         <td>{formatDate(r.created_at)}</td>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <span className={`pd-badge ${meta.badge}`} style={{ minWidth: 92, textAlign: 'center' }}>{meta.label}</span>
+                            <span className={`pd-badge ${meta.badge}`} style={{ minWidth: 92, textAlign: 'center' }}>{t(`maintenance.status.${meta.value}`)}</span>
                             <select
                               className="pd-select"
                               style={{ width: 140, padding: '4px 28px 4px 8px', fontSize: 12.5 }}
@@ -477,7 +482,7 @@ export default function MaintenancePage() {
                               onChange={(e) => updateStatus(r, e.target.value)}
                             >
                               {STATUSES.map((s) => (
-                                <option key={s.value} value={s.value}>{s.label}</option>
+                                <option key={s.value} value={s.value}>{t(`maintenance.status.${s.value}`)}</option>
                               ))}
                             </select>
                           </div>

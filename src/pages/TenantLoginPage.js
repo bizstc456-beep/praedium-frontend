@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../components/LanguageToggle';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -10,6 +12,7 @@ const supabase = createClient(
 );
 
 export default function TenantLoginPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,7 +28,7 @@ export default function TenantLoginPage() {
       if (error) setError(error.message);
       else navigate('/tenant');
     } catch (err) {
-      setError('An error occurred');
+      setError(t('tenantLogin.genericError'));
     } finally {
       setLoading(false);
     }
@@ -34,29 +37,32 @@ export default function TenantLoginPage() {
   return (
     <div className="pd-auth-page">
       <div className="pd-auth-card">
-        <div className="pd-auth-brand">Praedium</div>
+        <div className="pd-auth-top-row">
+          <div className="pd-auth-brand">Praedium</div>
+          <LanguageToggle />
+        </div>
         <div className="pd-auth-header">
-          <h1>Tenant portal</h1>
-          <p>Sign in to view your lease and submit maintenance requests.</p>
+          <h1>{t('tenantLogin.title')}</h1>
+          <p>{t('tenantLogin.subtitle')}</p>
         </div>
         <form onSubmit={handleLogin}>
           {error && <div className="pd-alert-danger">{error}</div>}
           <div className="pd-field">
-            <label htmlFor="tenant-login-email">Email</label>
+            <label htmlFor="tenant-login-email">{t('tenantLogin.emailLabel')}</label>
             <input
               id="tenant-login-email"
               className="pd-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              placeholder={t('tenantLogin.emailPlaceholder')}
               required
             />
           </div>
           <div className="pd-field">
             <div className="pd-field-label-row">
-              <label htmlFor="tenant-login-password">Password</label>
-              <Link to="/forgot-password">Forgot password?</Link>
+              <label htmlFor="tenant-login-password">{t('tenantLogin.passwordLabel')}</label>
+              <Link to="/forgot-password">{t('tenantLogin.forgotPassword')}</Link>
             </div>
             <input
               id="tenant-login-password"
@@ -69,12 +75,12 @@ export default function TenantLoginPage() {
             />
           </div>
           <button type="submit" className="pd-btn pd-btn-primary pd-btn-block" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? t('tenantLogin.signingIn') : t('tenantLogin.signIn')}
           </button>
         </form>
         <div className="pd-auth-footer">
-          <p>New here? Use the invite link your landlord emailed you to set up your account.</p>
-          <p className="pd-auth-support">Need help? <a href="mailto:support@praedium.pro">Contact support</a></p>
+          <p>{t('tenantLogin.newHere')}</p>
+          <p className="pd-auth-support">{t('tenantLogin.needHelp')} <a href="mailto:support@praedium.pro">{t('tenantLogin.contactSupport')}</a></p>
         </div>
       </div>
     </div>

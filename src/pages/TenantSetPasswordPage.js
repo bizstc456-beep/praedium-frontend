@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../components/LanguageToggle';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -15,6 +17,7 @@ const supabase = createClient(
 // the "set a password" form and call updateUser(). Same pattern as the
 // landlord ResetPasswordPage, extended to cover both event names.
 export default function TenantSetPasswordPage() {
+  const { t } = useTranslation();
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -39,11 +42,11 @@ export default function TenantSetPasswordPage() {
     e.preventDefault();
     setError('');
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('tenantSetPassword.passwordTooShort'));
       return;
     }
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('tenantSetPassword.passwordsDontMatch'));
       return;
     }
     setLoading(true);
@@ -55,7 +58,7 @@ export default function TenantSetPasswordPage() {
         setTimeout(() => navigate('/tenant'), 2000);
       }
     } catch (err) {
-      setError('An error occurred');
+      setError(t('tenantSetPassword.genericError'));
     } finally {
       setLoading(false);
     }
@@ -64,19 +67,22 @@ export default function TenantSetPasswordPage() {
   return (
     <div className="pd-auth-page">
       <div className="pd-auth-card">
-        <div className="pd-auth-brand">Praedium</div>
+        <div className="pd-auth-top-row">
+          <div className="pd-auth-brand">Praedium</div>
+          <LanguageToggle />
+        </div>
         <div className="pd-auth-header">
-          <h1>Set up your portal login</h1>
-          <p>Choose a password to access your tenant portal.</p>
+          <h1>{t('tenantSetPassword.title')}</h1>
+          <p>{t('tenantSetPassword.subtitle')}</p>
         </div>
 
         {success ? (
-          <div className="pd-auth-footer">Password set — taking you to your portal...</div>
+          <div className="pd-auth-footer">{t('tenantSetPassword.successMessage')}</div>
         ) : ready ? (
           <form onSubmit={handleSetPassword}>
             {error && <div className="pd-alert-danger">{error}</div>}
             <div className="pd-field">
-              <label htmlFor="tenant-set-password-new">New password</label>
+              <label htmlFor="tenant-set-password-new">{t('tenantSetPassword.newPasswordLabel')}</label>
               <input
                 id="tenant-set-password-new"
                 className="pd-input"
@@ -89,7 +95,7 @@ export default function TenantSetPasswordPage() {
               />
             </div>
             <div className="pd-field">
-              <label htmlFor="tenant-set-password-confirm">Confirm password</label>
+              <label htmlFor="tenant-set-password-confirm">{t('tenantSetPassword.confirmPasswordLabel')}</label>
               <input
                 id="tenant-set-password-confirm"
                 className="pd-input"
@@ -102,17 +108,17 @@ export default function TenantSetPasswordPage() {
               />
             </div>
             <button type="submit" className="pd-btn pd-btn-primary pd-btn-block" disabled={loading}>
-              {loading ? 'Saving...' : 'Set password & continue'}
+              {loading ? t('tenantSetPassword.saving') : t('tenantSetPassword.setPasswordAndContinue')}
             </button>
           </form>
         ) : (
           <div>
             <div className="pd-alert-danger">
-              This invite link is invalid or has expired.
+              {t('tenantSetPassword.linkInvalid')}
             </div>
             <div className="pd-auth-footer">
-              <p>Ask your landlord to resend your portal invite.</p>
-              <p><Link to="/tenant/login">Back to sign in</Link></p>
+              <p>{t('tenantSetPassword.askLandlordToResend')}</p>
+              <p><Link to="/tenant/login">{t('tenantSetPassword.backToSignIn')}</Link></p>
             </div>
           </div>
         )}

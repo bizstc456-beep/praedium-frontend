@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 
@@ -8,18 +9,18 @@ const supabase = createClient(
   { auth: { storageKey: 'pd-landlord-auth' } }
 );
 
-const CATEGORY_LABELS = {
-  repairs: 'Repairs & maintenance',
-  insurance: 'Insurance',
-  taxes: 'Property taxes',
-  mortgage: 'Mortgage',
-  utilities: 'Utilities',
-  management: 'Management',
-  other: 'Other',
+const CATEGORY_KEYS = {
+  repairs: 'categoryRepairs',
+  insurance: 'categoryInsurance',
+  taxes: 'categoryTaxes',
+  mortgage: 'categoryMortgage',
+  utilities: 'categoryUtilities',
+  management: 'categoryManagement',
+  other: 'categoryOther',
 };
 
-function categoryLabel(value) {
-  return CATEGORY_LABELS[value] || 'Other';
+function categoryLabel(value, t) {
+  return t(`insights.${CATEGORY_KEYS[value] || 'categoryOther'}`);
 }
 
 function categoryBadgeClass(value) {
@@ -90,6 +91,7 @@ const RIGHT_PAD = 20;
 const BAR_W = 20;
 
 export default function InsightsPage() {
+  const { t } = useTranslation();
   const [summary, setSummary] = useState(null);
   const [cashFlow, setCashFlow] = useState([]);
   const [expensesByCategory, setExpensesByCategory] = useState([]);
@@ -103,7 +105,7 @@ export default function InsightsPage() {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('insights.pleaseLogInAgain'));
         setLoading(false);
         return;
       }
@@ -112,17 +114,18 @@ export default function InsightsPage() {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to load insights');
+      if (!res.ok) throw new Error(data.error || t('insights.loadFailed'));
 
       setSummary(data.summary);
       setCashFlow(data.cash_flow || []);
       setExpensesByCategory(data.expenses_by_category || []);
       setProperties(data.properties || []);
     } catch (err) {
-      setError(err.message || 'Failed to load insights');
+      setError(err.message || t('insights.loadFailed'));
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -132,7 +135,7 @@ export default function InsightsPage() {
   if (loading) {
     return (
       <AppShell active="insights" wide>
-        <div className="pd-ins-loading">Loading insights&hellip;</div>
+        <div className="pd-ins-loading">{t('insights.loading')}</div>
       </AppShell>
     );
   }
@@ -149,8 +152,8 @@ export default function InsightsPage() {
     return (
       <AppShell active="insights" wide>
         <div className="pd-ins-empty">
-          <div className="pd-ins-empty-title">No portfolio data yet</div>
-          <div className="pd-ins-empty-sub">Add your first property to start tracking cash flow and occupancy here.</div>
+          <div className="pd-ins-empty-title">{t('insights.emptyTitle')}</div>
+          <div className="pd-ins-empty-sub">{t('insights.emptySub')}</div>
         </div>
       </AppShell>
     );
@@ -199,16 +202,19 @@ export default function InsightsPage() {
 
   const netChangeLabel = summary.net_change_pct === null
     ? null
-    : `${summary.net_change_pct >= 0 ? '▲' : '▼'} ${Math.abs(summary.net_change_pct)}% vs last month`;
+    : t('insights.vsLastMonth', {
+        arrow: summary.net_change_pct >= 0 ? '▲' : '▼',
+        pct: Math.abs(summary.net_change_pct),
+      });
 
   return (
     <AppShell active="insights" wide>
       <div className="pd-ins">
         <div className="pd-ins-header">
           <div>
-            <div className="pd-ins-eyebrow">Portfolio performance</div>
-            <div className="pd-ins-title">Insights</div>
-            <div className="pd-ins-sub">Cash flow and occupancy across your {properties.length} propert{properties.length === 1 ? 'y' : 'ies'}.</div>
+            <div className="pd-ins-eyebrow">{t('insights.eyebrow')}</div>
+            <div className="pd-ins-title">{t('insights.title')}</div>
+            <div className="pd-ins-sub">{t('insights.subtitle', { count: properties.length })}</div>
           </div>
         </div>
 
@@ -218,33 +224,33 @@ export default function InsightsPage() {
 
             <div className="pd-ins-kpis">
               <div className="pd-card pd-ins-kpi">
-                <div className="pd-ins-kpi-label">Net cash flow &middot; this month</div>
+                <div className="pd-ins-kpi-label">{t('insights.netCashFlowLabel')}</div>
                 <div className="pd-ins-kpi-value">{formatMoney(summary.net_cash_flow)}</div>
                 {netChangeLabel && (
                   <div className={`pd-ins-kpi-delta ${summary.net_change_pct >= 0 ? 'good' : 'warn'}`}>{netChangeLabel}</div>
                 )}
               </div>
               <div className="pd-card pd-ins-kpi">
-                <div className="pd-ins-kpi-label">Portfolio occupancy</div>
+                <div className="pd-ins-kpi-label">{t('insights.portfolioOccupancy')}</div>
                 <div className="pd-ins-kpi-value">{summary.occupancy_pct}%</div>
                 <div className="pd-ins-meter"><span style={{ width: `${summary.occupancy_pct}%` }} /></div>
-                <div className="pd-ins-kpi-note">{summary.occupancy_occupied} of {summary.occupancy_units} units</div>
+                <div className="pd-ins-kpi-note">{t('insights.unitsOfUnits', { occupied: summary.occupancy_occupied, total: summary.occupancy_units })}</div>
               </div>
               <div className="pd-card pd-ins-kpi">
-                <div className="pd-ins-kpi-label">Est. vacancy loss</div>
-                <div className="pd-ins-kpi-value warn">{formatMoney(summary.vacancy_loss)}<span className="pd-ins-kpi-unit">/mo</span></div>
-                <div className="pd-ins-kpi-note">{summary.occupancy_units - summary.occupancy_occupied} vacant unit{(summary.occupancy_units - summary.occupancy_occupied) === 1 ? '' : 's'}</div>
+                <div className="pd-ins-kpi-label">{t('insights.estVacancyLoss')}</div>
+                <div className="pd-ins-kpi-value warn">{formatMoney(summary.vacancy_loss)}<span className="pd-ins-kpi-unit">{t('insights.perMonth')}</span></div>
+                <div className="pd-ins-kpi-note">{t('insights.vacantUnitsCount', { count: summary.occupancy_units - summary.occupancy_occupied })}</div>
               </div>
               <div className="pd-card pd-ins-kpi">
-                <div className="pd-ins-kpi-label">Avg rent / occupied unit</div>
+                <div className="pd-ins-kpi-label">{t('insights.avgRentPerUnit')}</div>
                 <div className="pd-ins-kpi-value">{formatMoney(summary.avg_rent_per_unit)}</div>
-                <div className="pd-ins-kpi-note">across {summary.occupancy_occupied} lease{summary.occupancy_occupied === 1 ? '' : 's'}</div>
+                <div className="pd-ins-kpi-note">{t('insights.acrossLeases', { count: summary.occupancy_occupied })}</div>
               </div>
             </div>
 
             <div className="pd-card pd-ins-chart-card">
               <div className="pd-ins-chart-head">
-                <div className="pd-ins-chart-title">Cash flow</div>
+                <div className="pd-ins-chart-title">{t('insights.cashFlowTitle')}</div>
                 <div className="pd-ins-chart-controls">
                   <div className="pd-ins-range-toggle">
                     {[3, 6, 12].map((n) => (
@@ -254,24 +260,24 @@ export default function InsightsPage() {
                         className={`pd-ins-range-btn${rangeMonths === n ? ' active' : ''}`}
                         onClick={() => setRangeMonths(n)}
                       >
-                        {n}mo
+                        {t('insights.monthsAbbrev', { n })}
                       </button>
                     ))}
                   </div>
                   <div className="pd-ins-legend">
-                    <span className="pd-ins-legend-item"><span className="pd-ins-swatch income" />Income</span>
-                    <span className="pd-ins-legend-item"><span className="pd-ins-swatch expense" />Expenses</span>
+                    <span className="pd-ins-legend-item"><span className="pd-ins-swatch income" />{t('insights.legendIncome')}</span>
+                    <span className="pd-ins-legend-item"><span className="pd-ins-swatch expense" />{t('insights.legendExpenses')}</span>
                   </div>
                 </div>
               </div>
 
               <svg viewBox={`0 0 ${VIEW_W} 214`} className="pd-ins-svg">
-                {ticks.map((t) => {
-                  const y = BASELINE_Y - (t / chartMax) * PLOT_H;
+                {ticks.map((tick) => {
+                  const y = BASELINE_Y - (tick / chartMax) * PLOT_H;
                   return (
-                    <g key={t}>
+                    <g key={tick}>
                       <line x1={LEFT_PAD} y1={y} x2={VIEW_W - RIGHT_PAD} y2={y} className="pd-ins-gridline" />
-                      <text x={LEFT_PAD - 6} y={y + 3} textAnchor="end" className="pd-ins-axis-label">{formatCompact(t)}</text>
+                      <text x={LEFT_PAD - 6} y={y + 3} textAnchor="end" className="pd-ins-axis-label">{formatCompact(tick)}</text>
                     </g>
                   );
                 })}
@@ -313,17 +319,17 @@ export default function InsightsPage() {
                   style={{ left: `${(activeMonth.center / VIEW_W) * 100}%` }}
                 >
                   <div className="pd-ins-tooltip-title">{activeMonth.label} 2026</div>
-                  <div className="pd-ins-tooltip-row income">Income <b>{formatMoney(activeMonth.income)}</b></div>
-                  <div className="pd-ins-tooltip-row expense">Expenses <b>{formatMoney(activeMonth.expenses)}</b></div>
-                  <div className="pd-ins-tooltip-row">Net <b>{formatMoney(activeMonth.net)}</b></div>
+                  <div className="pd-ins-tooltip-row income">{t('insights.tooltipIncome')} <b>{formatMoney(activeMonth.income)}</b></div>
+                  <div className="pd-ins-tooltip-row expense">{t('insights.tooltipExpenses')} <b>{formatMoney(activeMonth.expenses)}</b></div>
+                  <div className="pd-ins-tooltip-row">{t('insights.tooltipNet')} <b>{formatMoney(activeMonth.net)}</b></div>
                 </div>
               )}
             </div>
 
             <div className="pd-card pd-ins-table-card">
-              <div className="pd-ins-chart-title">Property performance</div>
+              <div className="pd-ins-chart-title">{t('insights.propertyPerformanceTitle')}</div>
               <div className="pd-ins-table-head">
-                <span>Property</span><span>Occupancy</span><span className="pd-ins-num">Income /mo</span><span className="pd-ins-num">Status</span>
+                <span>{t('insights.tableHeadProperty')}</span><span>{t('insights.tableHeadOccupancy')}</span><span className="pd-ins-num">{t('insights.tableHeadIncomePerMonth')}</span><span className="pd-ins-num">{t('insights.tableHeadStatus')}</span>
               </div>
               {sortedProperties.map((p) => {
                 const pct = p.units > 0 ? Math.round((p.occupied / p.units) * 100) : 0;
@@ -336,7 +342,7 @@ export default function InsightsPage() {
                     </span>
                     <span className="pd-ins-num pd-ins-income-cell">{formatMoney(p.income)}</span>
                     <span className={`pd-ins-num pd-ins-status ${p.vacant === 0 ? 'good' : 'warn'}`}>
-                      {p.vacant === 0 ? '✓ Full' : `${p.vacant} vacant`}
+                      {p.vacant === 0 ? t('insights.statusFull') : t('insights.vacantCount', { count: p.vacant })}
                     </span>
                   </div>
                 );
@@ -348,27 +354,27 @@ export default function InsightsPage() {
           <div className="pd-ins-rail">
             {topPerformer && (
               <div className="pd-card pd-ins-top-performer">
-                <div className="pd-ins-rail-label">Top performer</div>
+                <div className="pd-ins-rail-label">{t('insights.topPerformerLabel')}</div>
                 <div className="pd-ins-top-name">{topPerformer.address}</div>
                 <div className="pd-ins-top-row">
                   <span className={`pd-ins-badge ${topPerformer.vacant === 0 ? 'good' : 'warn'}`}>
-                    {topPerformer.vacant === 0 ? '✓ Fully occupied' : `${topPerformer.vacant} vacant`}
+                    {topPerformer.vacant === 0 ? t('insights.fullyOccupied') : t('insights.vacantCount', { count: topPerformer.vacant })}
                   </span>
-                  <span className="pd-ins-top-income">{formatMoney(topPerformer.income)}/mo</span>
+                  <span className="pd-ins-top-income">{formatMoney(topPerformer.income)}{t('insights.perMonth')}</span>
                 </div>
               </div>
             )}
 
             <div className="pd-card pd-ins-rail-card">
               <div className="pd-ins-rail-head">
-                <div className="pd-ins-rail-title">Expenses by category</div>
-                <span className="pd-ins-rail-tag">6 mo</span>
+                <div className="pd-ins-rail-title">{t('insights.expensesByCategoryTitle')}</div>
+                <span className="pd-ins-rail-tag">{t('insights.sixMonths')}</span>
               </div>
-              {sortedCategories.length === 0 && <div className="pd-rail-empty">No expenses logged yet</div>}
+              {sortedCategories.length === 0 && <div className="pd-rail-empty">{t('insights.noExpensesLogged')}</div>}
               {sortedCategories.map((c) => (
                 <div className="pd-ins-cat-row" key={c.category}>
                   <div className="pd-ins-cat-top">
-                    <span className={`pd-badge ${categoryBadgeClass(c.category)}`}>{categoryLabel(c.category)}</span>
+                    <span className={`pd-badge ${categoryBadgeClass(c.category)}`}>{categoryLabel(c.category, t)}</span>
                     <span className="pd-ins-cat-amount">{formatMoney(c.amount)}</span>
                   </div>
                   <div className="pd-ins-meter"><span style={{ width: `${Math.max(4, ((c.amount || 0) / maxCategoryAmount) * 100)}%`, background: categoryColor(c.category) }} /></div>
@@ -378,16 +384,16 @@ export default function InsightsPage() {
 
             <div className="pd-card pd-ins-rail-card">
               <div className="pd-ins-rail-head">
-                <div className="pd-ins-rail-title">Vacant units</div>
-                <span className="pd-ins-rail-tag warn">{summary.occupancy_units - summary.occupancy_occupied} open</span>
+                <div className="pd-ins-rail-title">{t('insights.vacantUnitsTitle')}</div>
+                <span className="pd-ins-rail-tag warn">{t('insights.openCount', { count: summary.occupancy_units - summary.occupancy_occupied })}</span>
               </div>
-              {vacantProperties.length === 0 && <div className="pd-rail-empty">No vacancies right now</div>}
+              {vacantProperties.length === 0 && <div className="pd-rail-empty">{t('insights.noVacanciesRightNow')}</div>}
               {vacantProperties.map((p) => (
                 <div className="pd-ins-vacancy-row" key={p.id}>
                   <span className="pd-ins-dot" />
                   <div className="pd-ins-vacancy-text">
                     <div className="pd-ins-vacancy-name">{p.address}</div>
-                    <div className="pd-ins-vacancy-sub">{p.vacant} unit{p.vacant === 1 ? '' : 's'} vacant &middot; ~{formatMoney(p.vacancy_loss)}/mo potential</div>
+                    <div className="pd-ins-vacancy-sub">{t('insights.vacancySub', { count: p.vacant, amount: formatMoney(p.vacancy_loss) })}</div>
                   </div>
                 </div>
               ))}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
 import AppShell from '../components/AppShell';
 
 const supabase = createClient(
@@ -9,10 +10,10 @@ const supabase = createClient(
 );
 
 const STATUS_META = {
-  upcoming: { label: 'Upcoming', badge: 'neutral' },
-  in_window: { label: 'Notice window open', badge: 'warn' },
-  window_passed: { label: 'Window passed — act now', badge: 'warn' },
-  lease_ended: { label: 'Lease ended', badge: 'good' },
+  upcoming: { labelKey: 'leaseRenewals.statusUpcoming', badge: 'neutral' },
+  in_window: { labelKey: 'leaseRenewals.statusInWindow', badge: 'warn' },
+  window_passed: { labelKey: 'leaseRenewals.statusWindowPassed', badge: 'warn' },
+  lease_ended: { labelKey: 'leaseRenewals.statusLeaseEnded', badge: 'good' },
 };
 
 function formatDate(value) {
@@ -26,6 +27,7 @@ async function getSession() {
 }
 
 export default function LeaseRenewalsPage() {
+  const { t } = useTranslation();
   const [renewals, setRenewals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -36,7 +38,7 @@ export default function LeaseRenewalsPage() {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('leaseRenewals.pleaseLogIn'));
         return;
       }
       const res = await fetch(
@@ -44,14 +46,15 @@ export default function LeaseRenewalsPage() {
         { headers: { Authorization: `Bearer ${session.access_token}` } }
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to load lease renewals');
+      if (!res.ok) throw new Error(data.error || t('leaseRenewals.loadFailed'));
       setRenewals(data.renewals || []);
     } catch (err) {
       console.error('Error loading lease renewals:', err);
-      setError('Could not load lease renewals. Please try again shortly.');
+      setError(t('leaseRenewals.loadGenericError'));
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -64,7 +67,7 @@ export default function LeaseRenewalsPage() {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('leaseRenewals.pleaseLogIn'));
         return;
       }
       const res = await fetch(
@@ -72,12 +75,12 @@ export default function LeaseRenewalsPage() {
         { method: 'POST', headers: { Authorization: `Bearer ${session.access_token}` } }
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to update');
+      if (!res.ok) throw new Error(data.error || t('leaseRenewals.updateFailed'));
       setRenewals((prev) => prev.map((r) =>
         r.tenant_id === renewal.tenant_id ? { ...r, renewal_notice_sent_at: data.tenant.renewal_notice_sent_at } : r
       ));
     } catch (err) {
-      setError(err.message || 'Failed to update.');
+      setError(err.message || t('leaseRenewals.updateFailed'));
     } finally {
       setUpdatingId(null);
     }
@@ -89,7 +92,7 @@ export default function LeaseRenewalsPage() {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('leaseRenewals.pleaseLogIn'));
         return;
       }
       const res = await fetch(
@@ -97,12 +100,12 @@ export default function LeaseRenewalsPage() {
         { method: 'DELETE', headers: { Authorization: `Bearer ${session.access_token}` } }
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to update');
+      if (!res.ok) throw new Error(data.error || t('leaseRenewals.updateFailed'));
       setRenewals((prev) => prev.map((r) =>
         r.tenant_id === renewal.tenant_id ? { ...r, renewal_notice_sent_at: null } : r
       ));
     } catch (err) {
-      setError(err.message || 'Failed to update.');
+      setError(err.message || t('leaseRenewals.updateFailed'));
     } finally {
       setUpdatingId(null);
     }
@@ -116,9 +119,9 @@ export default function LeaseRenewalsPage() {
     return (
       <AppShell active="renewals">
         <div className="pd-page-header">
-          <h1>Lease Renewals</h1>
+          <h1>{t('leaseRenewals.title')}</h1>
         </div>
-        <p className="pd-empty">Loading...</p>
+        <p className="pd-empty">{t('leaseRenewals.loading')}</p>
       </AppShell>
     );
   }
@@ -126,7 +129,7 @@ export default function LeaseRenewalsPage() {
   return (
     <AppShell active="renewals">
       <div className="pd-page-header">
-        <h1>Lease Renewals</h1>
+        <h1>{t('leaseRenewals.title')}</h1>
       </div>
 
       {error && <div className="pd-alert-danger">{error}</div>}
@@ -137,18 +140,18 @@ export default function LeaseRenewalsPage() {
             className={`pd-btn ${filter === 'attention' ? 'pd-btn-primary' : 'pd-btn-secondary'}`}
             onClick={() => setFilter('attention')}
           >
-            Needs attention
+            {t('leaseRenewals.filterNeedsAttention')}
           </button>
           <button
             className={`pd-btn ${filter === 'all' ? 'pd-btn-primary' : 'pd-btn-secondary'}`}
             onClick={() => setFilter('all')}
           >
-            All leases with an end date
+            {t('leaseRenewals.filterAllLeases')}
           </button>
           <span className="pd-info-tip">
             <span className="pd-info-icon">i</span>
             <span className="pd-info-bubble">
-              Quebec's TAL generally requires notice of a rent increase or lease change 3-6 months before a lease of 12+ months ends, or 1-2 months before a shorter fixed-term lease ends. Confirm the exact requirements for your situation before acting.
+              {t('leaseRenewals.noticeWindowTip')}
             </span>
           </span>
         </div>
@@ -157,19 +160,19 @@ export default function LeaseRenewalsPage() {
       {visible.length === 0 ? (
         <p className="pd-empty">
           {renewals.length === 0
-            ? "No tenants have a lease end date on file yet, so there's nothing to track."
-            : "Nothing needs attention right now."}
+            ? t('leaseRenewals.emptyNoneOnFile')
+            : t('leaseRenewals.emptyNothingNeedsAttention')}
         </p>
       ) : (
         <div className="pd-table-wrap">
           <table className="pd-table">
             <thead>
               <tr>
-                <th>Property</th>
-                <th>Tenant</th>
-                <th>Lease ends</th>
-                <th>Notice window</th>
-                <th>Status</th>
+                <th>{t('leaseRenewals.columnProperty')}</th>
+                <th>{t('leaseRenewals.columnTenant')}</th>
+                <th>{t('leaseRenewals.columnLeaseEnds')}</th>
+                <th>{t('leaseRenewals.columnNoticeWindow')}</th>
+                <th>{t('leaseRenewals.columnStatus')}</th>
                 <th></th>
               </tr>
             </thead>
@@ -185,17 +188,17 @@ export default function LeaseRenewalsPage() {
                       {formatDate(r.window_start)} – {formatDate(r.window_end)}
                       <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.bracket}</div>
                     </td>
-                    <td><span className={`pd-badge ${meta.badge}`}>{meta.label}</span></td>
+                    <td><span className={`pd-badge ${meta.badge}`}>{t(meta.labelKey)}</span></td>
                     <td>
                       {r.renewal_notice_sent_at ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <span className="pd-badge good">Sent {formatDate(r.renewal_notice_sent_at)}</span>
+                          <span className="pd-badge good">{t('leaseRenewals.sentOn', { date: formatDate(r.renewal_notice_sent_at) })}</span>
                           <button
                             className="pd-btn pd-btn-secondary"
                             disabled={updatingId === r.tenant_id}
                             onClick={() => undoSent(r)}
                           >
-                            Undo
+                            {t('leaseRenewals.undo')}
                           </button>
                         </div>
                       ) : (
@@ -204,7 +207,7 @@ export default function LeaseRenewalsPage() {
                           disabled={updatingId === r.tenant_id}
                           onClick={() => markSent(r)}
                         >
-                          {updatingId === r.tenant_id ? 'Saving...' : 'Mark notice sent'}
+                          {updatingId === r.tenant_id ? t('leaseRenewals.saving') : t('leaseRenewals.markNoticeSent')}
                         </button>
                       )}
                     </td>

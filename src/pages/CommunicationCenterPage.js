@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 
@@ -51,6 +52,7 @@ function formatMessageDate(value) {
 }
 
 export default function CommunicationCenterPage() {
+  const { t } = useTranslation();
   const [tenants, setTenants] = useState([]);
   const [messages, setMessages] = useState([]);
   const [templates, setTemplates] = useState([]);
@@ -76,7 +78,7 @@ export default function CommunicationCenterPage() {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('communicationCenter.pleaseLogInAgain'));
         return;
       }
 
@@ -93,8 +95,8 @@ export default function CommunicationCenterPage() {
       const messagesData = await messagesRes.json();
       const templatesData = await templatesRes.json();
 
-      if (!tenantsRes.ok) throw new Error(tenantsData.error || 'Failed to load tenants');
-      if (!messagesRes.ok) throw new Error(messagesData.error || 'Failed to load messages');
+      if (!tenantsRes.ok) throw new Error(tenantsData.error || t('communicationCenter.loadTenantsFailed'));
+      if (!messagesRes.ok) throw new Error(messagesData.error || t('communicationCenter.loadMessagesFailed'));
       // Quick-action templates are a nice-to-have -- don't fail the whole
       // page over them if that route hiccups.
       setTenants(tenantsData.tenants || []);
@@ -102,7 +104,7 @@ export default function CommunicationCenterPage() {
       setTemplates(templatesRes.ok ? (templatesData.templates || []) : []);
     } catch (err) {
       console.error('Error loading communication center:', err);
-      setError('Could not load your messages. Please try again shortly.');
+      setError(t('communicationCenter.loadError'));
     } finally {
       setLoading(false);
     }
@@ -132,7 +134,7 @@ export default function CommunicationCenterPage() {
     setSendSuccess('');
 
     if (!selectedTenantId || !messageText.trim()) {
-      setSendError('Choose a tenant and write a message first.');
+      setSendError(t('communicationCenter.chooseTenantAndMessage'));
       return;
     }
 
@@ -140,7 +142,7 @@ export default function CommunicationCenterPage() {
     try {
       const session = await getSession();
       if (!session) {
-        setSendError('Please log in again.');
+        setSendError(t('communicationCenter.pleaseLogInAgain'));
         return;
       }
 
@@ -155,15 +157,15 @@ export default function CommunicationCenterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to send message');
+        throw new Error(data.error || t('communicationCenter.sendFailed'));
       }
 
-      setSendSuccess('Message sent.');
+      setSendSuccess(t('communicationCenter.sendSuccess'));
       setMessageText('');
       await loadData();
     } catch (err) {
       console.error('Error sending message:', err);
-      setSendError(err.message || 'Failed to send message.');
+      setSendError(err.message || t('communicationCenter.sendFailedFallback'));
     } finally {
       setSending(false);
     }
@@ -172,7 +174,7 @@ export default function CommunicationCenterPage() {
   if (loading) {
     return (
       <AppShell active="messages">
-        <div className="pd-state"><p>Loading your messages...</p></div>
+        <div className="pd-state"><p>{t('communicationCenter.loadingMessage')}</p></div>
       </AppShell>
     );
   }
@@ -188,27 +190,27 @@ export default function CommunicationCenterPage() {
   return (
     <AppShell active="messages">
       <div className="pd-page-header">
-        <h1>Communication Center</h1>
-        <p>Send SMS to your tenants and see your message history</p>
+        <h1>{t('communicationCenter.pageTitle')}</h1>
+        <p>{t('communicationCenter.pageSubtitle')}</p>
       </div>
 
       <div className="pd-card">
-        <h2 className="pd-section-title">Send a message</h2>
+        <h2 className="pd-section-title">{t('communicationCenter.sendMessageSectionTitle')}</h2>
         {tenants.length === 0 ? (
-          <p className="pd-empty">You don't have any tenants yet, so there's no one to message. Add a tenant first.</p>
+          <p className="pd-empty">{t('communicationCenter.noTenantsEmptyState')}</p>
         ) : (
           <form onSubmit={handleSend}>
             {sendError && <div className="pd-alert">{sendError}</div>}
             {sendSuccess && <p className="pd-success-text">{sendSuccess}</p>}
             <div className="pd-field">
-              <label htmlFor="comms-tenant">Tenant</label>
+              <label htmlFor="comms-tenant">{t('communicationCenter.tenantLabel')}</label>
               <select
                 id="comms-tenant"
                 className="pd-select"
                 value={selectedTenantId}
                 onChange={(e) => setSelectedTenantId(e.target.value)}
               >
-                <option value="">Select a tenant...</option>
+                <option value="">{t('communicationCenter.selectTenantPlaceholder')}</option>
                 {tenants.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name} ({t.phone})
@@ -218,7 +220,7 @@ export default function CommunicationCenterPage() {
             </div>
             {selectedTenant && quickTemplates.length > 0 && (
               <div className="pd-field">
-                <label>Quick templates</label>
+                <label>{t('communicationCenter.quickTemplatesLabel')}</label>
                 <div className="pd-quick-actions">
                   {quickTemplates.map((tpl) => (
                     <button
@@ -234,37 +236,37 @@ export default function CommunicationCenterPage() {
               </div>
             )}
             <div className="pd-field">
-              <label htmlFor="comms-message">Message</label>
+              <label htmlFor="comms-message">{t('communicationCenter.messageLabel')}</label>
               <textarea
                 id="comms-message"
                 className="pd-textarea"
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
-                placeholder="Type your message..."
+                placeholder={t('communicationCenter.messagePlaceholder')}
                 rows={3}
               />
             </div>
             <button type="submit" className="pd-btn pd-btn-primary" disabled={sending}>
-              {sending ? 'Sending...' : 'Send SMS'}
+              {sending ? t('communicationCenter.sending') : t('communicationCenter.sendButton')}
             </button>
           </form>
         )}
       </div>
 
-      <h2 className="pd-section-title">Message history</h2>
+      <h2 className="pd-section-title">{t('communicationCenter.messageHistoryTitle')}</h2>
       {messages.length === 0 ? (
-        <p className="pd-empty">No messages yet.</p>
+        <p className="pd-empty">{t('communicationCenter.noMessagesEmptyState')}</p>
       ) : (
         <div className="pd-table-wrap">
           <table className="pd-table">
             <thead>
               <tr>
-                <th>Tenant</th>
-                <th>Phone</th>
-                <th>Message</th>
-                <th>Direction</th>
-                <th>Status</th>
-                <th>Date</th>
+                <th>{t('communicationCenter.columnTenant')}</th>
+                <th>{t('communicationCenter.columnPhone')}</th>
+                <th>{t('communicationCenter.columnMessage')}</th>
+                <th>{t('communicationCenter.columnDirection')}</th>
+                <th>{t('communicationCenter.columnStatus')}</th>
+                <th>{t('communicationCenter.columnDate')}</th>
               </tr>
             </thead>
             <tbody>
@@ -277,7 +279,7 @@ export default function CommunicationCenterPage() {
                     <td>{m.message}</td>
                     <td>
                       <span className={`pd-badge ${m.status === 'received' ? 'neutral' : 'good'}`}>
-                        {m.status === 'received' ? 'Received' : 'Sent'}
+                        {m.status === 'received' ? t('communicationCenter.statusReceived') : t('communicationCenter.statusSent')}
                       </span>
                     </td>
                     <td>{m.status}</td>

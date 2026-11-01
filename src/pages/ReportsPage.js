@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
 import AppShell from '../components/AppShell';
 
 const supabase = createClient(
@@ -9,17 +10,17 @@ const supabase = createClient(
 );
 
 const EXPENSE_CATEGORIES = [
-  { value: 'repairs', label: 'Repairs & maintenance' },
-  { value: 'insurance', label: 'Insurance' },
-  { value: 'taxes', label: 'Property taxes' },
-  { value: 'mortgage', label: 'Mortgage' },
-  { value: 'utilities', label: 'Utilities' },
-  { value: 'management', label: 'Management' },
-  { value: 'other', label: 'Other' },
+  'repairs',
+  'insurance',
+  'taxes',
+  'mortgage',
+  'utilities',
+  'management',
+  'other',
 ];
 
-function categoryLabel(value) {
-  return EXPENSE_CATEGORIES.find((c) => c.value === value)?.label || 'Other';
+function categoryLabel(value, t) {
+  return EXPENSE_CATEGORIES.includes(value) ? t(`reports.categories.${value}`) : t('reports.categories.other');
 }
 
 function categoryBadgeClass(value) {
@@ -73,6 +74,7 @@ async function getSession() {
 }
 
 export default function ReportsPage() {
+  const { t } = useTranslation();
   const [properties, setProperties] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [report, setReport] = useState(null);
@@ -95,7 +97,7 @@ export default function ReportsPage() {
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('reports.pleaseLogIn'));
         return;
       }
       const backend = process.env.REACT_APP_BACKEND_URL;
@@ -120,10 +122,11 @@ export default function ReportsPage() {
       setReport(reportData);
     } catch (err) {
       console.error('Error loading reports:', err);
-      setError('Could not load your reports. Please try again shortly.');
+      setError(t('reports.couldNotLoad'));
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -164,7 +167,7 @@ export default function ReportsPage() {
     loadAll(start, end);
   };
 
-  const propertyAddress = (id) => properties.find((p) => p.id === id)?.address || 'Unknown property';
+  const propertyAddress = (id) => properties.find((p) => p.id === id)?.address || t('reports.unknownProperty');
 
   const filteredExpenses = expenses.filter((e) => {
     if (filterProperty && e.property_id !== filterProperty) return false;
@@ -191,22 +194,22 @@ export default function ReportsPage() {
     setFormError('');
 
     if (!expenseForm.property_id) {
-      setFormError('Choose a property.');
+      setFormError(t('reports.chooseProperty'));
       return;
     }
     if (!expenseForm.amount || Number(expenseForm.amount) <= 0) {
-      setFormError('Enter an amount.');
+      setFormError(t('reports.enterAmount'));
       return;
     }
     if (!expenseForm.expense_date) {
-      setFormError('Choose a date.');
+      setFormError(t('reports.chooseDate'));
       return;
     }
 
     try {
       const session = await getSession();
       if (!session) {
-        setFormError('Please log in again.');
+        setFormError(t('reports.pleaseLogIn'));
         return;
       }
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/expenses`, {
@@ -226,16 +229,17 @@ export default function ReportsPage() {
       closeExpenseForm();
       await loadAll(start, end);
     } catch (err) {
-      setFormError(err.message || 'Failed to save expense.');
+      setFormError(err.message || t('reports.failedToSaveExpense'));
     }
   };
 
   const deleteExpense = async (expense) => {
-    if (!window.confirm(`Delete this ${categoryLabel(expense.category).toLowerCase()} expense of ${formatMoney(expense.amount)}?`)) return;
+    const label = categoryLabel(expense.category, t).toLowerCase();
+    if (!window.confirm(t('reports.deleteConfirm', { category: label, amount: formatMoney(expense.amount) }))) return;
     try {
       const session = await getSession();
       if (!session) {
-        setError('Please log in again.');
+        setError(t('reports.pleaseLogIn'));
         return;
       }
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/expenses/${expense.id}`, {
@@ -246,7 +250,7 @@ export default function ReportsPage() {
       if (!res.ok) throw new Error(data.error || 'Failed to delete expense');
       await loadAll(start, end);
     } catch (err) {
-      setError(err.message || 'Failed to delete expense.');
+      setError(err.message || t('reports.failedToDeleteExpense'));
     }
   };
 
@@ -255,21 +259,21 @@ export default function ReportsPage() {
   const exportCSV = () => {
     if (!report) return;
     const rows = [];
-    rows.push(['Praedium report', `${start} to ${end}`]);
+    rows.push([t('reports.csv.title'), `${start} ${t('reports.csv.to')} ${end}`]);
     rows.push([]);
-    rows.push(['Summary']);
-    rows.push(['Income', (report.summary.income / 100).toFixed(2)]);
-    rows.push(['Expenses', (report.summary.expenses / 100).toFixed(2)]);
-    rows.push(['Net income', (report.summary.net / 100).toFixed(2)]);
+    rows.push([t('reports.csv.summary')]);
+    rows.push([t('reports.csv.income'), (report.summary.income / 100).toFixed(2)]);
+    rows.push([t('reports.csv.expenses'), (report.summary.expenses / 100).toFixed(2)]);
+    rows.push([t('reports.csv.netIncome'), (report.summary.net / 100).toFixed(2)]);
     rows.push([]);
-    rows.push(['By property', 'Income', 'Expenses', 'Net']);
+    rows.push([t('reports.csv.byProperty'), t('reports.csv.income'), t('reports.csv.expenses'), t('reports.csv.net')]);
     report.properties.forEach((p) => {
       rows.push([p.address, (p.income / 100).toFixed(2), (p.expenses / 100).toFixed(2), (p.net / 100).toFixed(2)]);
     });
     rows.push([]);
-    rows.push(['By expense category', 'Amount']);
+    rows.push([t('reports.csv.byCategory'), t('reports.csv.amount')]);
     report.expenses_by_category.forEach((c) => {
-      rows.push([categoryLabel(c.category), (c.amount / 100).toFixed(2)]);
+      rows.push([categoryLabel(c.category, t), (c.amount / 100).toFixed(2)]);
     });
 
     const csv = rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
@@ -287,7 +291,7 @@ export default function ReportsPage() {
   if (loading && !report) {
     return (
       <AppShell active="reports">
-        <div className="pd-state"><p>Loading your reports...</p></div>
+        <div className="pd-state"><p>{t('reports.loadingReports')}</p></div>
       </AppShell>
     );
   }
@@ -304,21 +308,21 @@ export default function ReportsPage() {
     <AppShell active="reports">
       <div className="pd-page-header pd-page-header-row">
         <div>
-          <h1>Reports</h1>
-          <p>Income, expenses, and a tax-ready export for any date range</p>
+          <h1>{t('reports.pageTitle')}</h1>
+          <p>{t('reports.pageSubtitle')}</p>
         </div>
-        <button className="pd-btn pd-btn-secondary" onClick={exportCSV} disabled={!report}>Export CSV</button>
+        <button className="pd-btn pd-btn-secondary" onClick={exportCSV} disabled={!report}>{t('reports.exportCsv')}</button>
       </div>
 
       <div className="pd-card">
         <div className="pd-range-row">
           <div className="pd-range-presets">
             {[
-              { value: 'this_month', label: 'This month' },
-              { value: 'last_month', label: 'Last month' },
-              { value: 'this_year', label: 'This year' },
-              { value: 'last_year', label: 'Last year' },
-              { value: 'custom', label: 'Custom' },
+              { value: 'this_month', label: t('reports.presetThisMonth') },
+              { value: 'last_month', label: t('reports.presetLastMonth') },
+              { value: 'this_year', label: t('reports.presetThisYear') },
+              { value: 'last_year', label: t('reports.presetLastYear') },
+              { value: 'custom', label: t('reports.presetCustom') },
             ].map((p) => (
               <button
                 key={p.value}
@@ -331,10 +335,10 @@ export default function ReportsPage() {
           </div>
           {preset === 'custom' && (
             <div className="pd-range-custom">
-              <input aria-label="Custom range start date" className="pd-input" type="date" value={start} onChange={(e) => setStart(e.target.value)} />
-              <span>to</span>
-              <input aria-label="Custom range end date" className="pd-input" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
-              <button className="pd-btn pd-btn-primary" onClick={applyCustomRange}>Apply</button>
+              <input aria-label={t('reports.customStartLabel')} className="pd-input" type="date" value={start} onChange={(e) => setStart(e.target.value)} />
+              <span>{t('reports.to')}</span>
+              <input aria-label={t('reports.customEndLabel')} className="pd-input" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
+              <button className="pd-btn pd-btn-primary" onClick={applyCustomRange}>{t('reports.apply')}</button>
             </div>
           )}
         </div>
@@ -343,32 +347,32 @@ export default function ReportsPage() {
       {report && (
         <>
           <div className="pd-chips">
-            <div className="pd-chip"><b>{formatMoney(report.summary.income)}</b><span>income</span></div>
-            <div className="pd-chip"><b>{formatMoney(report.summary.expenses)}</b><span>expenses</span></div>
-            <div className="pd-chip"><b>{formatMoney(report.summary.net)}</b><span>net income</span></div>
+            <div className="pd-chip"><b>{formatMoney(report.summary.income)}</b><span>{t('reports.income')}</span></div>
+            <div className="pd-chip"><b>{formatMoney(report.summary.expenses)}</b><span>{t('reports.expenses')}</span></div>
+            <div className="pd-chip"><b>{formatMoney(report.summary.net)}</b><span>{t('reports.netIncome')}</span></div>
           </div>
 
-          <h2 className="pd-section-title">By property</h2>
+          <h2 className="pd-section-title">{t('reports.byProperty')}</h2>
           {report.properties.length === 0 ? (
-            <p className="pd-empty">No properties yet.</p>
+            <p className="pd-empty">{t('reports.noPropertiesYet')}</p>
           ) : (
             <div className="pd-table-wrap" style={{ marginBottom: 28 }}>
               <table className="pd-table pd-table-stack">
                 <thead>
                   <tr>
-                    <th>Property</th>
-                    <th>Income</th>
-                    <th>Expenses</th>
-                    <th>Net</th>
+                    <th>{t('reports.colProperty')}</th>
+                    <th>{t('reports.colIncome')}</th>
+                    <th>{t('reports.colExpenses')}</th>
+                    <th>{t('reports.colNet')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {report.properties.map((p) => (
                     <tr key={p.id}>
-                      <td data-label="Property">{p.address}</td>
-                      <td data-label="Income">{formatMoney(p.income)}</td>
-                      <td data-label="Expenses">{formatMoney(p.expenses)}</td>
-                      <td data-label="Net">{formatMoney(p.net)}</td>
+                      <td data-label={t('reports.colProperty')}>{p.address}</td>
+                      <td data-label={t('reports.colIncome')}>{formatMoney(p.income)}</td>
+                      <td data-label={t('reports.colExpenses')}>{formatMoney(p.expenses)}</td>
+                      <td data-label={t('reports.colNet')}>{formatMoney(p.net)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -378,20 +382,20 @@ export default function ReportsPage() {
 
           {report.expenses_by_category.length > 0 && (
             <>
-              <h2 className="pd-section-title">Expenses by category</h2>
+              <h2 className="pd-section-title">{t('reports.expensesByCategory')}</h2>
               <div className="pd-table-wrap" style={{ marginBottom: 28 }}>
                 <table className="pd-table pd-table-stack">
                   <thead>
                     <tr>
-                      <th>Category</th>
-                      <th>Amount</th>
+                      <th>{t('reports.colCategory')}</th>
+                      <th>{t('reports.colAmount')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {report.expenses_by_category.map((c) => (
                       <tr key={c.category}>
-                        <td data-label="Category">{categoryLabel(c.category)}</td>
-                        <td data-label="Amount">{formatMoney(c.amount)}</td>
+                        <td data-label={t('reports.colCategory')}>{categoryLabel(c.category, t)}</td>
+                        <td data-label={t('reports.colAmount')}>{formatMoney(c.amount)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -403,39 +407,39 @@ export default function ReportsPage() {
       )}
 
       <div className="pd-page-header-row">
-        <h2 className="pd-section-title" style={{ margin: 0 }}>Expenses</h2>
+        <h2 className="pd-section-title" style={{ margin: 0 }}>{t('reports.expensesHeading')}</h2>
         <button className="pd-btn pd-btn-primary" onClick={openExpenseForm} disabled={properties.length === 0}>
-          + Add expense
+          {t('reports.addExpense')}
         </button>
       </div>
       <div className="pd-filter-row" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
-        <select aria-label="Filter by property" className="pd-select" style={{ maxWidth: 220 }} value={filterProperty} onChange={(e) => setFilterProperty(e.target.value)}>
-          <option value="">All properties</option>
+        <select aria-label={t('reports.filterByPropertyLabel')} className="pd-select" style={{ maxWidth: 220 }} value={filterProperty} onChange={(e) => setFilterProperty(e.target.value)}>
+          <option value="">{t('reports.allProperties')}</option>
           {properties.map((p) => (
             <option key={p.id} value={p.id}>{p.address}</option>
           ))}
         </select>
-        <select aria-label="Filter by category" className="pd-select" style={{ maxWidth: 200 }} value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-          <option value="">All categories</option>
+        <select aria-label={t('reports.filterByCategoryLabel')} className="pd-select" style={{ maxWidth: 200 }} value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+          <option value="">{t('reports.allCategories')}</option>
           {EXPENSE_CATEGORIES.map((c) => (
-            <option key={c.value} value={c.value}>{c.label}</option>
+            <option key={c} value={c}>{categoryLabel(c, t)}</option>
           ))}
         </select>
-        <input aria-label="Filter by date" type="date" className="pd-input" style={{ maxWidth: 170 }} value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+        <input aria-label={t('reports.filterByDateLabel')} type="date" className="pd-input" style={{ maxWidth: 170 }} value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
         {(filterProperty || filterCategory || filterDate) && (
-          <button type="button" className="pd-btn pd-btn-secondary" onClick={() => { setFilterProperty(''); setFilterCategory(''); setFilterDate(''); }}>Clear filters</button>
+          <button type="button" className="pd-btn pd-btn-secondary" onClick={() => { setFilterProperty(''); setFilterCategory(''); setFilterDate(''); }}>{t('reports.clearFilters')}</button>
         )}
       </div>
-      {properties.length === 0 && <p className="pd-empty">Add a property first to start logging expenses.</p>}
+      {properties.length === 0 && <p className="pd-empty">{t('reports.addPropertyFirst')}</p>}
 
       {expenseFormOpen && (
         <div className="pd-card">
-          <h2 className="pd-section-title">New expense</h2>
+          <h2 className="pd-section-title">{t('reports.newExpense')}</h2>
           {formError && <div className="pd-alert">{formError}</div>}
           <form onSubmit={submitExpense}>
             <div className="pd-form-row">
               <div className="pd-field">
-                <label htmlFor="expense-property">Property</label>
+                <label htmlFor="expense-property">{t('reports.fieldProperty')}</label>
                 <select
                   id="expense-property"
                   className="pd-select"
@@ -448,7 +452,7 @@ export default function ReportsPage() {
                 </select>
               </div>
               <div className="pd-field">
-                <label htmlFor="expense-category">Category</label>
+                <label htmlFor="expense-category">{t('reports.fieldCategory')}</label>
                 <select
                   id="expense-category"
                   className="pd-select"
@@ -456,14 +460,14 @@ export default function ReportsPage() {
                   onChange={(e) => setExpenseForm({ ...expenseForm, category: e.target.value })}
                 >
                   {EXPENSE_CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>{c.label}</option>
+                    <option key={c} value={c}>{categoryLabel(c, t)}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div className="pd-form-row">
               <div className="pd-field">
-                <label htmlFor="expense-amount">Amount ($)</label>
+                <label htmlFor="expense-amount">{t('reports.fieldAmount')}</label>
                 <input
                   id="expense-amount"
                   className="pd-input"
@@ -476,7 +480,7 @@ export default function ReportsPage() {
                 />
               </div>
               <div className="pd-field">
-                <label htmlFor="expense-date">Date</label>
+                <label htmlFor="expense-date">{t('reports.fieldDate')}</label>
                 <input
                   id="expense-date"
                   className="pd-input"
@@ -487,48 +491,48 @@ export default function ReportsPage() {
               </div>
             </div>
             <div className="pd-field">
-              <label htmlFor="expense-notes">Notes (optional)</label>
+              <label htmlFor="expense-notes">{t('reports.fieldNotes')}</label>
               <input
                 id="expense-notes"
                 className="pd-input"
                 value={expenseForm.notes}
                 onChange={(e) => setExpenseForm({ ...expenseForm, notes: e.target.value })}
-                placeholder="Plumber — leaking faucet, unit 2"
+                placeholder={t('reports.notesPlaceholder')}
               />
             </div>
             <div className="pd-form-actions">
-              <button type="submit" className="pd-btn pd-btn-primary">Save expense</button>
-              <button type="button" className="pd-btn pd-btn-secondary" onClick={closeExpenseForm}>Cancel</button>
+              <button type="submit" className="pd-btn pd-btn-primary">{t('reports.saveExpense')}</button>
+              <button type="button" className="pd-btn pd-btn-secondary" onClick={closeExpenseForm}>{t('reports.cancel')}</button>
             </div>
           </form>
         </div>
       )}
 
       {filteredExpenses.length === 0 ? (
-        <p className="pd-empty">{expenses.length === 0 ? 'No expenses logged yet.' : 'No expenses match your filters.'}</p>
+        <p className="pd-empty">{expenses.length === 0 ? t('reports.noExpensesLogged') : t('reports.noExpensesMatchFilters')}</p>
       ) : (
         <div className="pd-table-wrap">
           <table className="pd-table pd-table-stack">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Property</th>
-                <th>Category</th>
-                <th>Notes</th>
-                <th>Amount</th>
+                <th>{t('reports.colDate')}</th>
+                <th>{t('reports.colProperty')}</th>
+                <th>{t('reports.colCategory')}</th>
+                <th>{t('reports.colNotes')}</th>
+                <th>{t('reports.colAmount')}</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {filteredExpenses.map((e) => (
                 <tr key={e.id}>
-                  <td data-label="Date">{e.expense_date}</td>
-                  <td data-label="Property">{propertyAddress(e.property_id)}</td>
-                  <td data-label="Category"><span className={`pd-badge ${categoryBadgeClass(e.category)}`}>{categoryLabel(e.category)}</span></td>
-                  <td data-label="Notes">{e.notes || '—'}</td>
-                  <td data-label="Amount">{formatMoney(e.amount)}</td>
+                  <td data-label={t('reports.colDate')}>{e.expense_date}</td>
+                  <td data-label={t('reports.colProperty')}>{propertyAddress(e.property_id)}</td>
+                  <td data-label={t('reports.colCategory')}><span className={`pd-badge ${categoryBadgeClass(e.category)}`}>{categoryLabel(e.category, t)}</span></td>
+                  <td data-label={t('reports.colNotes')}>{e.notes || '—'}</td>
+                  <td data-label={t('reports.colAmount')}>{formatMoney(e.amount)}</td>
                   <td>
-                    <button className="pd-btn pd-btn-danger" onClick={() => deleteExpense(e)}>Delete</button>
+                    <button className="pd-btn pd-btn-danger" onClick={() => deleteExpense(e)}>{t('reports.delete')}</button>
                   </td>
                 </tr>
               ))}

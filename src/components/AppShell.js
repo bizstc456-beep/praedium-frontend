@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
 import { ADMIN_EMAILS } from '../utils/adminEmails';
+import LanguageToggle from './LanguageToggle';
+import LanguagePrompt from './LanguagePrompt';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -13,11 +16,13 @@ const supabase = createClient(
 // Shared sidebar layout for the logged-in app. Wrap a page's content with
 // <AppShell active="dashboard">...</AppShell> to get the nav + sign out.
 export default function AppShell({ active, wide, children }) {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const [trialEndsAt, setTrialEndsAt] = useState(null);
   const [now, setNow] = useState(() => Date.now());
+  const [showLanguagePrompt, setShowLanguagePrompt] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -54,6 +59,54 @@ export default function AppShell({ active, wide, children }) {
     return () => { active = false; };
   }, []);
 
+  // Language preference: if the account already has one saved, make sure
+  // this device/browser reflects it (keeps multiple devices in sync). If
+  // it has never been set, show the first-use prompt once.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      try {
+        const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        const data = await res.json();
+        if (!active || !res.ok) return;
+        if (data.preferred_language) {
+          if (i18n.language !== data.preferred_language) {
+            i18n.changeLanguage(data.preferred_language);
+          }
+        } else {
+          setShowLanguagePrompt(true);
+        }
+      } catch (err) {
+        console.error('Error loading language preference:', err);
+      }
+    })();
+    return () => { active = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleLanguageSelect = async (lang) => {
+    setShowLanguagePrompt(false);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ preferred_language: lang }),
+      });
+    } catch (err) {
+      // Best-effort -- the UI already switched language locally regardless.
+      console.error('Error saving language preference:', err);
+    }
+  };
+
   // Tick once a minute so the countdown stays live while the banner is open.
   useEffect(() => {
     if (!trialEndsAt) return;
@@ -84,6 +137,7 @@ export default function AppShell({ active, wide, children }) {
 
   return (
     <div className="pd-shell">
+      {showLanguagePrompt && <LanguagePrompt onSelect={handleLanguageSelect} />}
       <div className="pd-mobile-bar">
         <div className="pd-brand">Praedium</div>
         <button
@@ -103,32 +157,37 @@ export default function AppShell({ active, wide, children }) {
         <nav className="pd-nav">
           {isAdmin && (
             <>
-              <Link to="/admin" className={linkClass('admin')} onClick={closeNav}>Admin</Link>
-              <div className="pd-nav-section-label">Landlord view</div>
+              <Link to="/admin" className={linkClass('admin')} onClick={closeNav}>{t('nav.admin')}</Link>
+              <div className="pd-nav-section-label">{t('nav.landlordView')}</div>
             </>
           )}
-          <Link to={isAdmin ? '/dashboard' : '/'} className={linkClass('dashboard')} onClick={closeNav}>Dashboard</Link>
-          <Link to="/insights" className={linkClass('insights')} onClick={closeNav}>Insights</Link>
-          <Link to="/properties" className={linkClass('properties')} onClick={closeNav}>Properties</Link>
-          <Link to="/reports" className={linkClass('reports')} onClick={closeNav}>Reports</Link>
-          <Link to="/maintenance" className={linkClass('maintenance')} onClick={closeNav}>Maintenance</Link>
-          <Link to="/renewals" className={linkClass('renewals')} onClick={closeNav}>Lease Renewals</Link>
-          <Link to="/messages" className={linkClass('messages')} onClick={closeNav}>Messages</Link>
-          <Link to="/payment" className={linkClass('billing')} onClick={closeNav}>Billing</Link>
-          <Link to="/settings" className={linkClass('settings')} onClick={closeNav}>Settings</Link>
+          <Link to={isAdmin ? '/dashboard' : '/'} className={linkClass('dashboard')} onClick={closeNav}>{t('nav.dashboard')}</Link>
+          <Link to="/insights" className={linkClass('insights')} onClick={closeNav}>{t('nav.insights')}</Link>
+          <Link to="/properties" className={linkClass('properties')} onClick={closeNav}>{t('nav.properties')}</Link>
+          <Link to="/reports" className={linkClass('reports')} onClick={closeNav}>{t('nav.reports')}</Link>
+          <Link to="/maintenance" className={linkClass('maintenance')} onClick={closeNav}>{t('nav.maintenance')}</Link>
+          <Link to="/renewals" className={linkClass('renewals')} onClick={closeNav}>{t('nav.renewals')}</Link>
+          <Link to="/messages" className={linkClass('messages')} onClick={closeNav}>{t('nav.messages')}</Link>
+          <Link to="/payment" className={linkClass('billing')} onClick={closeNav}>{t('nav.billing')}</Link>
+          <Link to="/settings" className={linkClass('settings')} onClick={closeNav}>{t('nav.settings')}</Link>
         </nav>
-        <button onClick={handleLogout} className="pd-signout">Sign Out</button>
-        <Link to="/help" className="pd-support-link" onClick={closeNav}>Need help? Visit the help center</Link>
+        <LanguageToggle className="pd-lang-toggle-side" onChange={handleLanguageSelect} />
+        <button onClick={handleLogout} className="pd-signout">{t('nav.signOut')}</button>
+        <Link to="/help" className="pd-support-link" onClick={closeNav}>{t('nav.helpLink')}</Link>
       </aside>
       <main className={`pd-main${wide ? ' pd-main-wide' : ''}`}>
         {trialCountdown && (
           <div className="pd-trial-banner" role="status">
             <span className="pd-trial-banner-text">
               {trialCountdown.expired
-                ? "Your free trial has ended — subscribe to keep your account active."
-                : `Your free trial ends in ${trialCountdown.days > 0 ? `${trialCountdown.days}d ` : ''}${trialCountdown.hours}h ${trialCountdown.minutes}m — subscribe to keep your account active.`}
+                ? t('nav.trialExpired')
+                : t('nav.trialCountdown', {
+                    days: trialCountdown.days > 0 ? `${trialCountdown.days}d ` : '',
+                    hours: trialCountdown.hours,
+                    minutes: trialCountdown.minutes,
+                  })}
             </span>
-            <Link to="/payment" className="pd-trial-banner-cta" onClick={closeNav}>View plans</Link>
+            <Link to="/payment" className="pd-trial-banner-cta" onClick={closeNav}>{t('nav.viewPlans')}</Link>
           </div>
         )}
         {children}

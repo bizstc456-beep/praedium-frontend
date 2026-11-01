@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 import CountUp from '../components/CountUp';
@@ -10,12 +11,6 @@ const supabase = createClient(
 );
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
-const REASON_LABEL = {
-  no_properties: 'No properties',
-  payment_failed: 'Payment failed',
-  canceled: 'Canceled',
-};
 
 function shortDate(value) {
   if (!value) return '';
@@ -60,6 +55,7 @@ function buildSparkline(counts) {
 }
 
 export default function AdminDashboardPage() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalProperties: 0,
@@ -83,6 +79,12 @@ export default function AdminDashboardPage() {
   const [needsAttention, setNeedsAttention] = useState([]);
   const [loading, setLoading] = useState(true);
   const [accessDenied, setAccessDenied] = useState(false);
+
+  const REASON_LABEL = {
+    no_properties: t('adminDashboard.reasonNoProperties'),
+    payment_failed: t('adminDashboard.reasonPaymentFailed'),
+    canceled: t('adminDashboard.reasonCanceled'),
+  };
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,7 +131,7 @@ export default function AdminDashboardPage() {
   if (loading) {
     return (
       <AppShell active="admin">
-        <div className="pd-state"><p>Loading admin data...</p></div>
+        <div className="pd-state"><p>{t('adminDashboard.loadingMessage')}</p></div>
       </AppShell>
     );
   }
@@ -137,7 +139,7 @@ export default function AdminDashboardPage() {
   if (accessDenied) {
     return (
       <AppShell active="admin">
-        <div className="pd-state"><p>You don't have access to this page.</p></div>
+        <div className="pd-state"><p>{t('adminDashboard.accessDenied')}</p></div>
       </AppShell>
     );
   }
@@ -148,60 +150,60 @@ export default function AdminDashboardPage() {
   return (
     <AppShell active="admin" wide>
       <div className="pd-page-header">
-        <h1>Admin Dashboard</h1>
-        <p>Praedium platform overview</p>
+        <h1>{t('adminDashboard.pageTitle')}</h1>
+        <p>{t('adminDashboard.pageSubtitle')}</p>
       </div>
 
       <div className="pd-statgrid">
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '0ms' }}>
-          <div className="k">Total Users</div>
+          <div className="k">{t('adminDashboard.statTotalUsers')}</div>
           <div className="v"><CountUp value={stats.totalUsers} /></div>
         </div>
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '50ms' }}>
-          <div className="k">Properties</div>
+          <div className="k">{t('adminDashboard.statProperties')}</div>
           <div className="v"><CountUp value={stats.totalProperties} /></div>
         </div>
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '100ms' }}>
-          <div className="k">Tenants</div>
+          <div className="k">{t('adminDashboard.statTenants')}</div>
           <div className="v"><CountUp value={stats.totalTenants} /></div>
         </div>
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '150ms' }}>
-          <div className="k">Rent Payments Processed</div>
+          <div className="k">{t('adminDashboard.statRentPaymentsProcessed')}</div>
           <div className="v">
             <CountUp value={(stats.totalRevenue || 0) / 100} format={formatCurrency} />
           </div>
         </div>
       </div>
 
-      <h2 className="pd-section-title">Subscription revenue</h2>
+      <h2 className="pd-section-title">{t('adminDashboard.subscriptionRevenueTitle')}</h2>
       <div className="pd-statgrid">
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '0ms' }}>
-          <div className="k">MRR</div>
+          <div className="k">{t('adminDashboard.statMrr')}</div>
           <div className="v"><CountUp value={subscription.mrr} format={formatCurrency} /></div>
         </div>
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '50ms' }}>
-          <div className="k">ARR (est.)</div>
+          <div className="k">{t('adminDashboard.statArr')}</div>
           <div className="v"><CountUp value={subscription.arr} format={formatCurrency} /></div>
         </div>
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '100ms' }}>
-          <div className="k">At-risk revenue</div>
+          <div className="k">{t('adminDashboard.statAtRiskRevenue')}</div>
           <div className="v"><CountUp value={subscription.atRiskRevenue} format={formatCurrency} /></div>
         </div>
         <div className="pd-statcard pd-anim-in" style={{ animationDelay: '150ms' }}>
-          <div className="k">Revenue per subscriber</div>
+          <div className="k">{t('adminDashboard.statRevenuePerSubscriber')}</div>
           <div className="v"><CountUp value={subscription.arpu} format={formatCurrency} /></div>
         </div>
       </div>
 
       <div className="pd-subs-overview pd-anim-in" style={{ animationDelay: '0ms' }}>
-        <span className="pd-badge good">Active {subscription.statusCounts.active}</span>
-        <span className="pd-badge warn">Trialing {subscription.statusCounts.trialing}</span>
-        <span className="pd-badge danger">Past due {subscription.statusCounts.past_due}</span>
-        <span className="pd-badge muted">Canceled {subscription.statusCounts.canceled}</span>
-        <span className="pd-badge neutral">Never subscribed {subscription.statusCounts.none}</span>
+        <span className="pd-badge good">{t('adminDashboard.badgeActive')} {subscription.statusCounts.active}</span>
+        <span className="pd-badge warn">{t('adminDashboard.badgeTrialing')} {subscription.statusCounts.trialing}</span>
+        <span className="pd-badge danger">{t('adminDashboard.badgePastDue')} {subscription.statusCounts.past_due}</span>
+        <span className="pd-badge muted">{t('adminDashboard.badgeCanceled')} {subscription.statusCounts.canceled}</span>
+        <span className="pd-badge neutral">{t('adminDashboard.badgeNeverSubscribed')} {subscription.statusCounts.none}</span>
       </div>
 
-      <h2 className="pd-section-title">Subscribers by plan</h2>
+      <h2 className="pd-section-title">{t('adminDashboard.subscribersByPlanTitle')}</h2>
       <div className="pd-tier-grid">
         {Object.entries(subscription.tierBreakdown).map(([key, tier]) => {
           const tierTotal = (tier.trialing || 0) + (tier.active || 0) + (tier.past_due || 0);
@@ -221,9 +223,9 @@ export default function AdminDashboardPage() {
                 <div className="pd-tier-bar-fill" style={{ width: `${(tierTotal / maxTotal) * 100}%` }} />
               </div>
               <div className="pd-tier-card-detail">
-                <span>{tier.active || 0} active</span>
-                <span>{tier.trialing || 0} trialing</span>
-                <span>{tier.past_due || 0} past due</span>
+                <span>{tier.active || 0} {t('adminDashboard.tierActive')}</span>
+                <span>{tier.trialing || 0} {t('adminDashboard.tierTrialing')}</span>
+                <span>{tier.past_due || 0} {t('adminDashboard.tierPastDue')}</span>
               </div>
             </div>
           );
@@ -232,14 +234,14 @@ export default function AdminDashboardPage() {
 
       <div className="pd-dash-grid">
         <div className="pd-dash-main">
-          <h2 className="pd-section-title">Registered users</h2>
+          <h2 className="pd-section-title">{t('adminDashboard.registeredUsersTitle')}</h2>
           <div className="pd-table-wrap">
             <table className="pd-table">
               <thead>
                 <tr>
-                  <th>Email</th>
-                  <th>Created</th>
-                  <th>Status</th>
+                  <th>{t('adminDashboard.columnEmail')}</th>
+                  <th>{t('adminDashboard.columnCreated')}</th>
+                  <th>{t('adminDashboard.columnStatus')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -249,7 +251,7 @@ export default function AdminDashboardPage() {
                     <td>{new Date(user.created_at).toLocaleDateString()}</td>
                     <td>
                       <span className={`pd-badge ${user.confirmed_at ? 'good' : 'warn'}`}>
-                        {user.confirmed_at ? 'Active' : 'Pending'}
+                        {user.confirmed_at ? t('adminDashboard.userActive') : t('adminDashboard.userPending')}
                       </span>
                     </td>
                   </tr>
@@ -261,10 +263,10 @@ export default function AdminDashboardPage() {
 
         <div className="pd-rail">
           <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '0ms' }}>
-            <div className="pd-rail-card-title">Signups</div>
+            <div className="pd-rail-card-title">{t('adminDashboard.signupsTitle')}</div>
             <div className="pd-signups-delta">
               <b>+{signupsTotal}</b>
-              <span>last 8 weeks</span>
+              <span>{t('adminDashboard.signupsLast8Weeks')}</span>
             </div>
             {spark && (
               <svg viewBox="0 0 300 64" width="100%" height="64" style={{ display: 'block' }}>
@@ -289,9 +291,9 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '70ms' }}>
-            <div className="pd-rail-card-title">Needs attention</div>
+            <div className="pd-rail-card-title">{t('adminDashboard.needsAttentionTitle')}</div>
             {needsAttention.length === 0 ? (
-              <p className="pd-rail-empty">Nothing needs attention right now.</p>
+              <p className="pd-rail-empty">{t('adminDashboard.needsAttentionEmpty')}</p>
             ) : (
               <div className="pd-activity-list">
                 {needsAttention.map((n, i) => {
@@ -299,10 +301,10 @@ export default function AdminDashboardPage() {
                     ? Math.max(0, Math.floor((Date.now() - new Date(n.since)) / MS_PER_DAY))
                     : null;
                   const detail = n.reason === 'payment_failed'
-                    ? `Subscription past due since ${shortDate(n.since)}`
+                    ? t('adminDashboard.detailPastDueSince', { date: shortDate(n.since) })
                     : n.reason === 'canceled'
-                      ? `Subscription canceled`
-                      : `Signed up ${daysAgo} day${daysAgo === 1 ? '' : 's'} ago, onboarding stalled`;
+                      ? t('adminDashboard.detailCanceled')
+                      : t('adminDashboard.detailSignedUp', { count: daysAgo });
                   const badgeClass = n.reason === 'payment_failed' ? 'danger' : n.reason === 'canceled' ? 'muted' : 'warn';
                   return (
                     <div className="pd-attention-row" key={`${n.email}-${i}`}>
@@ -321,19 +323,19 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '140ms' }}>
-            <div className="pd-rail-card-title">Platform activity</div>
+            <div className="pd-rail-card-title">{t('adminDashboard.platformActivityTitle')}</div>
             <div className="pd-rail-mini-list">
               <div className="pd-activity-stat-row">
-                <span>Payments processed</span>
-                <span>{stats.paymentsThisMonth} this month</span>
+                <span>{t('adminDashboard.paymentsProcessedLabel')}</span>
+                <span>{t('adminDashboard.paymentsProcessedValue', { count: stats.paymentsThisMonth })}</span>
               </div>
               <div className="pd-activity-stat-row">
-                <span>Maintenance requests open</span>
-                <span>{stats.maintenanceOpen} platform-wide</span>
+                <span>{t('adminDashboard.maintenanceOpenLabel')}</span>
+                <span>{t('adminDashboard.maintenanceOpenValue', { count: stats.maintenanceOpen })}</span>
               </div>
               <div className="pd-activity-stat-row">
-                <span>Properties added</span>
-                <span>{stats.propertiesThisWeek} this week</span>
+                <span>{t('adminDashboard.propertiesAddedLabel')}</span>
+                <span>{t('adminDashboard.propertiesAddedValue', { count: stats.propertiesThisWeek })}</span>
               </div>
             </div>
           </div>
