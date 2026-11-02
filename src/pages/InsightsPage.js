@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 
@@ -154,6 +155,7 @@ export default function InsightsPage() {
         <div className="pd-ins-empty">
           <div className="pd-ins-empty-title">{t('insights.emptyTitle')}</div>
           <div className="pd-ins-empty-sub">{t('insights.emptySub')}</div>
+          <Link to="/properties?new=1" className="pd-btn pd-btn-primary pd-ins-empty-cta">{t('insights.emptyCta')}</Link>
         </div>
       </AppShell>
     );

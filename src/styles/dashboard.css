@@ -2911,6 +2911,11 @@
   color: var(--pd-ink2);
 }
 
+.pd-ins-empty-cta {
+  display: inline-block;
+  margin-top: 18px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pd-ins-tooltip {
     transition: none;

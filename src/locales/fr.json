@@ -702,7 +702,9 @@
     "leaseRenewalsEmpty": "Aucune période de renouvellement ouverte pour le moment.",
     "leaseRenewalRow": "{{name}} — se termine le {{date}}",
     "renewalStatusWindowOpen": "Période ouverte",
-    "renewalStatusUpcoming": "À venir"
+    "renewalStatusUpcoming": "À venir",
+    "emptyRailTitle": "Ce que vous verrez ici",
+    "emptyRailNote": "Dès que vous ajoutez votre première propriété, c'est ici que vous suivrez l'activité récente, les demandes d'entretien et les renouvellements de bail."
   },
   "insights": {
     "loading": "Chargement des analyses…",
@@ -757,7 +759,8 @@
     "categoryMortgage": "Hypothèque",
     "categoryUtilities": "Services publics",
     "categoryManagement": "Gestion",
-    "categoryOther": "Autre"
+    "categoryOther": "Autre",
+    "emptyCta": "Ajouter une propriété"
   },
   "payment": {
     "pleaseLogInFirst": "Veuillez d'abord vous connecter",

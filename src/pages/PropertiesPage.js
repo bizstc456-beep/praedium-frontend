@@ -86,6 +86,34 @@ export default function PropertiesPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Deep links from the dashboard's "Getting started" checklist, once
+  // properties/tenants are loaded -- ?addTenant=<propertyId> opens that
+  // property's add-tenant form, ?recordPayment=<tenantId> opens that
+  // tenant's payment form. Both need real data (the property/tenant must
+  // exist, and the payment form needs the full tenant record), so this
+  // waits for loadData() to finish instead of firing on mount like ?new=1.
+  useEffect(() => {
+    if (loading) return;
+    const params = new URLSearchParams(window.location.search);
+
+    const addTenantPropertyId = params.get('addTenant');
+    if (addTenantPropertyId && properties.some((p) => p.id === addTenantPropertyId)) {
+      openNewTenantForm(addTenantPropertyId);
+      window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
+
+    const recordPaymentTenantId = params.get('recordPayment');
+    if (recordPaymentTenantId) {
+      const tenant = tenants.find((tn) => tn.id === recordPaymentTenantId);
+      if (tenant) {
+        openPaymentForm(tenant);
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
   const loadData = async () => {
     try {
       const session = await getSession();

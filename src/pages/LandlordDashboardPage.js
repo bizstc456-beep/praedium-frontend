@@ -173,6 +173,21 @@ export default function LandlordDashboardPage() {
   // The payment step only sees this month's payments (the dashboard doesn't
   // fetch full history), which is a fine trade-off for an onboarding aid
   // aimed at brand-new accounts.
+  // Once a property exists, point the "add tenant" step straight at that
+  // property's add-tenant form (PropertiesPage opens it from ?addTenant=<id>)
+  // instead of just the plain properties list.
+  const firstPropertyId = properties[0]?.id;
+  const addTenantTo = firstPropertyId ? `/properties?addTenant=${firstPropertyId}` : '/properties';
+
+  // Once there's a tenant with no payment recorded this month, point the
+  // "record payment" step at that tenant's payment form (?recordPayment=<id>)
+  // rather than the plain list -- falls back to the first tenant if every
+  // tenant already looks paid (e.g. this month's payments data is still
+  // loading), since the step wouldn't show as "current" anyway once done.
+  const paidTenantIds = new Set(payments.filter((p) => p.status === 'paid').map((p) => p.tenant_id));
+  const unpaidTenant = tenants.find((tn) => !paidTenantIds.has(tn.id)) || tenants[0];
+  const recordPaymentTo = unpaidTenant ? `/properties?recordPayment=${unpaidTenant.id}` : '/properties';
+
   const onboardingSteps = [
     {
       key: 'property',
@@ -186,14 +201,14 @@ export default function LandlordDashboardPage() {
       label: t('dashboard.onboardingAddTenant'),
       done: tenants.length > 0,
       cta: t('dashboard.onboardingAddTenantCta'),
-      to: '/properties',
+      to: addTenantTo,
     },
     {
       key: 'payment',
       label: t('dashboard.onboardingRecordPayment'),
       done: (summary.total_collected_this_month || 0) > 0,
       cta: t('dashboard.onboardingRecordPaymentCta'),
-      to: '/properties',
+      to: recordPaymentTo,
     },
   ];
   const onboardingDoneCount = onboardingSteps.filter((s) => s.done).length;
@@ -342,78 +357,89 @@ export default function LandlordDashboardPage() {
         </div>
 
         <div className="pd-rail">
-          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '0ms' }}>
-            <div className="pd-rail-card-title">{t('dashboard.quickActionsTitle')}</div>
-            <div className="pd-quick-actions">
-              <Link to="/properties?new=1" className="pd-quick-action">{t('dashboard.quickActionAddProperty')}</Link>
-              <Link to="/properties" className="pd-quick-action">{t('dashboard.quickActionRecordPayment')}</Link>
-              <Link to="/properties" className="pd-quick-action">{t('dashboard.quickActionInviteTenant')}</Link>
-              <Link to="/reports?new=1" className="pd-quick-action">{t('dashboard.quickActionLogExpense')}</Link>
-            </div>
-          </div>
-
-          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '70ms' }}>
-            <div className="pd-rail-card-title">{t('dashboard.recentActivityTitle')}</div>
-            {recentActivity.length === 0 ? (
-              <p className="pd-rail-empty">{t('dashboard.recentActivityEmpty')}</p>
-            ) : (
-              <div className="pd-activity-list">
-                {recentActivity.map((a) => (
-                  <div className="pd-activity-row" key={a.key}>
-                    <span className={`pd-activity-dot ${a.dot}`} />
-                    <span className="pd-activity-text">{a.text}</span>
-                    <span className="pd-activity-date">{shortDate(a.date)}</span>
-                  </div>
-                ))}
+          {properties.length > 0 && (
+            <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '0ms' }}>
+              <div className="pd-rail-card-title">{t('dashboard.quickActionsTitle')}</div>
+              <div className="pd-quick-actions">
+                <Link to="/properties?new=1" className="pd-quick-action">{t('dashboard.quickActionAddProperty')}</Link>
+                <Link to="/properties" className="pd-quick-action">{t('dashboard.quickActionRecordPayment')}</Link>
+                <Link to="/properties" className="pd-quick-action">{t('dashboard.quickActionInviteTenant')}</Link>
+                <Link to="/reports?new=1" className="pd-quick-action">{t('dashboard.quickActionLogExpense')}</Link>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '140ms' }}>
-            <div className="pd-rail-card-head">
-              <span className="pd-rail-card-title">{t('dashboard.maintenanceTitle')}</span>
-              <Link to="/maintenance" className="pd-rail-view-all">{t('dashboard.viewAll')}</Link>
+          {properties.length === 0 ? (
+            <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '70ms' }}>
+              <div className="pd-rail-card-title">{t('dashboard.emptyRailTitle')}</div>
+              <p className="pd-rail-empty">{t('dashboard.emptyRailNote')}</p>
             </div>
-            <div className="pd-rail-count">
-              <b>{openMaintenance.length}</b>
-              <span>{t('dashboard.openRequestsCount', { count: openMaintenance.length })}</span>
-            </div>
-            {maintenancePreview.length === 0 ? (
-              <p className="pd-rail-empty">{t('dashboard.maintenanceEmptyNow')}</p>
-            ) : (
-              <div className="pd-rail-mini-list">
-                {maintenancePreview.map((r) => (
-                  <div className="pd-rail-mini-row" key={r.id}>
-                    <span>{r.title}{r.tenants?.unit_label ? ` — ${r.tenants.unit_label}` : ''}</span>
-                    <span className={`pd-badge ${r.status === 'open' ? 'warn pd-badge-pulse' : 'neutral'}`}>
-                      {r.status === 'open' ? t('dashboard.maintenanceStatusOpen') : t('dashboard.maintenanceStatusInProgress')}
-                    </span>
+          ) : (
+            <>
+              <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '70ms' }}>
+                <div className="pd-rail-card-title">{t('dashboard.recentActivityTitle')}</div>
+                {recentActivity.length === 0 ? (
+                  <p className="pd-rail-empty">{t('dashboard.recentActivityEmpty')}</p>
+                ) : (
+                  <div className="pd-activity-list">
+                    {recentActivity.map((a) => (
+                      <div className="pd-activity-row" key={a.key}>
+                        <span className={`pd-activity-dot ${a.dot}`} />
+                        <span className="pd-activity-text">{a.text}</span>
+                        <span className="pd-activity-date">{shortDate(a.date)}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '210ms' }}>
-            <div className="pd-rail-card-head">
-              <span className="pd-rail-card-title">{t('dashboard.leaseRenewalsTitle')}</span>
-              <Link to="/renewals" className="pd-rail-view-all">{t('dashboard.viewAll')}</Link>
-            </div>
-            {renewalPreview.length === 0 ? (
-              <p className="pd-rail-empty">{t('dashboard.leaseRenewalsEmpty')}</p>
-            ) : (
-              <div className="pd-rail-mini-list">
-                {renewalPreview.map((r) => (
-                  <div className="pd-rail-mini-row" key={r.tenant_id}>
-                    <span>{t('dashboard.leaseRenewalRow', { name: shortName(r.tenant_name, t('dashboard.tenantFallback')), date: shortDate(r.lease_end_date) })}</span>
-                    <span className={`pd-badge ${r.status === 'in_window' ? 'warn' : 'muted'}`}>
-                      {r.status === 'in_window' ? t('dashboard.renewalStatusWindowOpen') : t('dashboard.renewalStatusUpcoming')}
-                    </span>
+              <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '140ms' }}>
+                <div className="pd-rail-card-head">
+                  <span className="pd-rail-card-title">{t('dashboard.maintenanceTitle')}</span>
+                  <Link to="/maintenance" className="pd-rail-view-all">{t('dashboard.viewAll')}</Link>
+                </div>
+                <div className="pd-rail-count">
+                  <b>{openMaintenance.length}</b>
+                  <span>{t('dashboard.openRequestsCount', { count: openMaintenance.length })}</span>
+                </div>
+                {maintenancePreview.length === 0 ? (
+                  <p className="pd-rail-empty">{t('dashboard.maintenanceEmptyNow')}</p>
+                ) : (
+                  <div className="pd-rail-mini-list">
+                    {maintenancePreview.map((r) => (
+                      <div className="pd-rail-mini-row" key={r.id}>
+                        <span>{r.title}{r.tenants?.unit_label ? ` — ${r.tenants.unit_label}` : ''}</span>
+                        <span className={`pd-badge ${r.status === 'open' ? 'warn pd-badge-pulse' : 'neutral'}`}>
+                          {r.status === 'open' ? t('dashboard.maintenanceStatusOpen') : t('dashboard.maintenanceStatusInProgress')}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            )}
-          </div>
+
+              <div className="pd-rail-card pd-anim-in" style={{ animationDelay: '210ms' }}>
+                <div className="pd-rail-card-head">
+                  <span className="pd-rail-card-title">{t('dashboard.leaseRenewalsTitle')}</span>
+                  <Link to="/renewals" className="pd-rail-view-all">{t('dashboard.viewAll')}</Link>
+                </div>
+                {renewalPreview.length === 0 ? (
+                  <p className="pd-rail-empty">{t('dashboard.leaseRenewalsEmpty')}</p>
+                ) : (
+                  <div className="pd-rail-mini-list">
+                    {renewalPreview.map((r) => (
+                      <div className="pd-rail-mini-row" key={r.tenant_id}>
+                        <span>{t('dashboard.leaseRenewalRow', { name: shortName(r.tenant_name, t('dashboard.tenantFallback')), date: shortDate(r.lease_end_date) })}</span>
+                        <span className={`pd-badge ${r.status === 'in_window' ? 'warn' : 'muted'}`}>
+                          {r.status === 'in_window' ? t('dashboard.renewalStatusWindowOpen') : t('dashboard.renewalStatusUpcoming')}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -702,7 +702,9 @@
     "leaseRenewalsEmpty": "No renewal windows open right now.",
     "leaseRenewalRow": "{{name}} — ends {{date}}",
     "renewalStatusWindowOpen": "Window open",
-    "renewalStatusUpcoming": "Upcoming"
+    "renewalStatusUpcoming": "Upcoming",
+    "emptyRailTitle": "What you'll see here",
+    "emptyRailNote": "Once you add your first property, this is where you'll track recent activity, maintenance requests, and lease renewals."
   },
   "insights": {
     "loading": "Loading insights…",
@@ -757,7 +759,8 @@
     "categoryMortgage": "Mortgage",
     "categoryUtilities": "Utilities",
     "categoryManagement": "Management",
-    "categoryOther": "Other"
+    "categoryOther": "Other",
+    "emptyCta": "Add a property"
   },
   "payment": {
     "pleaseLogInFirst": "Please log in first",
