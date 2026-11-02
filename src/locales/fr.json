@@ -36,7 +36,8 @@
     "signUp": "S'inscrire",
     "needHelp": "Besoin d'aide?",
     "contactSupport": "Contactez le soutien",
-    "genericError": "Une erreur est survenue"
+    "genericError": "Une erreur est survenue",
+    "emailNotConfirmed": "Veuillez confirmer votre courriel avant de vous connecter — vérifiez votre boîte de réception pour le lien de confirmation que nous vous avons envoyé."
   },
   "register": {
     "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
@@ -62,7 +63,8 @@
     "alreadyHaveAccount": "Vous avez déjà un compte?",
     "signIn": "Se connecter",
     "needHelp": "Besoin d'aide?",
-    "contactSupport": "Contactez le soutien"
+    "contactSupport": "Contactez le soutien",
+    "checkEmailToConfirm": "Compte créé! Vérifiez votre boîte courriel pour le lien de confirmation, puis connectez-vous."
   },
   "forgotPassword": {
     "genericError": "Une erreur est survenue",

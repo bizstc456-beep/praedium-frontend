@@ -36,7 +36,8 @@
     "signUp": "Sign up",
     "needHelp": "Need help?",
     "contactSupport": "Contact support",
-    "genericError": "An error occurred"
+    "genericError": "An error occurred",
+    "emailNotConfirmed": "Please confirm your email before signing in — check your inbox for the confirmation link we sent you."
   },
   "register": {
     "passwordTooShort": "Password must be at least 6 characters",
@@ -62,7 +63,8 @@
     "alreadyHaveAccount": "Already have an account?",
     "signIn": "Sign in",
     "needHelp": "Need help?",
-    "contactSupport": "Contact support"
+    "contactSupport": "Contact support",
+    "checkEmailToConfirm": "Account created! Check your inbox for a confirmation email, then sign in."
   },
   "forgotPassword": {
     "genericError": "An error occurred",

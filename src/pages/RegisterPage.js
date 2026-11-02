@@ -21,11 +21,13 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [confirmEmailSent, setConfirmEmailSent] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
+    setConfirmEmailSent(false);
 
     if (password.length < 6) {
       setError(t('register.passwordTooShort'));
@@ -63,9 +65,18 @@ export default function RegisterPage() {
 
       // Backend creates the account but doesn't hand back a session --
       // sign in immediately so the new landlord lands straight in the app.
+      // When the Supabase project requires email confirmation, this sign-in
+      // fails right after every signup with "Email not confirmed" even
+      // though the account was created successfully -- show that as the
+      // expected next step instead of a scary raw error.
       const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
       if (loginError) {
-        setError(loginError.message);
+        if (loginError.message === 'Email not confirmed' || loginError.code === 'email_not_confirmed') {
+          setError('');
+          setConfirmEmailSent(true);
+        } else {
+          setError(loginError.message);
+        }
       } else {
         navigate('/');
       }
@@ -88,6 +99,7 @@ export default function RegisterPage() {
           <p>{t('register.trialSubtitle')}</p>
         </div>
         <form onSubmit={handleRegister}>
+          {confirmEmailSent && <div className="pd-alert-success">{t('register.checkEmailToConfirm')}</div>}
           {error && <div className="pd-alert-danger">{error}</div>}
           <div className="pd-field">
             <label htmlFor="register-name">{t('register.fullNameLabel')}</label>
