@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import AppShell from '../components/AppShell';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -41,16 +42,14 @@ export default function LeaseRenewalsPage() {
         setError(t('leaseRenewals.pleaseLogIn'));
         return;
       }
-      const res = await fetch(
+      const data = await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/lease-renewals/landlord/${session.user.id}`,
         { headers: { Authorization: `Bearer ${session.access_token}` } }
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('leaseRenewals.loadFailed'));
       setRenewals(data.renewals || []);
     } catch (err) {
       console.error('Error loading lease renewals:', err);
-      setError(t('leaseRenewals.loadGenericError'));
+      setError(err.message || t('leaseRenewals.loadGenericError'));
     } finally {
       setLoading(false);
     }
@@ -70,12 +69,10 @@ export default function LeaseRenewalsPage() {
         setError(t('leaseRenewals.pleaseLogIn'));
         return;
       }
-      const res = await fetch(
+      const data = await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/tenants/${renewal.tenant_id}/renewal-notice-sent`,
         { method: 'POST', headers: { Authorization: `Bearer ${session.access_token}` } }
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('leaseRenewals.updateFailed'));
       setRenewals((prev) => prev.map((r) =>
         r.tenant_id === renewal.tenant_id ? { ...r, renewal_notice_sent_at: data.tenant.renewal_notice_sent_at } : r
       ));
@@ -95,12 +92,10 @@ export default function LeaseRenewalsPage() {
         setError(t('leaseRenewals.pleaseLogIn'));
         return;
       }
-      const res = await fetch(
+      await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/tenants/${renewal.tenant_id}/renewal-notice-sent`,
         { method: 'DELETE', headers: { Authorization: `Bearer ${session.access_token}` } }
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('leaseRenewals.updateFailed'));
       setRenewals((prev) => prev.map((r) =>
         r.tenant_id === renewal.tenant_id ? { ...r, renewal_notice_sent_at: null } : r
       ));

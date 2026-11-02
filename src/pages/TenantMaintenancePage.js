@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import TenantShell from '../components/TenantShell';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -47,15 +48,13 @@ export default function TenantMaintenancePage() {
         setError(t('tenantMaintenance.pleaseLogInAgain'));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/maintenance`, {
+      const data = await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/maintenance`, {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('tenantMaintenance.loadFailed'));
       setRequests(data.requests || []);
     } catch (err) {
       console.error('Error loading maintenance requests:', err);
-      setError(t('tenantMaintenance.loadError'));
+      setError(err.message || t('tenantMaintenance.loadError'));
     } finally {
       setLoading(false);
     }
@@ -104,7 +103,7 @@ export default function TenantMaintenancePage() {
         formData.append('photo', photo);
       }
 
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/maintenance`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/maintenance`, {
         method: 'POST',
         headers: {
           // No Content-Type here -- the browser sets the multipart boundary itself.
@@ -112,8 +111,6 @@ export default function TenantMaintenancePage() {
         },
         body: formData,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('tenantMaintenance.submitFailed'));
       setTitle('');
       setDescription('');
       setPhoto(null);

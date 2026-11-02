@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import CountUp from '../components/CountUp';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -86,12 +87,7 @@ export default function LandlordDashboardPage() {
       setUserId(session.user.id);
       setOnboardingDismissed(readOnboardingDismissed(session.user.id));
 
-      const res = await fetch(`${base}/api/dashboard/${session.user.id}`, { headers });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to load dashboard');
-      }
+      const data = await apiRequest(`${base}/api/dashboard/${session.user.id}`, { headers });
 
       setSummary(data.summary);
       setProperties(data.properties || []);
@@ -101,18 +97,16 @@ export default function LandlordDashboardPage() {
 
       // Right-rail widgets are fetched separately and never block the core
       // dashboard from rendering, even if one of them is slow or fails.
-      fetch(`${base}/api/maintenance/landlord/${session.user.id}`, { headers })
-        .then((r) => r.json())
+      apiRequest(`${base}/api/maintenance/landlord/${session.user.id}`, { headers })
         .then((d) => setMaintenanceRequests(d.requests || []))
         .catch(() => { });
 
-      fetch(`${base}/api/lease-renewals/landlord/${session.user.id}`, { headers })
-        .then((r) => r.json())
+      apiRequest(`${base}/api/lease-renewals/landlord/${session.user.id}`, { headers })
         .then((d) => setLeaseRenewals(d.renewals || []))
         .catch(() => { });
     } catch (err) {
       console.error('Error loading dashboard:', err);
-      setError(t('dashboard.loadError'));
+      setError(err.message || t('dashboard.loadError'));
     } finally {
       setLoading(false);
     }

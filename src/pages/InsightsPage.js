@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -111,11 +112,9 @@ export default function InsightsPage() {
         return;
       }
       const backend = process.env.REACT_APP_BACKEND_URL;
-      const res = await fetch(`${backend}/api/insights/${session.user.id}?months=${months}`, {
+      const data = await apiRequest(`${backend}/api/insights/${session.user.id}?months=${months}`, {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('insights.loadFailed'));
 
       setSummary(data.summary);
       setCashFlow(data.cash_flow || []);

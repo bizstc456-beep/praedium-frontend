@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -36,12 +37,11 @@ export default function PaymentPage() {
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
+      const data = await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/billing/plan/${user.id}`,
         { headers: { Authorization: `Bearer ${session?.access_token}` } }
       );
-      const data = await res.json();
-      if (res.ok) setPlan(data);
+      setPlan(data);
     } catch (err) {
       console.error('Error loading plan:', err);
     }
@@ -59,7 +59,7 @@ export default function PaymentPage() {
       // The backend derives the user from this session token rather than
       // trusting the body, and maps `tier` server-side to the matching
       // Stripe price id -- the frontend never sends a price id directly.
-      const response = await fetch(
+      const data = await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/create-checkout-session`,
         {
           method: 'POST',
@@ -71,10 +71,8 @@ export default function PaymentPage() {
         }
       );
 
-      const data = await response.json();
-
-      if (!response.ok || !data.url) {
-        throw new Error(data.error || t('payment.checkoutSessionFailed'));
+      if (!data.url) {
+        throw new Error(t('payment.checkoutSessionFailed'));
       }
 
       window.location.href = data.url;
@@ -93,7 +91,7 @@ export default function PaymentPage() {
     setLoadingTier(tierKey);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const response = await fetch(
+      await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/billing/change-plan`,
         {
           method: 'POST',
@@ -104,10 +102,6 @@ export default function PaymentPage() {
           body: JSON.stringify({ tier: tierKey }),
         }
       );
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || t('payment.switchPlanFailed'));
-      }
       await getUserAndPlan();
     } catch (error) {
       console.error('Change plan error:', error);
@@ -125,7 +119,7 @@ export default function PaymentPage() {
     setLoadingTier('cancel');
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const response = await fetch(
+      await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/billing/cancel`,
         {
           method: 'POST',
@@ -136,10 +130,6 @@ export default function PaymentPage() {
           body: JSON.stringify({ reason: cancelReason, feedback: cancelFeedback }),
         }
       );
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || t('payment.cancelFailed'));
-      }
       setShowCancelFeedback(false);
       setCancelReason('');
       setCancelFeedback('');
@@ -156,17 +146,13 @@ export default function PaymentPage() {
     setLoadingTier('resume');
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const response = await fetch(
+      await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/billing/resume`,
         {
           method: 'POST',
           headers: { Authorization: `Bearer ${session.access_token}` },
         }
       );
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || t('payment.resumeFailed'));
-      }
       await getUserAndPlan();
     } catch (error) {
       console.error('Resume subscription error:', error);

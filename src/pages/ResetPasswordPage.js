@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
+import { apiRequest } from '../utils/api';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -60,10 +61,10 @@ export default function ResetPasswordPage() {
         let destination = '/';
         try {
           const { data: { session } } = await supabase.auth.getSession();
-          const meRes = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/me`, {
+          await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/me`, {
             headers: { Authorization: `Bearer ${session?.access_token}` },
           });
-          if (meRes.ok) destination = '/tenant';
+          destination = '/tenant';
         } catch (lookupErr) {
           // Not a tenant account (or backend unreachable) -- fall back to '/'.
         }

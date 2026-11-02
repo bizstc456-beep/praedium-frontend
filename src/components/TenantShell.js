@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from './LanguageToggle';
 import LanguagePrompt from './LanguagePrompt';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -27,11 +28,10 @@ export default function TenantShell({ active, children }) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       try {
-        const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/me`, {
+        const data = await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/me`, {
           headers: { Authorization: `Bearer ${session.access_token}` },
         });
-        const data = await res.json();
-        if (!active || !res.ok) return;
+        if (!active) return;
         const lang = data.tenant?.preferred_language;
         if (lang) {
           if (i18n.language !== lang) i18n.changeLanguage(lang);
@@ -51,7 +51,7 @@ export default function TenantShell({ active, children }) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/language`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/tenant-portal/language`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 import CountUp from '../components/CountUp';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -102,18 +103,17 @@ export default function AdminDashboardPage() {
       // Admin stats are fetched through the backend, which uses the service-role
       // key server-side and checks the caller's email against an admin allowlist.
       // This can never be done safely with a direct client-side Supabase call.
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/stats`, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-
-      if (res.status === 401 || res.status === 403) {
-        setAccessDenied(true);
-        return;
-      }
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to load admin data');
+      let data;
+      try {
+        data = await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/admin/stats`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+      } catch (err) {
+        if (err.status === 401 || err.status === 403) {
+          setAccessDenied(true);
+          return;
+        }
+        throw err;
       }
 
       setStats(data.stats);

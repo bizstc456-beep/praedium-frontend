@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 import KebabMenu from '../components/KebabMenu';
 import DatePicker from '../components/DatePicker';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -125,22 +126,16 @@ export default function PropertiesPage() {
       const backend = process.env.REACT_APP_BACKEND_URL;
       const authHeaders = { Authorization: `Bearer ${session.access_token}` };
 
-      const [propsRes, tenantsRes] = await Promise.all([
-        fetch(`${backend}/api/properties/${session.user.id}`, { headers: authHeaders }),
-        fetch(`${backend}/api/tenants/landlord/${session.user.id}`, { headers: authHeaders }),
+      const [propsData, tenantsData] = await Promise.all([
+        apiRequest(`${backend}/api/properties/${session.user.id}`, { headers: authHeaders }),
+        apiRequest(`${backend}/api/tenants/landlord/${session.user.id}`, { headers: authHeaders }),
       ]);
-
-      const propsData = await propsRes.json();
-      const tenantsData = await tenantsRes.json();
-
-      if (!propsRes.ok) throw new Error(propsData.error || 'Failed to load properties');
-      if (!tenantsRes.ok) throw new Error(tenantsData.error || 'Failed to load tenants');
 
       setProperties(propsData.properties || []);
       setTenants(tenantsData.tenants || []);
     } catch (err) {
       console.error('Error loading properties:', err);
-      setError(t('properties.couldNotLoad'));
+      setError(err.message || t('properties.couldNotLoad'));
     } finally {
       setLoading(false);
     }
@@ -206,7 +201,7 @@ export default function PropertiesPage() {
         ? `${backend}/api/properties`
         : `${backend}/api/properties/${propertyFormOpen}`;
 
-      const res = await fetch(url, {
+      await apiRequest(url, {
         method: isNew ? 'POST' : 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -218,13 +213,19 @@ export default function PropertiesPage() {
           bathrooms: propertyForm.bathrooms === '' ? null : Number(propertyForm.bathrooms),
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.failedToSaveProperty'));
 
       closePropertyForm();
       await loadData();
     } catch (err) {
-      setFormError(err.message || t('properties.failedToSaveProperty'));
+      if (err.code === 'plan_limit_reached' && err.data) {
+        setFormError(t('properties.planLimitReached', {
+          currentUnits: err.data.current_units,
+          maxUnits: err.data.max_units,
+          planName: t(`payment.tiers.${err.data.plan_tier}.name`),
+        }));
+      } else {
+        setFormError(err.message || t('properties.failedToSaveProperty'));
+      }
     }
   };
 
@@ -241,12 +242,10 @@ export default function PropertiesPage() {
         setError(t('properties.pleaseLogIn'));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/properties/${p.id}`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/properties/${p.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.failedToDeleteProperty'));
       await loadData();
     } catch (err) {
       setError(err.message || t('properties.failedToDeleteProperty'));
@@ -304,7 +303,7 @@ export default function PropertiesPage() {
 
       const rentCents = tenantForm.rent_amount === '' ? null : Math.round(Number(tenantForm.rent_amount) * 100);
 
-      const res = await fetch(url, {
+      await apiRequest(url, {
         method: isNew ? 'POST' : 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -316,8 +315,6 @@ export default function PropertiesPage() {
           property_id: tenantFormOpen.propertyId,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.failedToSaveTenant'));
 
       closeTenantForm();
       await loadData();
@@ -336,12 +333,10 @@ export default function PropertiesPage() {
         setError(t('properties.pleaseLogIn'));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenants/${tenant.id}`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/tenants/${tenant.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.failedToDeleteTenant'));
       await loadData();
     } catch (err) {
       setError(err.message || t('properties.failedToDeleteTenant'));
@@ -356,12 +351,10 @@ export default function PropertiesPage() {
         setInviteStatus((s) => ({ ...s, [tenant.id]: { error: t('properties.pleaseLogIn') } }));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenants/${tenant.id}/invite`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/tenants/${tenant.id}/invite`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.failedToSendInvite'));
       setInviteStatus((s) => ({ ...s, [tenant.id]: { success: true } }));
       await loadData();
     } catch (err) {
@@ -404,7 +397,7 @@ export default function PropertiesPage() {
         return;
       }
 
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/payments/mark-paid`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/payments/mark-paid`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -417,8 +410,6 @@ export default function PropertiesPage() {
           payment_method: paymentForm.payment_method,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.failedToRecordPayment'));
 
       setPaymentSuccess(t('properties.paymentRecorded'));
       setPaymentFormOpen(null);
@@ -437,14 +428,12 @@ export default function PropertiesPage() {
         setFormError(t('properties.pleaseLogIn'));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/payments/${tenantId}/latest`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/payments/${tenantId}/latest`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.failedToCancelPayment'));
 
       setPaymentSuccess(t('properties.lastPaymentCanceled'));
       await loadData();
@@ -855,12 +844,10 @@ function DocumentsPanel({ entityType, entityId }) {
         setError(t('properties.pleaseLogIn'));
         return;
       }
-      const res = await fetch(
+      const data = await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/documents/${entityType}/${entityId}`,
         { headers: { Authorization: `Bearer ${session.access_token}` } }
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.failedToLoadDocuments'));
       setDocuments(data.documents || []);
     } catch (err) {
       setError(err.message || t('properties.failedToLoadDocuments'));
@@ -891,13 +878,11 @@ function DocumentsPanel({ entityType, entityId }) {
       formData.append('category', category);
       formData.append(entityType === 'tenant' ? 'tenant_id' : 'property_id', entityId);
 
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/documents/upload`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/documents/upload`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${session.access_token}` },
         body: formData,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.uploadFailed'));
 
       if (fileInputRef.current) fileInputRef.current.value = '';
       await loadDocuments();
@@ -916,12 +901,10 @@ function DocumentsPanel({ entityType, entityId }) {
         setError(t('properties.pleaseLogIn'));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/documents/${doc.id}`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/documents/${doc.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('properties.failedToDeleteDocument'));
       await loadDocuments();
     } catch (err) {
       setError(err.message || t('properties.failedToDeleteDocument'));

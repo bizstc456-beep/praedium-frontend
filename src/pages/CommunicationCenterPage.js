@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -85,26 +86,25 @@ export default function CommunicationCenterPage() {
       const backend = process.env.REACT_APP_BACKEND_URL;
       const authHeaders = { Authorization: `Bearer ${session.access_token}` };
 
-      const [tenantsRes, messagesRes, templatesRes] = await Promise.all([
-        fetch(`${backend}/api/tenants/landlord/${session.user.id}`, { headers: authHeaders }),
-        fetch(`${backend}/api/sms/inbox/${session.user.id}`, { headers: authHeaders }),
-        fetch(`${backend}/api/sms/templates`, { headers: authHeaders }),
+      const [tenantsData, messagesData] = await Promise.all([
+        apiRequest(`${backend}/api/tenants/landlord/${session.user.id}`, { headers: authHeaders }),
+        apiRequest(`${backend}/api/sms/inbox/${session.user.id}`, { headers: authHeaders }),
       ]);
 
-      const tenantsData = await tenantsRes.json();
-      const messagesData = await messagesRes.json();
-      const templatesData = await templatesRes.json();
-
-      if (!tenantsRes.ok) throw new Error(tenantsData.error || t('communicationCenter.loadTenantsFailed'));
-      if (!messagesRes.ok) throw new Error(messagesData.error || t('communicationCenter.loadMessagesFailed'));
-      // Quick-action templates are a nice-to-have -- don't fail the whole
-      // page over them if that route hiccups.
       setTenants(tenantsData.tenants || []);
       setMessages(messagesData.messages || []);
-      setTemplates(templatesRes.ok ? (templatesData.templates || []) : []);
+
+      // Quick-action templates are a nice-to-have -- don't fail the whole
+      // page over them if that route hiccups.
+      try {
+        const templatesData = await apiRequest(`${backend}/api/sms/templates`, { headers: authHeaders });
+        setTemplates(templatesData.templates || []);
+      } catch {
+        setTemplates([]);
+      }
     } catch (err) {
       console.error('Error loading communication center:', err);
-      setError(t('communicationCenter.loadError'));
+      setError(err.message || t('communicationCenter.loadError'));
     } finally {
       setLoading(false);
     }
@@ -146,7 +146,7 @@ export default function CommunicationCenterPage() {
         return;
       }
 
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/sms/send`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/sms/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -154,11 +154,6 @@ export default function CommunicationCenterPage() {
         },
         body: JSON.stringify({ tenant_id: selectedTenantId, message: messageText.trim() }),
       });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || t('communicationCenter.sendFailed'));
-      }
 
       setSendSuccess(t('communicationCenter.sendSuccess'));
       setMessageText('');

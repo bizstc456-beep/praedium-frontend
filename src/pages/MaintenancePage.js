@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -105,16 +106,14 @@ export default function MaintenancePage() {
         setError(t('maintenance.pleaseLogInAgain'));
         return;
       }
-      const res = await fetch(
+      const data = await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/maintenance/landlord/${session.user.id}`,
         { headers: { Authorization: `Bearer ${session.access_token}` } }
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('maintenance.loadRequestsFailed'));
       setRequests(data.requests || []);
     } catch (err) {
       console.error('Error loading maintenance requests:', err);
-      setError(t('maintenance.loadRequestsError'));
+      setError(err.message || t('maintenance.loadRequestsError'));
     } finally {
       setLoading(false);
     }
@@ -125,16 +124,14 @@ export default function MaintenancePage() {
     try {
       const session = await getSession();
       if (!session) return;
-      const res = await fetch(
+      const data = await apiRequest(
         `${process.env.REACT_APP_BACKEND_URL}/api/vendors/${session.user.id}`,
         { headers: { Authorization: `Bearer ${session.access_token}` } }
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('maintenance.loadVendorsFailed'));
       setVendors(data.vendors || []);
     } catch (err) {
       console.error('Error loading vendors:', err);
-      setVendorError(t('maintenance.loadVendorsError'));
+      setVendorError(err.message || t('maintenance.loadVendorsError'));
     } finally {
       setVendorsLoading(false);
     }
@@ -155,7 +152,7 @@ export default function MaintenancePage() {
         setError(t('maintenance.pleaseLogInAgain'));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/maintenance/${request.id}`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/maintenance/${request.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -163,8 +160,6 @@ export default function MaintenancePage() {
         },
         body: JSON.stringify({ status }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('maintenance.updateRequestFailed'));
       setRequests((prev) => prev.map((r) => (r.id === request.id ? { ...r, status } : r)));
     } catch (err) {
       setError(err.message || t('maintenance.updateRequestError'));
@@ -216,7 +211,7 @@ export default function MaintenancePage() {
       const url = editingVendorId
         ? `${process.env.REACT_APP_BACKEND_URL}/api/vendors/${editingVendorId}`
         : `${process.env.REACT_APP_BACKEND_URL}/api/vendors`;
-      const res = await fetch(url, {
+      await apiRequest(url, {
         method: editingVendorId ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -224,8 +219,6 @@ export default function MaintenancePage() {
         },
         body: JSON.stringify(vendorForm),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('maintenance.saveVendorFailed'));
       closeVendorForm();
       await loadVendors();
     } catch (err) {
@@ -244,12 +237,10 @@ export default function MaintenancePage() {
         setVendorError(t('maintenance.pleaseLogInAgain'));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/vendors/${vendor.id}`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/vendors/${vendor.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('maintenance.deleteVendorFailed'));
       await loadVendors();
     } catch (err) {
       setVendorError(err.message || t('maintenance.deleteVendorError'));

@@ -24,6 +24,7 @@ import TermsOfServicePage from './pages/TermsOfServicePage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import NotFoundPage from './pages/NotFoundPage';
 import HelpPage from './pages/HelpPage';
+import ErrorBoundary from './components/ErrorBoundary';
 import { ADMIN_EMAILS } from './utils/adminEmails';
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -69,33 +70,35 @@ function App() {
   if (loading) return <div className="loading-container"><div className="spinner"></div><p>Loading...</p></div>;
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/settings" element={user ? <SettingsPage /> : <Navigate to="/login" />} />
-        <Route path="/payment" element={user ? <PaymentPage /> : <Navigate to="/login" />} />
-        <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/login" />} />
-        <Route path="/admin" element={user ? <AdminDashboardPage /> : <Navigate to="/login" />} />
-        <Route path="/messages" element={user ? <CommunicationCenterPage /> : <Navigate to="/login" />} />
-        <Route path="/properties" element={user ? <PropertiesPage /> : <Navigate to="/login" />} />
-        <Route path="/reports" element={user ? <ReportsPage /> : <Navigate to="/login" />} />
-        <Route path="/insights" element={user ? <InsightsPage /> : <Navigate to="/login" />} />
-        <Route path="/maintenance" element={user ? <MaintenancePage /> : <Navigate to="/login" />} />
-        <Route path="/tenant/login" element={!tenantUser ? <TenantLoginPage /> : <Navigate to="/tenant" />} />
-        <Route path="/tenant/set-password" element={<TenantSetPasswordPage />} />
-        <Route path="/tenant" element={tenantUser ? <TenantPortalPage /> : <Navigate to="/tenant/login" />} />
-        <Route path="/tenant/maintenance" element={tenantUser ? <TenantMaintenancePage /> : <Navigate to="/tenant/login" />} />
-        <Route path="/renewals" element={user ? <LeaseRenewalsPage /> : <Navigate to="/login" />} />
-        <Route path="/terms" element={<TermsOfServicePage />} />
-        <Route path="/privacy" element={<PrivacyPolicyPage />} />
-        <Route path="/" element={user ? (isAdmin ? <AdminDashboardPage /> : <DashboardPage />) : <Navigate to="/login" />} />
-        <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/login" />} />
-        <Route path="/help" element={user ? <HelpPage /> : <Navigate to="/login" />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <Routes>
+          <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/settings" element={user ? <SettingsPage /> : <Navigate to="/login" />} />
+          <Route path="/payment" element={user ? <PaymentPage /> : <Navigate to="/login" />} />
+          <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/login" />} />
+          <Route path="/admin" element={user ? <AdminDashboardPage /> : <Navigate to="/login" />} />
+          <Route path="/messages" element={user ? <CommunicationCenterPage /> : <Navigate to="/login" />} />
+          <Route path="/properties" element={user ? <PropertiesPage /> : <Navigate to="/login" />} />
+          <Route path="/reports" element={user ? <ReportsPage /> : <Navigate to="/login" />} />
+          <Route path="/insights" element={user ? <InsightsPage /> : <Navigate to="/login" />} />
+          <Route path="/maintenance" element={user ? <MaintenancePage /> : <Navigate to="/login" />} />
+          <Route path="/tenant/login" element={!tenantUser ? <TenantLoginPage /> : <Navigate to="/tenant" />} />
+          <Route path="/tenant/set-password" element={<TenantSetPasswordPage />} />
+          <Route path="/tenant" element={tenantUser ? <TenantPortalPage /> : <Navigate to="/tenant/login" />} />
+          <Route path="/tenant/maintenance" element={tenantUser ? <TenantMaintenancePage /> : <Navigate to="/tenant/login" />} />
+          <Route path="/renewals" element={user ? <LeaseRenewalsPage /> : <Navigate to="/login" />} />
+          <Route path="/terms" element={<TermsOfServicePage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/" element={user ? (isAdmin ? <AdminDashboardPage /> : <DashboardPage />) : <Navigate to="/login" />} />
+          <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/login" />} />
+          <Route path="/help" element={user ? <HelpPage /> : <Navigate to="/login" />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

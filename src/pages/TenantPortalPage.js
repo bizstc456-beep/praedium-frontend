@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import TenantShell from '../components/TenantShell';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -46,15 +47,10 @@ export default function TenantPortalPage() {
       const backend = process.env.REACT_APP_BACKEND_URL;
       const authHeaders = { Authorization: `Bearer ${session.access_token}` };
 
-      const [meRes, paymentsRes] = await Promise.all([
-        fetch(`${backend}/api/tenant-portal/me`, { headers: authHeaders }),
-        fetch(`${backend}/api/tenant-portal/payments`, { headers: authHeaders }),
+      const [meData, paymentsData] = await Promise.all([
+        apiRequest(`${backend}/api/tenant-portal/me`, { headers: authHeaders }),
+        apiRequest(`${backend}/api/tenant-portal/payments`, { headers: authHeaders }),
       ]);
-      const meData = await meRes.json();
-      const paymentsData = await paymentsRes.json();
-
-      if (!meRes.ok) throw new Error(meData.error || t('tenantPortal.loadRentalInfoFailed'));
-      if (!paymentsRes.ok) throw new Error(paymentsData.error || t('tenantPortal.loadPaymentHistoryFailed'));
 
       setTenant(meData.tenant);
       setProperty(meData.property);

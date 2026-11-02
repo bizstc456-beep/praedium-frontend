@@ -3,6 +3,7 @@ import AppShell from '../components/AppShell';
 import LanguageToggle from '../components/LanguageToggle';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -34,11 +35,9 @@ export default function SettingsPage() {
           return;
         }
         setEmail(session.user.email || '');
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
+        const data = await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
           headers: { Authorization: `Bearer ${session.access_token}` }
         });
-        if (!response.ok) throw new Error('Failed to load account');
-        const data = await response.json();
         setPhone(data.phone || '');
       } catch (err) {
         console.error('Load account error:', err);
@@ -58,7 +57,7 @@ export default function SettingsPage() {
         alert(t('settings.pleaseLogIn'));
         return;
       }
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
+      const data = await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -66,8 +65,6 @@ export default function SettingsPage() {
         },
         body: JSON.stringify({ phone })
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || t('settings.savePhoneFailed'));
       setPhone(data.phone || '');
       setPhoneSaved(true);
     } catch (err) {
@@ -106,7 +103,7 @@ export default function SettingsPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -114,11 +111,10 @@ export default function SettingsPage() {
         },
         body: JSON.stringify({ preferred_language: lang })
       });
-      if (!response.ok) throw new Error(t('settings.saveLanguageFailed'));
       setLanguageSaved(true);
     } catch (err) {
       console.error('Save language error:', err);
-      setError(t('settings.saveLanguageFailed'));
+      setError(err.message || t('settings.saveLanguageFailed'));
     } finally {
       setSavingLanguage(false);
     }
@@ -166,16 +162,14 @@ export default function SettingsPage() {
         alert(t('settings.pleaseLogIn'));
         return;
       }
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account/delete-request`, {
+      const data = await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/account/delete-request`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${session.access_token}` }
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || t('settings.deleteRequestFailed'));
       setDeletionStatus(data);
     } catch (err) {
       console.error('Delete request error:', err);
-      setError(t('settings.deleteRequestError'));
+      setError(err.message || t('settings.deleteRequestError'));
     } finally {
       setRequesting(false);
     }

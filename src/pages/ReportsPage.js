@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import AppShell from '../components/AppShell';
+import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -103,26 +104,18 @@ export default function ReportsPage() {
       const backend = process.env.REACT_APP_BACKEND_URL;
       const authHeaders = { Authorization: `Bearer ${session.access_token}` };
 
-      const [propsRes, expensesRes, reportRes] = await Promise.all([
-        fetch(`${backend}/api/properties/${session.user.id}`, { headers: authHeaders }),
-        fetch(`${backend}/api/expenses/landlord/${session.user.id}`, { headers: authHeaders }),
-        fetch(`${backend}/api/reports/${session.user.id}?start=${rangeStart}&end=${rangeEnd}`, { headers: authHeaders }),
+      const [propsData, expensesData, reportData] = await Promise.all([
+        apiRequest(`${backend}/api/properties/${session.user.id}`, { headers: authHeaders }),
+        apiRequest(`${backend}/api/expenses/landlord/${session.user.id}`, { headers: authHeaders }),
+        apiRequest(`${backend}/api/reports/${session.user.id}?start=${rangeStart}&end=${rangeEnd}`, { headers: authHeaders }),
       ]);
-
-      const propsData = await propsRes.json();
-      const expensesData = await expensesRes.json();
-      const reportData = await reportRes.json();
-
-      if (!propsRes.ok) throw new Error(propsData.error || 'Failed to load properties');
-      if (!expensesRes.ok) throw new Error(expensesData.error || 'Failed to load expenses');
-      if (!reportRes.ok) throw new Error(reportData.error || 'Failed to load report');
 
       setProperties(propsData.properties || []);
       setExpenses(expensesData.expenses || []);
       setReport(reportData);
     } catch (err) {
       console.error('Error loading reports:', err);
-      setError(t('reports.couldNotLoad'));
+      setError(err.message || t('reports.couldNotLoad'));
     } finally {
       setLoading(false);
     }
@@ -212,7 +205,7 @@ export default function ReportsPage() {
         setFormError(t('reports.pleaseLogIn'));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/expenses`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/expenses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -223,8 +216,6 @@ export default function ReportsPage() {
           amount: Math.round(Number(expenseForm.amount) * 100),
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to save expense');
 
       closeExpenseForm();
       await loadAll(start, end);
@@ -242,12 +233,10 @@ export default function ReportsPage() {
         setError(t('reports.pleaseLogIn'));
         return;
       }
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/expenses/${expense.id}`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/expenses/${expense.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to delete expense');
       await loadAll(start, end);
     } catch (err) {
       setError(err.message || t('reports.failedToDeleteExpense'));

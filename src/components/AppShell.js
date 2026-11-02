@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import { ADMIN_EMAILS } from '../utils/adminEmails';
+import { apiRequest } from '../utils/api';
 import LanguageToggle from './LanguageToggle';
 import LanguagePrompt from './LanguagePrompt';
 import '../styles/dashboard.css';
@@ -43,12 +44,11 @@ export default function AppShell({ active, wide, children }) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       try {
-        const res = await fetch(
+        const data = await apiRequest(
           `${process.env.REACT_APP_BACKEND_URL}/api/billing/plan/${user.id}`,
           { headers: { Authorization: `Bearer ${session.access_token}` } }
         );
-        const data = await res.json();
-        if (!active || !res.ok) return;
+        if (!active) return;
         if (!data.has_subscription && data.trial_ends_at) {
           setTrialEndsAt(data.trial_ends_at);
         }
@@ -68,11 +68,10 @@ export default function AppShell({ active, wide, children }) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       try {
-        const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
+        const data = await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
           headers: { Authorization: `Bearer ${session.access_token}` },
         });
-        const data = await res.json();
-        if (!active || !res.ok) return;
+        if (!active) return;
         if (data.preferred_language) {
           if (i18n.language !== data.preferred_language) {
             i18n.changeLanguage(data.preferred_language);
@@ -93,7 +92,7 @@ export default function AppShell({ active, wide, children }) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/account`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

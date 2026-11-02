@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
+import { apiRequest } from '../utils/api';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -51,17 +52,11 @@ export default function RegisterPage() {
       // billing status). A direct supabase.auth.signUp() here would create a
       // login with no customer record behind it, and property creation would
       // fail the moment they tried to add their first building.
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/register`, {
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name, phone }),
       });
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || t('register.couldNotCreateAccount'));
-        return;
-      }
 
       // Backend creates the account but doesn't hand back a session --
       // sign in immediately so the new landlord lands straight in the app.
@@ -81,7 +76,7 @@ export default function RegisterPage() {
         navigate('/');
       }
     } catch (err) {
-      setError(t('register.genericError'));
+      setError(err.message || t('register.genericError'));
     } finally {
       setLoading(false);
     }

@@ -351,7 +351,8 @@
       "insurance": "Insurance",
       "inspection": "Inspection",
       "other": "Other"
-    }
+    },
+    "planLimitReached": "Adding this property would put you at {{currentUnits}} units, over your {{planName}} plan's {{maxUnits}}-unit limit. Upgrade your plan to add more."
   },
   "notFound": {
     "title": "Page not found",
@@ -922,5 +923,16 @@
       "locksmith": "Locksmith",
       "other": "Other"
     }
+  },
+  "errors": {
+    "timeout": "The request timed out. Check your connection and try again.",
+    "network": "Couldn't reach the server. Check your connection and try again.",
+    "badResponse": "Something went wrong on our end. Please try again in a moment.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "message": "This page ran into an unexpected problem. Reloading usually fixes it.",
+    "reloadButton": "Reload page"
   }
 }
