@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import './App.css';
 import LoginPage from './pages/LoginPage';
@@ -37,6 +37,20 @@ const supabaseTenant = createClient(
   { auth: { storageKey: 'pd-tenant-auth' } }
 );
 
+// Sends a GA4 page_view on every client-side route change (SPA navigations
+// don't trigger a normal page load, so gtag's automatic pageview misses them).
+function AnalyticsTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('config', 'G-8VD7EFE62G', {
+        page_path: location.pathname + location.search,
+      });
+    }
+  }, [location]);
+  return null;
+}
+
 function App() {
   const [user, setUser] = useState(null);
   const [tenantUser, setTenantUser] = useState(null);
@@ -72,6 +86,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
+        <AnalyticsTracker />
         <Routes>
           <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
