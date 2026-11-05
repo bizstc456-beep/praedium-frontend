@@ -15,7 +15,9 @@
     "helpLink": "Besoin d'aide? Visitez le centre d'aide",
     "trialExpired": "Votre essai gratuit est terminé — abonnez-vous pour garder votre compte actif.",
     "trialCountdown": "Votre essai gratuit se termine dans {{days}}{{hours}} h {{minutes}} min — abonnez-vous pour garder votre compte actif.",
-    "viewPlans": "Voir les forfaits"
+    "viewPlans": "Voir les forfaits",
+    "deletionRequestedBanner": "Suppression du compte demandée le {{datetime}}. Vérifiez votre courriel pour un lien d'annulation.",
+    "deletionBannerCta": "Voir"
   },
   "tenantNav": {
     "myRental": "Mon logement",

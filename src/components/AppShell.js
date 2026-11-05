@@ -24,6 +24,7 @@ export default function AppShell({ active, wide, children }) {
   const [trialEndsAt, setTrialEndsAt] = useState(null);
   const [now, setNow] = useState(() => Date.now());
   const [showLanguagePrompt, setShowLanguagePrompt] = useState(false);
+  const [deletionRequestedAt, setDeletionRequestedAt] = useState(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -79,6 +80,7 @@ export default function AppShell({ active, wide, children }) {
         } else {
           setShowLanguagePrompt(true);
         }
+        setDeletionRequestedAt(data.deletion_requested_at || null);
       } catch (err) {
         console.error('Error loading language preference:', err);
       }
@@ -177,6 +179,19 @@ export default function AppShell({ active, wide, children }) {
         <Link to="/help" className="pd-support-link" onClick={closeNav}>{t('nav.helpLink')}</Link>
       </aside>
       <main className={`pd-main${wide ? ' pd-main-wide' : ''}`}>
+        {deletionRequestedAt && (
+          <div className="pd-deletion-banner" role="alert">
+            <span className="pd-deletion-banner-text">
+              {t('nav.deletionRequestedBanner', {
+                datetime: new Date(deletionRequestedAt).toLocaleString(i18n.language === 'fr' ? 'fr-CA' : 'en-CA', {
+                  dateStyle: 'long',
+                  timeStyle: 'short',
+                }),
+              })}
+            </span>
+            <Link to="/settings" className="pd-deletion-banner-cta" onClick={closeNav}>{t('nav.deletionBannerCta')}</Link>
+          </div>
+        )}
         {trialCountdown && (
           <div className="pd-trial-banner" role="status">
             <span className="pd-trial-banner-text">

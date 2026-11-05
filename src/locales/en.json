@@ -15,7 +15,9 @@
     "helpLink": "Need help? Visit the help center",
     "trialExpired": "Your free trial has ended — subscribe to keep your account active.",
     "trialCountdown": "Your free trial ends in {{days}}{{hours}}h {{minutes}}m — subscribe to keep your account active.",
-    "viewPlans": "View plans"
+    "viewPlans": "View plans",
+    "deletionRequestedBanner": "Account deletion requested on {{datetime}}. Check your email for a link to cancel.",
+    "deletionBannerCta": "Review"
   },
   "tenantNav": {
     "myRental": "My Rental",

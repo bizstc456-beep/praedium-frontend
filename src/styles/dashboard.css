@@ -229,6 +229,42 @@
   font-family: "Public Sans", sans-serif;
 }
 
+.pd-deletion-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--pd-danger-soft);
+  border: 1px solid var(--pd-danger);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin: 0 0 22px;
+  font-family: "Public Sans", sans-serif;
+}
+
+.pd-deletion-banner-text {
+  color: var(--pd-danger);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.pd-deletion-banner-cta {
+  flex-shrink: 0;
+  background: var(--pd-danger);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 7px 16px;
+  border-radius: 7px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pd-deletion-banner-cta:hover {
+  opacity: 0.88;
+}
+
 .pd-trial-banner-text {
   color: var(--pd-warn);
   font-weight: 600;
