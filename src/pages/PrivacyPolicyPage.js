@@ -102,6 +102,9 @@ export default function PrivacyPolicyPage() {
             <strong>{t('privacyPolicy.section6LocalStorageLabel')}</strong> {t('privacyPolicy.section6LocalStorage')}
           </p>
           <p>
+            <strong>{t('privacyPolicy.section6CookiesLabel')}</strong> {t('privacyPolicy.section6Cookies')}
+          </p>
+          <p>
             <strong>{t('privacyPolicy.section6ChildrenLabel')}</strong> {t('privacyPolicy.section6Children')}
           </p>
           <p>

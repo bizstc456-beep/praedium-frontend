@@ -434,7 +434,7 @@
   },
   "privacyPolicy": {
     "title": "Politique de confidentialité",
-    "lastUpdated": "Dernière mise à jour : 19 septembre 2026",
+    "lastUpdated": "Dernière mise à jour : 5 novembre 2026",
     "section1Title": "1. Qui est couvert par cette politique",
     "section1Para1": "Cette politique couvre à la fois les propriétaires qui créent un compte Praedium et leurs locataires, qui ne créent pas de compte eux-mêmes mais dont les renseignements sont saisis par les propriétaires dans le Service.",
     "section1Para2Prefix": "En vertu de la Loi 25 du Québec, toute organisation traitant des renseignements personnels doit désigner une personne responsable de la protection des renseignements personnels. Pour Praedium, cette personne est Felix, joignable à",
@@ -465,7 +465,7 @@
     "section3Item5": "Anthropic (Claude), qui rédige le texte de certains messages automatisés — il voit le nom du locataire et le montant du paiement à cette seule fin",
     "section3Item6": "Railway et Vercel, pour l'hébergement",
     "section3Para2Label": "Transfert transfrontalier :",
-    "section3Para2": "aucun de ces fournisseurs n'est basé au Québec, donc vos données sont très probablement traitées sur des serveurs situés hors Québec (généralement aux États-Unis). La Loi 25 du Québec exige une évaluation des facteurs relatifs à la vie privée avant ce type de transfert, confirmant que les données bénéficient d'une protection équivalente. Cette évaluation devrait être complétée et référencée ici avant la publication de cette politique.",
+    "section3Para2": "Transfert transfrontalier : aucun de ces fournisseurs n'est basé au Québec, donc vos données sont traitées sur des serveurs situés hors Québec (généralement aux États-Unis). La Loi 25 du Québec exige de confirmer que les données transférées hors Québec bénéficient d'une protection équivalente à celle prévue par la loi québécoise. Nous avons examiné les pratiques de sécurité publiées par chaque fournisseur — ce sont tous des fournisseurs reconnus qui publient des ententes de traitement des données, chiffrent les données en transit et au repos, et maintiennent des certifications de sécurité indépendantes (comme SOC 2) — et nous considérons cette protection comme équivalente. Cette évaluation fait l'objet d'une révision périodique à mesure que les fournisseurs ou leurs pratiques évoluent.",
     "section3Para3": "Nous pouvons également divulguer des renseignements si la loi l'exige, ou pour protéger des droits, la sécurité ou des biens.",
     "section4Title": "4. Comment nous les protégeons, et combien de temps nous les conservons",
     "section4Para1": "Les données de chaque compte sont isolées et vérifiées à chaque requête. Les documents téléversés sont stockés de manière privée et accessibles uniquement via des liens à usage unique de courte durée — jamais des URL publiques. Toutes les données sont chiffrées en transit via HTTPS.",
@@ -477,14 +477,16 @@
     "section5Para3": "Vous avez également le droit de déposer une plainte auprès de la CAI.",
     "section6Title": "6. Autres choses à savoir",
     "section6LocalStorageLabel": "Stockage local :",
-    "section6LocalStorage": "nous utilisons le stockage local de votre navigateur pour vous garder connecté. Nous n'utilisons pas de témoins publicitaires ni de traqueurs tiers.",
+    "section6LocalStorage": "nous utilisons le stockage local de votre navigateur pour vous garder connecté et pour mémoriser votre choix concernant les témoins.",
     "section6ChildrenLabel": "Enfants :",
     "section6Children": "Praedium est un outil d'affaires qui n'est pas destiné à être utilisé par des personnes de moins de 18 ans, et nous ne recueillons pas sciemment de renseignements auprès d'enfants.",
     "section6ChangesLabel": "Modifications de cette politique :",
     "section6Changes": "nous aviserons les utilisateurs actifs de tout changement important avant son entrée en vigueur.",
     "section6ContactLabel": "Contact :",
     "section6ContactPrefix": "les questions, demandes ou plaintes concernant cette politique ou vos renseignements personnels peuvent être envoyées à",
-    "backToPraedium": "Retour à Praedium"
+    "backToPraedium": "Retour à Praedium",
+    "section6CookiesLabel": "Témoins analytiques :",
+    "section6Cookies": "avec votre consentement, donné via la bannière de témoins, nous utilisons Google Analytics pour comprendre l'utilisation de Praedium. Si vous refusez ou ne répondez pas, aucun témoin analytique n'est déposé et rien n'est transmis à Google."
   },
   "tenantPortal": {
     "title": "Ma location",

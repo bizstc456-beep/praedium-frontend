@@ -434,7 +434,7 @@
   },
   "privacyPolicy": {
     "title": "Privacy Policy",
-    "lastUpdated": "Last updated: September 19, 2026",
+    "lastUpdated": "Last updated: November 5, 2026",
     "section1Title": "1. Who this policy covers",
     "section1Para1": "This policy covers both landlords who create a Praedium account and their tenants, who don't create accounts themselves but whose information landlords enter into the Service.",
     "section1Para2Prefix": "Under Quebec's Law 25, every organization handling personal information must designate a person in charge of the protection of personal information. For Praedium, that person is Felix, reachable at",
@@ -465,7 +465,7 @@
     "section3Item5": "Anthropic (Claude), which drafts the text of some automated messages — it sees the tenant's name and payment amount for that purpose only",
     "section3Item6": "Railway and Vercel, for hosting",
     "section3Para2Label": "Cross-border transfer:",
-    "section3Para2": "none of these providers are based in Quebec, so your data is very likely processed on servers outside Quebec (commonly the United States). Quebec's Law 25 requires a privacy impact assessment before this kind of transfer, confirming the data receives equivalent protection. That assessment should be completed and referenced here before this policy is published.",
+    "section3Para2": "Cross-border transfer: none of these providers are based in Quebec, so your data is processed on servers outside Quebec (commonly the United States). Quebec's Law 25 requires confirming that data transferred outside Quebec receives protection equivalent to what Quebec law provides. We've reviewed each provider's published security practices — all are established providers that publish data processing agreements, encrypt data in transit and at rest, and maintain independent security certifications (such as SOC 2) — and consider this protection equivalent. We keep this assessment under periodic review as providers or their practices change.",
     "section3Para3": "We may also disclose information if legally required to, or to protect rights, safety, or property.",
     "section4Title": "4. How we protect it, and how long we keep it",
     "section4Para1": "Each account's data is isolated and checked on every request. Uploaded documents are stored privately and accessed only through short-lived, single-use links — never public URLs. All data is encrypted in transit over HTTPS.",
@@ -477,14 +477,16 @@
     "section5Para3": "You also have the right to file a complaint with the CAI.",
     "section6Title": "6. Other things to know",
     "section6LocalStorageLabel": "Local storage:",
-    "section6LocalStorage": "we use your browser's local storage to keep you signed in. We don't use advertising cookies or third-party trackers.",
+    "section6LocalStorage": "we use your browser's local storage to keep you signed in and to remember your cookie preference.",
     "section6ChildrenLabel": "Children:",
     "section6Children": "Praedium is a business tool not intended for use by anyone under 18, and we don't knowingly collect information from children.",
     "section6ChangesLabel": "Changes to this policy:",
     "section6Changes": "we'll notify active users of any material change before it takes effect.",
     "section6ContactLabel": "Contact:",
     "section6ContactPrefix": "questions, requests, or complaints about this policy or your personal information can be sent to",
-    "backToPraedium": "Back to Praedium"
+    "backToPraedium": "Back to Praedium",
+    "section6CookiesLabel": "Analytics cookies:",
+    "section6Cookies": "with your consent, given through the cookie banner, we use Google Analytics to understand how Praedium is used. If you decline or don't respond, no analytics cookies are set and nothing is sent to Google."
   },
   "tenantPortal": {
     "title": "My Rental",
