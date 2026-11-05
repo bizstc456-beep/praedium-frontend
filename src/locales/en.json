@@ -798,6 +798,7 @@
     "emptyCta": "Add a property"
   },
   "payment": {
+    "billingRequiredNotice": "Your Praedium subscription needs attention before you can keep using the app — check below and update your plan or payment method.",
     "pleaseLogInFirst": "Please log in first",
     "checkoutSessionFailed": "Failed to create checkout session",
     "checkoutStartFailed": "Failed to start checkout. Please try again.",

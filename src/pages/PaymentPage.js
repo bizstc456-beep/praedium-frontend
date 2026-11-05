@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 import { apiRequest } from '../utils/api';
@@ -18,6 +19,8 @@ const TIERS = [
 
 export default function PaymentPage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const billingRequired = searchParams.get('billing') === 'required';
   const [user, setUser] = useState(null);
   const [plan, setPlan] = useState(null);
   const [loadingTier, setLoadingTier] = useState(null);
@@ -165,6 +168,11 @@ export default function PaymentPage() {
   return (
     <AppShell active="billing">
       <div className="pd-pricing-wrap pd-pricing-wrap-wide">
+        {billingRequired && (
+          <div className="pd-alert-danger" style={{ marginBottom: 20 }}>
+            {t('payment.billingRequiredNotice')}
+          </div>
+        )}
         <div className="pd-pricing-header">
           <h1>{t('payment.pageTitle')}</h1>
           <p>{t('payment.pageSubtitle')}</p>

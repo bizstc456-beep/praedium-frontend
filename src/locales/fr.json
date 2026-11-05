@@ -798,6 +798,7 @@
     "emptyCta": "Ajouter une propriété"
   },
   "payment": {
+    "billingRequiredNotice": "Votre abonnement Praedium nécessite votre attention avant de pouvoir continuer à utiliser l'application — vérifiez ci-dessous et mettez à jour votre forfait ou votre moyen de paiement.",
     "pleaseLogInFirst": "Veuillez d'abord vous connecter",
     "checkoutSessionFailed": "Impossible de créer la session de paiement",
     "checkoutStartFailed": "Impossible de démarrer le paiement. Veuillez réessayer.",

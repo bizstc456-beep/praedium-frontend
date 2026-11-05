@@ -66,9 +66,26 @@ export async function apiRequest(url, options = {}) {
   }
 
   if (!res.ok) {
+    const code = data && data.code;
+
+    // A 402 with this code means requireActiveBilling blocked the request
+    // (past_due, canceled, or an expired never-subscribed trial) -- send
+    // the landlord straight to the billing page rather than letting
+    // whichever page made this call show a raw, confusing error. Guarded
+    // against the Payment page itself (its own calls are all to
+    // billing-exempt endpoints anyway, but this avoids any chance of a
+    // redirect loop).
+    if (
+      code === 'billing_required' &&
+      typeof window !== 'undefined' &&
+      !window.location.pathname.startsWith('/payment')
+    ) {
+      window.location.href = '/payment?billing=required';
+    }
+
     throw new ApiError((data && data.error) || i18n.t('errors.generic'), {
       status: res.status,
-      code: data && data.code,
+      code,
       data,
     });
   }
