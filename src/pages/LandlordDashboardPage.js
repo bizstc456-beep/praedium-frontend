@@ -423,7 +423,11 @@ export default function LandlordDashboardPage() {
                   <div className="pd-rail-mini-list">
                     {renewalPreview.map((r) => (
                       <div className="pd-rail-mini-row" key={r.tenant_id}>
-                        <span>{t('dashboard.leaseRenewalRow', { name: shortName(r.tenant_name, t('dashboard.tenantFallback')), date: shortDate(r.lease_end_date) })}</span>
+                        <span>
+                          {r.is_month_to_month
+                            ? t('dashboard.leaseRenewalRowMonthToMonth', { name: shortName(r.tenant_name, t('dashboard.tenantFallback')) })
+                            : t('dashboard.leaseRenewalRow', { name: shortName(r.tenant_name, t('dashboard.tenantFallback')), date: shortDate(r.lease_end_date) })}
+                        </span>
                         <span className={`pd-badge ${r.status === 'in_window' ? 'warn' : 'muted'}`}>
                           {r.status === 'in_window' ? t('dashboard.renewalStatusWindowOpen') : t('dashboard.renewalStatusUpcoming')}
                         </span>
