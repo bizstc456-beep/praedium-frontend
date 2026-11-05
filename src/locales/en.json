@@ -404,7 +404,7 @@
     "section3Title": "3. Your account and your data",
     "section3Para1": "You own the data you put into Praedium (\"Your Data\") — your property details, tenant information, payment records, and documents. We don't sell it.",
     "section3Para2": "As a landlord using Praedium, you're responsible for having the legal right to store your tenants' personal information under applicable privacy law (including Quebec's Law 25) and for informing your tenants accordingly.",
-    "section3Para3": "You can export Your Data (as CSV) before closing your account. After closure, we retain it briefly and then delete it, as described in our Privacy Policy.",
+    "section3Para3": "You can export Your Data (as a downloadable JSON file, covering your properties, tenants, payments, documents, expenses, maintenance requests, vendors, and SMS history) before closing your account. After closure, we retain it briefly and then delete it, as described in our Privacy Policy.",
     "section4Title": "4. Acceptable use",
     "section4Intro": "You agree not to:",
     "section4Item1": "Use Praedium for anything illegal, including housing discrimination",

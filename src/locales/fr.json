@@ -404,7 +404,7 @@
     "section3Title": "3. Votre compte et vos données",
     "section3Para1": "Vous êtes propriétaire des données que vous entrez dans Praedium (« Vos données ») — les détails de vos propriétés, les informations sur vos locataires, les registres de paiement et les documents. Nous ne les vendons pas.",
     "section3Para2": "En tant que propriétaire utilisant Praedium, vous êtes responsable d'avoir le droit légal de conserver les renseignements personnels de vos locataires conformément à la loi sur la protection de la vie privée applicable (y compris la Loi 25 du Québec) et d'en informer vos locataires en conséquence.",
-    "section3Para3": "Vous pouvez exporter Vos données (au format CSV) avant de fermer votre compte. Après la fermeture, nous les conservons brièvement, puis les supprimons, comme décrit dans notre Politique de confidentialité.",
+    "section3Para3": "Vous pouvez exporter Vos données (sous forme de fichier JSON téléchargeable, couvrant vos propriétés, locataires, paiements, documents, dépenses, demandes d'entretien, fournisseurs et historique de messages) avant de fermer votre compte. Après la fermeture, nous les conservons brièvement, puis les supprimons, comme décrit dans notre Politique de confidentialité.",
     "section4Title": "4. Utilisation acceptable",
     "section4Intro": "Vous vous engagez à ne pas :",
     "section4Item1": "Utiliser Praedium à des fins illégales, y compris la discrimination en matière de logement",
