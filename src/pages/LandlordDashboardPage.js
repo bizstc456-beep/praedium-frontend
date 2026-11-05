@@ -314,7 +314,7 @@ export default function LandlordDashboardPage() {
                   {t('dashboard.bannerRenewalSub', { names: renewalsSoon.map((tn) => tn.name).join(', ') })}
                 </div>
               </div>
-              <Link to="/properties" className="pd-banner-btn">{t('dashboard.goToProperties')}</Link>
+              <Link to="/renewals" className="pd-banner-btn">{t('dashboard.goToRenewals')}</Link>
             </div>
           )}
 
