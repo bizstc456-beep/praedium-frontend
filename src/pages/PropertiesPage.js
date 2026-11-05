@@ -20,6 +20,7 @@ const EMPTY_PROPERTY = {
 const EMPTY_TENANT = {
   name: '', email: '', phone: '', unit_label: '',
   rent_amount: '', lease_start_date: '', lease_end_date: '',
+  lowest_rent_disclosed_amount: '', lowest_rent_disclosure_note: '',
 };
 
 const EMPTY_PAYMENT = { amount: '', payment_date: '', payment_method: 'e-transfer' };
@@ -270,6 +271,8 @@ export default function PropertiesPage() {
       rent_amount: tenant.rent_amount ? (tenant.rent_amount / 100).toFixed(2) : '',
       lease_start_date: toDateInputValue(tenant.lease_start_date),
       lease_end_date: toDateInputValue(tenant.lease_end_date),
+      lowest_rent_disclosed_amount: tenant.lowest_rent_disclosed_amount ? (tenant.lowest_rent_disclosed_amount / 100).toFixed(2) : '',
+      lowest_rent_disclosure_note: tenant.lowest_rent_disclosure_note || '',
     });
     setTenantFormOpen({ propertyId: tenant.property_id, tenantId: tenant.id });
   };
@@ -302,6 +305,9 @@ export default function PropertiesPage() {
         : `${backend}/api/tenants/${tenantFormOpen.tenantId}`;
 
       const rentCents = tenantForm.rent_amount === '' ? null : Math.round(Number(tenantForm.rent_amount) * 100);
+      const lowestRentDisclosedCents = tenantForm.lowest_rent_disclosed_amount === ''
+        ? null
+        : Math.round(Number(tenantForm.lowest_rent_disclosed_amount) * 100);
 
       await apiRequest(url, {
         method: isNew ? 'POST' : 'PUT',
@@ -312,6 +318,8 @@ export default function PropertiesPage() {
         body: JSON.stringify({
           ...tenantForm,
           rent_amount: rentCents,
+          lowest_rent_disclosed_amount: lowestRentDisclosedCents,
+          lowest_rent_disclosure_note: tenantForm.lowest_rent_disclosure_note || null,
           property_id: tenantFormOpen.propertyId,
         }),
       });
@@ -792,6 +800,37 @@ function TenantForm({ form, setForm, onSubmit, onCancel }) {
         <div className="pd-field">
           <label htmlFor="tenant-lease-end">{t('properties.fieldLeaseEnd')}</label>
           <DatePicker id="tenant-lease-end" value={form.lease_end_date} onChange={(d) => setForm({ ...form, lease_end_date: d })} />
+        </div>
+      </div>
+      <div className="pd-form-row">
+        <div className="pd-field">
+          <label htmlFor="tenant-lowest-rent">
+            {t('properties.fieldLowestRentDisclosed')}
+            <span className="pd-info-tip">
+              <span className="pd-info-icon">i</span>
+              <span className="pd-info-bubble">{t('properties.lowestRentTip')}</span>
+            </span>
+          </label>
+          <input
+            id="tenant-lowest-rent"
+            className="pd-input"
+            type="number"
+            step="0.01"
+            min="0"
+            value={form.lowest_rent_disclosed_amount}
+            onChange={(e) => setForm({ ...form, lowest_rent_disclosed_amount: e.target.value })}
+            placeholder="1700.00"
+          />
+        </div>
+        <div className="pd-field">
+          <label htmlFor="tenant-disclosure-note">{t('properties.fieldDisclosureNote')}</label>
+          <input
+            id="tenant-disclosure-note"
+            className="pd-input"
+            value={form.lowest_rent_disclosure_note}
+            onChange={(e) => setForm({ ...form, lowest_rent_disclosure_note: e.target.value })}
+            placeholder={t('properties.disclosureNotePlaceholder')}
+          />
         </div>
       </div>
       <div className="pd-form-actions">

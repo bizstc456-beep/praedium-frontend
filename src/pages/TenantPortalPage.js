@@ -99,6 +99,20 @@ export default function TenantPortalPage() {
             </div>
           </div>
 
+          {(tenant.lowest_rent_disclosed_amount || tenant.lowest_rent_disclosure_note) && (
+            <div className="pd-card" style={{ marginBottom: 24 }}>
+              <h2 className="pd-section-title">{t('tenantPortal.rentHistoryTitle')}</h2>
+              <div className="pd-prow-city">
+                {tenant.lowest_rent_disclosed_amount ? (
+                  <>{t('tenantPortal.rentHistoryAmountLabel')}: {formatMoney(tenant.lowest_rent_disclosed_amount)}<br /></>
+                ) : null}
+                {tenant.lowest_rent_disclosure_note ? (
+                  <>{t('tenantPortal.rentHistoryNoteLabel')}: {tenant.lowest_rent_disclosure_note}</>
+                ) : null}
+              </div>
+            </div>
+          )}
+
           <h2 className="pd-section-title">{t('tenantPortal.paymentHistoryTitle')}</h2>
           {payments.length === 0 ? (
             <p className="pd-empty">{t('tenantPortal.noPayments')}</p>
