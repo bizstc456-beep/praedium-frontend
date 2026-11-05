@@ -39,6 +39,9 @@ export default function SettingsPage() {
           headers: { Authorization: `Bearer ${session.access_token}` }
         });
         setPhone(data.phone || '');
+        if (data.deletion_requested_at) {
+          setDeletionStatus({ already_requested: true, deletion_requested_at: data.deletion_requested_at });
+        }
       } catch (err) {
         console.error('Load account error:', err);
       } finally {
