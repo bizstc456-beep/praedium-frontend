@@ -91,6 +91,17 @@
     "linkInvalid": "This link is invalid or has expired.",
     "requestNewLink": "Request a new reset link"
   },
+  "cancelDeletion": {
+    "checking": "Checking your link...",
+    "cancelledTitle": "Deletion cancelled",
+    "cancelledMessage": "Your account deletion request has been cancelled. Nothing was deleted — your account is active again.",
+    "invalidTitle": "This link isn't valid",
+    "invalidMessage": "We couldn't find a matching deletion request. It may have already been cancelled, or the link may be incorrect.",
+    "expiredTitle": "This link has expired",
+    "expiredMessage": "The 7-day window to cancel this deletion request has passed. If you still want to stop it, contact us right away.",
+    "genericError": "Something went wrong. Please try again or contact support.",
+    "backToSignIn": "Back to sign in"
+  },
   "tenantLogin": {
     "genericError": "An error occurred",
     "title": "Tenant portal",
@@ -149,10 +160,10 @@
     "exportButton": "Export data",
     "exportError": "Failed to export data",
     "deleteSectionTitle": "Delete account",
-    "deleteSectionDescription": "Permanently delete your account and all associated data. This cannot be undone.",
-    "deleteConfirm": "Are you sure you want to request account deletion? This cannot be undone.",
+    "deleteSectionDescription": "Permanently delete your account and all associated data. We will email you a link to cancel within 7 days before anything is actually removed.",
+    "deleteConfirm": "Request account deletion? We will email you a link to cancel within the next 7 days in case you change your mind or clicked by mistake.",
     "deletionAlreadyRequested": "Account deletion was already requested on {{date}}.",
-    "deletionRequested": "Account deletion requested on {{date}}. Our team will process this request shortly.",
+    "deletionRequested": "Account deletion requested on {{date}}. Check your email for a link to cancel within the next 7 days if you didn't mean to.",
     "submittingRequest": "Submitting request...",
     "deleteRequestButton": "Request account deletion",
     "deleteRequestFailed": "Failed to submit deletion request",

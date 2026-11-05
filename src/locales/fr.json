@@ -91,6 +91,17 @@
     "linkInvalid": "Ce lien est invalide ou a expiré.",
     "requestNewLink": "Demander un nouveau lien"
   },
+  "cancelDeletion": {
+    "checking": "Vérification de votre lien...",
+    "cancelledTitle": "Suppression annulée",
+    "cancelledMessage": "Votre demande de suppression de compte a été annulée. Rien n'a été supprimé — votre compte est de nouveau actif.",
+    "invalidTitle": "Ce lien n'est pas valide",
+    "invalidMessage": "Nous n'avons trouvé aucune demande de suppression correspondante. Elle a peut-être déjà été annulée, ou le lien est incorrect.",
+    "expiredTitle": "Ce lien a expiré",
+    "expiredMessage": "Le délai de 7 jours pour annuler cette demande de suppression est écoulé. Si vous voulez quand même l'arrêter, contactez-nous immédiatement.",
+    "genericError": "Une erreur est survenue. Veuillez réessayer ou contacter le support.",
+    "backToSignIn": "Retour à la connexion"
+  },
   "tenantLogin": {
     "genericError": "Une erreur est survenue",
     "title": "Portail locataire",
@@ -149,10 +160,10 @@
     "exportButton": "Exporter les données",
     "exportError": "Impossible d'exporter les données",
     "deleteSectionTitle": "Supprimer le compte",
-    "deleteSectionDescription": "Supprimez définitivement votre compte et toutes les données associées. Cette action est irréversible.",
-    "deleteConfirm": "Êtes-vous sûr de vouloir demander la suppression de votre compte? Cette action est irréversible.",
+    "deleteSectionDescription": "Supprimez définitivement votre compte et toutes les données associées. Nous vous enverrons un courriel avec un lien pour annuler dans les 7 jours avant que quoi que ce soit ne soit réellement supprimé.",
+    "deleteConfirm": "Demander la suppression du compte? Nous vous enverrons un courriel avec un lien pour annuler dans les 7 prochains jours, au cas où vous changeriez d'avis ou auriez cliqué par erreur.",
     "deletionAlreadyRequested": "La suppression du compte a déjà été demandée le {{date}}.",
-    "deletionRequested": "Suppression du compte demandée le {{date}}. Notre équipe traitera cette demande sous peu.",
+    "deletionRequested": "Suppression du compte demandée le {{date}}. Vérifiez votre courriel pour un lien d'annulation valide 7 jours si ce n'était pas voulu.",
     "submittingRequest": "Envoi de la demande...",
     "deleteRequestButton": "Demander la suppression du compte",
     "deleteRequestFailed": "Impossible d'envoyer la demande de suppression",

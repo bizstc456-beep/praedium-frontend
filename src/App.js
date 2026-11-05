@@ -14,6 +14,7 @@ import ReportsPage from './pages/ReportsPage';
 import InsightsPage from './pages/InsightsPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import CancelDeletionPage from './pages/CancelDeletionPage';
 import MaintenancePage from './pages/MaintenancePage';
 import TenantLoginPage from './pages/TenantLoginPage';
 import TenantSetPasswordPage from './pages/TenantSetPasswordPage';
@@ -93,6 +94,7 @@ function App() {
           <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/cancel-deletion" element={<CancelDeletionPage />} />
           <Route path="/settings" element={user ? <SettingsPage /> : <Navigate to="/login" />} />
           <Route path="/payment" element={user ? <PaymentPage /> : <Navigate to="/login" />} />
           <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/login" />} />
