@@ -369,7 +369,13 @@
       "inspection": "Inspection",
       "other": "Other"
     },
-    "planLimitReached": "Adding this property would put you at {{currentUnits}} units, over your {{planName}} plan's {{maxUnits}}-unit limit. Upgrade your plan to add more."
+    "planLimitReached": "Adding this property would put you at {{currentUnits}} units, over your {{planName}} plan's {{maxUnits}}-unit limit. Upgrade your plan to add more.",
+    "fieldMonthToMonth": "No fixed end date (month-to-month)",
+    "monthToMonthTip": "Check this for a tenant with an indeterminate-term (month-to-month) lease -- one with no fixed end date. Quebec's notice rule is different for these: 1-2 months before whichever date you choose to make a rent increase or other change take effect, not tied to any lease end. General reference only, not legal advice.",
+    "fieldPlannedRentChangeDate": "Planned rent change date (optional)",
+    "plannedRentChangeDateTip": "If you already know when you plan to raise the rent or change a lease term, set it here and Praedium will track the 1-2 month notice window counting back from it. Leave it blank until you decide -- you'll still see a reminder that no date is set yet.",
+    "monthToMonthLabel": "month-to-month",
+    "noticeWindowOpen": "Notice window open"
   },
   "notFound": {
     "title": "Page not found",
@@ -538,9 +544,9 @@
     "loadGenericError": "Could not load lease renewals. Please try again shortly.",
     "updateFailed": "Failed to update.",
     "filterNeedsAttention": "Needs attention",
-    "filterAllLeases": "All leases with an end date",
-    "noticeWindowTip": "Quebec's TAL generally requires notice of a rent increase or lease change 3-6 months before a lease of 12+ months ends, or 1-2 months before a shorter fixed-term lease ends. Confirm the exact requirements for your situation before acting.",
-    "emptyNoneOnFile": "No tenants have a lease end date on file yet, so there's nothing to track.",
+    "filterAllLeases": "All tracked leases",
+    "noticeWindowTip": "Quebec's TAL generally requires notice of a rent increase or lease change 3-6 months before a lease of 12+ months ends, 1-2 months before a shorter fixed-term lease ends, or 1-2 months before a month-to-month tenant's planned change date. Confirm the exact requirements for your situation before acting.",
+    "emptyNoneOnFile": "No tenants have a lease end date, or a month-to-month status, on file yet, so there's nothing to track.",
     "emptyNothingNeedsAttention": "Nothing needs attention right now.",
     "columnProperty": "Property",
     "columnTenant": "Tenant",
@@ -554,7 +560,11 @@
     "sentOn": "Sent {{date}}",
     "undo": "Undo",
     "saving": "Saving...",
-    "markNoticeSent": "Mark notice sent"
+    "markNoticeSent": "Mark notice sent",
+    "statusMonthToMonthNoDate": "Month-to-month — no date set",
+    "statusMonthToMonthDatePassed": "Planned date passed",
+    "monthToMonth": "Month-to-month",
+    "plannedChangeOn": "planned change {{date}}"
   },
   "tenantMaintenance": {
     "title": "Maintenance",

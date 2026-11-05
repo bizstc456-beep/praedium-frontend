@@ -21,6 +21,7 @@ const EMPTY_TENANT = {
   name: '', email: '', phone: '', unit_label: '',
   rent_amount: '', lease_start_date: '', lease_end_date: '',
   lowest_rent_disclosed_amount: '', lowest_rent_disclosure_note: '',
+  is_month_to_month: false, planned_rent_change_date: '',
 };
 
 const EMPTY_PAYMENT = { amount: '', payment_date: '', payment_method: 'e-transfer' };
@@ -273,6 +274,8 @@ export default function PropertiesPage() {
       lease_end_date: toDateInputValue(tenant.lease_end_date),
       lowest_rent_disclosed_amount: tenant.lowest_rent_disclosed_amount ? (tenant.lowest_rent_disclosed_amount / 100).toFixed(2) : '',
       lowest_rent_disclosure_note: tenant.lowest_rent_disclosure_note || '',
+      is_month_to_month: !!tenant.is_month_to_month,
+      planned_rent_change_date: toDateInputValue(tenant.planned_rent_change_date),
     });
     setTenantFormOpen({ propertyId: tenant.property_id, tenantId: tenant.id });
   };
@@ -589,12 +592,18 @@ export default function PropertiesPage() {
                             <div className="pd-unit-info">
                               <div className="pd-unit-name">
                                 {tenant.name}{tenant.unit_label ? ` — ${tenant.unit_label}` : ''}
-                                {tenant.renewal_soon && <span className="pd-badge warn pd-unit-badge">{t('properties.leaseEndsSoon')}</span>}
+                                {tenant.renewal_soon && (
+                                  <span className="pd-badge warn pd-unit-badge">
+                                    {tenant.is_month_to_month ? t('properties.noticeWindowOpen') : t('properties.leaseEndsSoon')}
+                                  </span>
+                                )}
                                 {tenant.auth_user_id && <span className="pd-badge good pd-unit-badge">{t('properties.portalInvited')}</span>}
                               </div>
                               <div className="pd-prow-city">
                                 {tenant.phone}{tenant.email ? ` · ${tenant.email}` : ''}
-                                {tenant.lease_end_date ? ` · ${t('properties.leaseEndsOn', { date: toDateInputValue(tenant.lease_end_date) })}` : ''}
+                                {tenant.is_month_to_month
+                                  ? ` · ${t('properties.monthToMonthLabel')}`
+                                  : (tenant.lease_end_date ? ` · ${t('properties.leaseEndsOn', { date: toDateInputValue(tenant.lease_end_date) })}` : '')}
                               </div>
                             </div>
                             <div className="pd-prow-rent">{formatMoney(tenant.rent_amount)}{t('properties.perMonth')}</div>
@@ -798,9 +807,52 @@ function TenantForm({ form, setForm, onSubmit, onCancel }) {
           <DatePicker id="tenant-lease-start" value={form.lease_start_date} onChange={(d) => setForm({ ...form, lease_start_date: d })} />
         </div>
         <div className="pd-field">
-          <label htmlFor="tenant-lease-end">{t('properties.fieldLeaseEnd')}</label>
-          <DatePicker id="tenant-lease-end" value={form.lease_end_date} onChange={(d) => setForm({ ...form, lease_end_date: d })} />
+          {form.is_month_to_month ? (
+            <>
+              <label htmlFor="tenant-planned-change-date">
+                {t('properties.fieldPlannedRentChangeDate')}
+                <span className="pd-info-tip">
+                  <span className="pd-info-icon">i</span>
+                  <span className="pd-info-bubble">{t('properties.plannedRentChangeDateTip')}</span>
+                </span>
+              </label>
+              <DatePicker
+                id="tenant-planned-change-date"
+                value={form.planned_rent_change_date}
+                onChange={(d) => setForm({ ...form, planned_rent_change_date: d })}
+              />
+            </>
+          ) : (
+            <>
+              <label htmlFor="tenant-lease-end">{t('properties.fieldLeaseEnd')}</label>
+              <DatePicker id="tenant-lease-end" value={form.lease_end_date} onChange={(d) => setForm({ ...form, lease_end_date: d })} />
+            </>
+          )}
         </div>
+      </div>
+      <div className="pd-field pd-field-checkbox">
+        <label className="pd-checkbox-label">
+          <input
+            type="checkbox"
+            checked={form.is_month_to_month}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setForm({
+                ...form,
+                is_month_to_month: checked,
+                lease_end_date: checked ? '' : form.lease_end_date,
+                planned_rent_change_date: checked ? form.planned_rent_change_date : '',
+              });
+            }}
+          />
+          <span>
+            {t('properties.fieldMonthToMonth')}
+            <span className="pd-info-tip">
+              <span className="pd-info-icon">i</span>
+              <span className="pd-info-bubble">{t('properties.monthToMonthTip')}</span>
+            </span>
+          </span>
+        </label>
       </div>
       <div className="pd-form-row">
         <div className="pd-field">

@@ -369,7 +369,13 @@
       "inspection": "Inspection",
       "other": "Autre"
     },
-    "planLimitReached": "Ajouter cette propriété vous ferait passer à {{currentUnits}} unités, dépassant la limite de {{maxUnits}} unités de votre forfait {{planName}}. Mettez à niveau votre forfait pour en ajouter davantage."
+    "planLimitReached": "Ajouter cette propriété vous ferait passer à {{currentUnits}} unités, dépassant la limite de {{maxUnits}} unités de votre forfait {{planName}}. Mettez à niveau votre forfait pour en ajouter davantage.",
+    "fieldMonthToMonth": "Sans date de fin fixe (mois en mois)",
+    "monthToMonthTip": "Cochez cette case pour un locataire avec un bail à durée indéterminée (mois en mois), c'est-à-dire sans date de fin fixe. La règle d'avis du Québec est différente pour ces baux : 1 à 2 mois avant la date que vous choisissez pour faire prendre effet une augmentation de loyer ou un autre changement, sans lien avec une fin de bail. Référence générale seulement, pas un avis juridique.",
+    "fieldPlannedRentChangeDate": "Date prévue du changement de loyer (optionnel)",
+    "plannedRentChangeDateTip": "Si vous savez déjà quand vous prévoyez augmenter le loyer ou modifier une clause du bail, indiquez-le ici et Praedium suivra la fenêtre d'avis de 1 à 2 mois à partir de cette date. Laissez vide jusqu'à ce que vous décidiez -- vous verrez quand même un rappel qu'aucune date n'est encore fixée.",
+    "monthToMonthLabel": "mois en mois",
+    "noticeWindowOpen": "Fenêtre d'avis ouverte"
   },
   "notFound": {
     "title": "Page introuvable",
@@ -538,9 +544,9 @@
     "loadGenericError": "Impossible de charger les renouvellements de bail. Veuillez réessayer dans un instant.",
     "updateFailed": "Impossible de mettre à jour.",
     "filterNeedsAttention": "Nécessite une attention",
-    "filterAllLeases": "Tous les baux avec une date de fin",
-    "noticeWindowTip": "Le TAL du Québec exige généralement un avis d'augmentation de loyer ou de modification de bail 3 à 6 mois avant la fin d'un bail de 12 mois ou plus, ou 1 à 2 mois avant la fin d'un bail à durée fixe plus courte. Confirmez les exigences exactes pour votre situation avant d'agir.",
-    "emptyNoneOnFile": "Aucun locataire n'a de date de fin de bail enregistrée pour l'instant, il n'y a donc rien à suivre.",
+    "filterAllLeases": "Tous les baux suivis",
+    "noticeWindowTip": "Le TAL exige généralement un avis d'augmentation de loyer ou de modification de bail 3 à 6 mois avant la fin d'un bail de 12 mois ou plus, 1 à 2 mois avant la fin d'un bail à durée fixe plus court, ou 1 à 2 mois avant la date de changement prévue d'un locataire au mois. Confirmez les exigences exactes pour votre situation avant d'agir.",
+    "emptyNoneOnFile": "Aucun locataire n'a de date de fin de bail, ni de statut mois en mois, enregistré pour le moment, donc rien à suivre.",
     "emptyNothingNeedsAttention": "Rien ne nécessite d'attention pour l'instant.",
     "columnProperty": "Propriété",
     "columnTenant": "Locataire",
@@ -554,7 +560,11 @@
     "sentOn": "Envoyé le {{date}}",
     "undo": "Annuler",
     "saving": "Enregistrement...",
-    "markNoticeSent": "Marquer l'avis comme envoyé"
+    "markNoticeSent": "Marquer l'avis comme envoyé",
+    "statusMonthToMonthNoDate": "Mois en mois — aucune date fixée",
+    "statusMonthToMonthDatePassed": "Date prévue dépassée",
+    "monthToMonth": "Mois en mois",
+    "plannedChangeOn": "changement prévu {{date}}"
   },
   "tenantMaintenance": {
     "title": "Entretien",

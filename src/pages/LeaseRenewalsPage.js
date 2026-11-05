@@ -15,6 +15,8 @@ const STATUS_META = {
   in_window: { labelKey: 'leaseRenewals.statusInWindow', badge: 'warn' },
   window_passed: { labelKey: 'leaseRenewals.statusWindowPassed', badge: 'warn' },
   lease_ended: { labelKey: 'leaseRenewals.statusLeaseEnded', badge: 'good' },
+  month_to_month_no_date: { labelKey: 'leaseRenewals.statusMonthToMonthNoDate', badge: 'neutral' },
+  month_to_month_date_passed: { labelKey: 'leaseRenewals.statusMonthToMonthDatePassed', badge: 'neutral' },
 };
 
 function formatDate(value) {
@@ -178,7 +180,20 @@ export default function LeaseRenewalsPage() {
                   <tr key={r.tenant_id}>
                     <td>{r.property_address || '—'}</td>
                     <td>{r.tenant_name}{r.unit_label ? ` — ${r.unit_label}` : ''}</td>
-                    <td>{formatDate(r.lease_end_date)}</td>
+                    <td>
+                      {r.is_month_to_month ? (
+                        <>
+                          {t('leaseRenewals.monthToMonth')}
+                          {r.planned_rent_change_date && (
+                            <div className="pd-prow-city" style={{ marginTop: 2 }}>
+                              {t('leaseRenewals.plannedChangeOn', { date: formatDate(r.planned_rent_change_date) })}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        formatDate(r.lease_end_date)
+                      )}
+                    </td>
                     <td>
                       {formatDate(r.window_start)} – {formatDate(r.window_end)}
                       <div className="pd-prow-city" style={{ marginTop: 2 }}>{r.bracket}</div>
