@@ -934,5 +934,12 @@
     "title": "Une erreur est survenue",
     "message": "Cette page a rencontré un problème inattendu. Recharger la page règle généralement le problème.",
     "reloadButton": "Recharger la page"
+  },
+  "cookieConsent": {
+    "ariaLabel": "Préférences de témoins",
+    "message": "Nous utilisons des témoins (cookies) analytiques pour comprendre l'utilisation de Praedium. Ils ne se chargent que si vous les acceptez.",
+    "learnMore": "En savoir plus",
+    "decline": "Refuser",
+    "accept": "Accepter"
   }
 }

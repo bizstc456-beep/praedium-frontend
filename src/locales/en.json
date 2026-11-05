@@ -934,5 +934,12 @@
     "title": "Something went wrong",
     "message": "This page ran into an unexpected problem. Reloading usually fixes it.",
     "reloadButton": "Reload page"
+  },
+  "cookieConsent": {
+    "ariaLabel": "Cookie preferences",
+    "message": "We use analytics cookies to understand how Praedium is used. They only load if you accept.",
+    "learnMore": "Learn more",
+    "decline": "Decline",
+    "accept": "Accept"
   }
 }

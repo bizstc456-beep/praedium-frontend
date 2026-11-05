@@ -25,6 +25,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import NotFoundPage from './pages/NotFoundPage';
 import HelpPage from './pages/HelpPage';
 import ErrorBoundary from './components/ErrorBoundary';
+import CookieConsentBanner from './components/CookieConsentBanner';
 import { ADMIN_EMAILS } from './utils/adminEmails';
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -87,6 +88,7 @@ function App() {
     <ErrorBoundary>
       <Router>
         <AnalyticsTracker />
+        <CookieConsentBanner />
         <Routes>
           <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />

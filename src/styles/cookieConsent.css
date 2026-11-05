@@ -1,0 +1,79 @@
+.pd-cookie-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  max-width: 560px;
+  margin: 0 auto;
+  background: var(--pd-card, #fffdf8);
+  color: var(--pd-ink, #231c12);
+  border: 1px solid var(--pd-accent-soft, #f6ead0);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.pd-cookie-banner p {
+  margin: 0;
+}
+
+.pd-cookie-banner a {
+  color: var(--pd-accent, #9c6b1d);
+  text-decoration: underline;
+}
+
+.pd-cookie-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.pd-cookie-btn {
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-family: inherit;
+}
+
+.pd-cookie-decline {
+  background: transparent;
+  border-color: var(--pd-ink2, #70644c);
+  color: var(--pd-ink, #231c12);
+}
+
+.pd-cookie-decline:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.pd-cookie-accept {
+  background: var(--pd-accent, #9c6b1d);
+  color: #fff;
+}
+
+.pd-cookie-accept:hover {
+  background: var(--pd-accent-2, #c9962c);
+}
+
+@media (max-width: 480px) {
+  .pd-cookie-banner {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    padding: 14px 16px;
+  }
+  .pd-cookie-actions {
+    justify-content: stretch;
+  }
+  .pd-cookie-btn {
+    flex: 1;
+  }
+}
