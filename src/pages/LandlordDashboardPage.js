@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import CountUp from '../components/CountUp';
+import { formatUnitLabel } from '../utils/formatUnitLabel';
 import { apiRequest } from '../utils/api';
 
 const supabase = createClient(
@@ -122,6 +123,7 @@ export default function LandlordDashboardPage() {
 
   const hasPending = summary.pending_amount > 0;
   const hasRenewals = renewalsSoon.length > 0;
+  const renewalsPastWindow = renewalsSoon.filter((tn) => tn.renewal_window_status === 'window_passed');
   const monthLabel = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   const tenantNameById = {};
@@ -158,8 +160,14 @@ export default function LandlordDashboardPage() {
   );
   const maintenancePreview = openMaintenance.slice(0, 2);
 
+  // Surface the most urgent renewals first: a notice window that has
+  // already passed needs action before one that's merely open, which in
+  // turn outranks one that's just upcoming.
+  const RENEWAL_URGENCY = { window_passed: 0, in_window: 1, upcoming: 2 };
   const renewalPreview = leaseRenewals
-    .filter((r) => r.status === 'in_window' || r.status === 'upcoming')
+    .filter((r) => r.status === 'window_passed' || r.status === 'in_window' || r.status === 'upcoming')
+    .slice()
+    .sort((a, b) => (RENEWAL_URGENCY[a.status] ?? 99) - (RENEWAL_URGENCY[b.status] ?? 99))
     .slice(0, 2);
 
   // "Getting started" checklist -- driven by real data, not its own tracked
@@ -305,10 +313,12 @@ export default function LandlordDashboardPage() {
           )}
 
           {hasRenewals && (
-            <div className="pd-banner">
+            <div className={`pd-banner${renewalsPastWindow.length > 0 ? ' pd-banner-urgent' : ''}`}>
               <div>
                 <div className="pd-banner-title">
-                  {t('dashboard.bannerRenewalTitle', { count: renewalsSoon.length })}
+                  {renewalsPastWindow.length > 0
+                    ? t('dashboard.bannerRenewalPassedTitle', { count: renewalsPastWindow.length })
+                    : t('dashboard.bannerRenewalTitle', { count: renewalsSoon.length })}
                 </div>
                 <div className="pd-banner-sub">
                   {t('dashboard.bannerRenewalSub', { names: renewalsSoon.map((tn) => tn.name).join(', ') })}
@@ -402,7 +412,7 @@ export default function LandlordDashboardPage() {
                   <div className="pd-rail-mini-list">
                     {maintenancePreview.map((r) => (
                       <div className="pd-rail-mini-row" key={r.id}>
-                        <span>{r.title}{r.tenants?.unit_label ? ` — ${r.tenants.unit_label}` : ''}</span>
+                        <span>{r.title}{r.tenants?.unit_label ? ` — ${formatUnitLabel(r.tenants.unit_label, t('properties.unitLabel'))}` : ''}</span>
                         <span className={`pd-badge ${r.status === 'open' ? 'warn pd-badge-pulse' : 'neutral'}`}>
                           {r.status === 'open' ? t('dashboard.maintenanceStatusOpen') : t('dashboard.maintenanceStatusInProgress')}
                         </span>
@@ -428,8 +438,14 @@ export default function LandlordDashboardPage() {
                             ? t('dashboard.leaseRenewalRowMonthToMonth', { name: shortName(r.tenant_name, t('dashboard.tenantFallback')) })
                             : t('dashboard.leaseRenewalRow', { name: shortName(r.tenant_name, t('dashboard.tenantFallback')), date: shortDate(r.lease_end_date) })}
                         </span>
-                        <span className={`pd-badge ${r.status === 'in_window' ? 'warn' : 'muted'}`}>
-                          {r.status === 'in_window' ? t('dashboard.renewalStatusWindowOpen') : t('dashboard.renewalStatusUpcoming')}
+                        <span className={`pd-badge ${
+                          r.status === 'window_passed' ? 'warn pd-badge-pulse' : r.status === 'in_window' ? 'warn' : 'muted'
+                        }`}>
+                          {r.status === 'window_passed'
+                            ? t('dashboard.renewalStatusWindowPassed')
+                            : r.status === 'in_window'
+                              ? t('dashboard.renewalStatusWindowOpen')
+                              : t('dashboard.renewalStatusUpcoming')}
                         </span>
                       </div>
                     ))}

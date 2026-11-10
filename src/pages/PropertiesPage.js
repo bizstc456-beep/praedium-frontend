@@ -5,6 +5,7 @@ import AppShell from '../components/AppShell';
 import KebabMenu from '../components/KebabMenu';
 import DatePicker from '../components/DatePicker';
 import { apiRequest } from '../utils/api';
+import { formatUnitLabel } from '../utils/formatUnitLabel';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -63,6 +64,7 @@ export default function PropertiesPage() {
 
   const [paymentFormOpen, setPaymentFormOpen] = useState(null); // null | tenant id
   const [paymentForm, setPaymentForm] = useState(EMPTY_PAYMENT);
+  const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState('');
 
   // Which "Documents" panel is expanded -- 'property-<id>' or 'tenant-<id>'.
@@ -396,11 +398,14 @@ export default function PropertiesPage() {
     e.preventDefault();
     setFormError('');
 
+    if (isSubmittingPayment) return; // guards against a double-click firing two payments
+
     if (!paymentForm.amount || Number(paymentForm.amount) <= 0) {
       setFormError(t('properties.enterPaymentAmount'));
       return;
     }
 
+    setIsSubmittingPayment(true);
     try {
       const session = await getSession();
       if (!session) {
@@ -427,6 +432,8 @@ export default function PropertiesPage() {
       await loadData();
     } catch (err) {
       setFormError(err.message || t('properties.failedToRecordPayment'));
+    } finally {
+      setIsSubmittingPayment(false);
     }
   };
 
@@ -591,7 +598,7 @@ export default function PropertiesPage() {
                           <div className="pd-unit-row">
                             <div className="pd-unit-info">
                               <div className="pd-unit-name">
-                                {tenant.name}{tenant.unit_label ? ` — ${tenant.unit_label}` : ''}
+                                {tenant.name}{tenant.unit_label ? ` — ${formatUnitLabel(tenant.unit_label, t('properties.unitLabel'))}` : ''}
                                 {tenant.renewal_soon && (
                                   <span className="pd-badge warn pd-unit-badge">
                                     {tenant.is_month_to_month ? t('properties.noticeWindowOpen') : t('properties.leaseEndsSoon')}
@@ -699,9 +706,11 @@ export default function PropertiesPage() {
                                 </div>
                               </div>
                               <div className="pd-form-actions">
-                                <button type="submit" className="pd-btn pd-btn-primary">{t('properties.recordPayment')}</button>
-                                <button type="button" className="pd-btn pd-btn-secondary" onClick={closePaymentForm}>{t('properties.cancel')}</button>
-                                <button type="button" className="pd-btn pd-btn-danger" onClick={() => cancelLastPayment(tenant.id)}>{t('properties.cancelLastPayment')}</button>
+                                <button type="submit" className="pd-btn pd-btn-primary" disabled={isSubmittingPayment}>
+                                  {isSubmittingPayment ? t('properties.recordingPayment') : t('properties.recordPayment')}
+                                </button>
+                                <button type="button" className="pd-btn pd-btn-secondary" onClick={closePaymentForm} disabled={isSubmittingPayment}>{t('properties.cancel')}</button>
+                                <button type="button" className="pd-btn pd-btn-danger" onClick={() => cancelLastPayment(tenant.id)} disabled={isSubmittingPayment}>{t('properties.cancelLastPayment')}</button>
                               </div>
                             </form>
                           </div>

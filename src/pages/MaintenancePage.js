@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { createClient } from '@supabase/supabase-js';
 import AppShell from '../components/AppShell';
 import { apiRequest } from '../utils/api';
+import { formatUnitLabel } from '../utils/formatUnitLabel';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -89,6 +90,7 @@ export default function MaintenancePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
+  const [assigningVendorId, setAssigningVendorId] = useState(null);
   const [filter, setFilter] = useState('open'); // 'open' | 'all'
 
   const [vendors, setVendors] = useState([]);
@@ -165,6 +167,32 @@ export default function MaintenancePage() {
       setError(err.message || t('maintenance.updateRequestError'));
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const assignVendor = async (request, vendorId) => {
+    setAssigningVendorId(request.id);
+    setError('');
+    try {
+      const session = await getSession();
+      if (!session) {
+        setError(t('maintenance.pleaseLogInAgain'));
+        return;
+      }
+      await apiRequest(`${process.env.REACT_APP_BACKEND_URL}/api/maintenance/${request.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ status: request.status, vendor_id: vendorId || null }),
+      });
+      const assignedVendor = vendorId ? vendors.find((v) => v.id === vendorId) || null : null;
+      setRequests((prev) => prev.map((r) => (r.id === request.id ? { ...r, vendor_id: vendorId || null, vendors: assignedVendor } : r)));
+    } catch (err) {
+      setError(err.message || t('maintenance.updateVendorAssignmentError'));
+    } finally {
+      setAssigningVendorId(null);
     }
   };
 
@@ -430,6 +458,7 @@ export default function MaintenancePage() {
                     <th>{t('maintenance.tablePhoto')}</th>
                     <th>{t('maintenance.tableSubmitted')}</th>
                     <th>{t('maintenance.tableStatus')}</th>
+                    <th>{t('maintenance.tableVendor')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -440,7 +469,7 @@ export default function MaintenancePage() {
                         <td>{r.properties?.address || '—'}</td>
                         <td>
                           {r.tenants?.name || '—'}
-                          {r.tenants?.unit_label ? ` — ${r.tenants.unit_label}` : ''}
+                          {r.tenants?.unit_label ? ` — ${formatUnitLabel(r.tenants.unit_label, t('properties.unitLabel'))}` : ''}
                         </td>
                         <td>
                           <div style={{ fontWeight: 600 }}>{r.title}</div>
@@ -477,6 +506,23 @@ export default function MaintenancePage() {
                               ))}
                             </select>
                           </div>
+                        </td>
+                        <td>
+                          <select
+                            className="pd-select"
+                            style={{ width: 160, padding: '4px 28px 4px 8px', fontSize: 12.5 }}
+                            value={r.vendor_id || ''}
+                            disabled={assigningVendorId === r.id || vendors.length === 0}
+                            onChange={(e) => assignVendor(r, e.target.value)}
+                          >
+                            <option value="">{t('maintenance.noVendorAssigned')}</option>
+                            {vendors.map((v) => (
+                              <option key={v.id} value={v.id}>{v.name} — {tradeLabel(v.trade, t)}</option>
+                            ))}
+                          </select>
+                          {r.vendors?.phone && (
+                            <div className="pd-prow-city" style={{ marginTop: 4 }}>{r.vendors.phone}</div>
+                          )}
                         </td>
                       </tr>
                     );

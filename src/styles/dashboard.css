@@ -371,6 +371,19 @@
   flex-wrap: wrap;
 }
 
+.pd-banner-urgent {
+  background: var(--pd-danger-soft);
+  border-color: var(--pd-danger);
+}
+
+.pd-banner-urgent .pd-banner-title {
+  color: var(--pd-danger);
+}
+
+.pd-banner-urgent .pd-banner-btn {
+  background: var(--pd-danger);
+}
+
 .pd-banner-title {
   font-weight: 700;
   font-size: 14px;

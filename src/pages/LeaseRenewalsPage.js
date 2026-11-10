@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import AppShell from '../components/AppShell';
 import { apiRequest } from '../utils/api';
+import { formatUnitLabel } from '../utils/formatUnitLabel';
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -179,7 +180,7 @@ export default function LeaseRenewalsPage() {
                 return (
                   <tr key={r.tenant_id}>
                     <td>{r.property_address || '—'}</td>
-                    <td>{r.tenant_name}{r.unit_label ? ` — ${r.unit_label}` : ''}</td>
+                    <td>{r.tenant_name}{r.unit_label ? ` — ${formatUnitLabel(r.unit_label, t('properties.unitLabel'))}` : ''}</td>
                     <td>
                       {r.is_month_to_month ? (
                         <>

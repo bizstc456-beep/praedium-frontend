@@ -279,6 +279,7 @@
     "paid": "Payé",
     "pendingAmount": "{{amount}} en attente",
     "recordPayment": "Enregistrer un paiement",
+    "recordingPayment": "Enregistrement en cours…",
     "inviting": "Invitation en cours...",
     "inviteToPortal": "Inviter au portail",
     "addEmailFirst": "Ajoutez d'abord une adresse courriel",
@@ -705,6 +706,8 @@
     "goToMessages": "Aller à Messages",
     "bannerRenewalTitle_one": "Un bail se termine dans les 90 jours",
     "bannerRenewalTitle_other": "{{count}} baux se terminent dans les 90 jours",
+    "bannerRenewalPassedTitle_one": "La fenêtre d'avis d'un bail est dépassée — agir maintenant",
+    "bannerRenewalPassedTitle_other": "La fenêtre d'avis de {{count}} baux est dépassée — agir maintenant",
     "bannerRenewalSub": "{{names}} — la période d'avis du TAL du Québec est de 3 à 6 mois avant la fin d'un bail de 12 mois ou plus, ou de 1 à 2 mois pour un bail plus court. Vérifiez chaque bail sur la page Renouvellements de bail avant d'envoyer un avis d'augmentation de loyer ou de non-renouvellement.",
     "goToProperties": "Aller aux propriétés",
     "goToRenewals": "Aller aux renouvellements de bail",
@@ -737,6 +740,7 @@
     "leaseRenewalRow": "{{name}} — se termine le {{date}}",
     "leaseRenewalRowMonthToMonth": "{{name}} — mois en mois",
     "renewalStatusWindowOpen": "Période ouverte",
+    "renewalStatusWindowPassed": "Fenêtre dépassée — agir maintenant",
     "renewalStatusUpcoming": "À venir",
     "emptyRailTitle": "Ce que vous verrez ici",
     "emptyRailNote": "Dès que vous ajoutez votre première propriété, c'est ici que vous suivrez l'activité récente, les demandes d'entretien et les renouvellements de bail."
@@ -957,7 +961,10 @@
       "pest_control": "Lutte antiparasitaire",
       "locksmith": "Serrurier",
       "other": "Autre"
-    }
+    },
+    "updateVendorAssignmentError": "Impossible de mettre à jour l'attribution du fournisseur.",
+    "tableVendor": "Fournisseur",
+    "noVendorAssigned": "Aucun fournisseur assigné"
   },
   "errors": {
     "timeout": "La requête a expiré. Vérifiez votre connexion et réessayez.",
