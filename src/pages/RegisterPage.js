@@ -73,7 +73,12 @@ export default function RegisterPage() {
           setError(loginError.message);
         }
       } else {
-        navigate('/');
+        // Send the new landlord straight into plan selection + Stripe
+        // Checkout instead of the dashboard. There's no free no-card
+        // window anymore (see /api/auth/register) -- the first dashboard
+        // API call would 402 and bounce them here anyway, so this just
+        // skips that extra round trip.
+        navigate('/payment');
       }
     } catch (err) {
       setError(err.message || t('register.genericError'));
