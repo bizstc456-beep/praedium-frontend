@@ -72,6 +72,13 @@
     "contactSupport": "Contactez le soutien",
     "checkEmailToConfirm": "Compte créé! Vérifiez votre boîte courriel pour le lien de confirmation, puis connectez-vous."
   },
+  "subscribe": {
+    "title": "Choisissez votre forfait pour continuer",
+    "subtitle": "Choisissez un forfait ci-dessous pour commencer votre essai gratuit de 30 jours et accéder à votre tableau de bord.",
+    "freeBannerTitle": "Le premier mois est offert.",
+    "freeBannerBody": "Peu importe le forfait choisi, vous ne serez facturé d'aucun montant pendant 30 jours. Annulez n'importe quand avant la fin de cette période et vous ne paierez rien.",
+    "signOut": "Pas encore prêt? Se déconnecter"
+  },
   "forgotPassword": {
     "genericError": "Une erreur est survenue",
     "title": "Réinitialisez votre mot de passe",

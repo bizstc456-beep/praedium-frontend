@@ -72,6 +72,13 @@
     "contactSupport": "Contact support",
     "checkEmailToConfirm": "Account created! Check your inbox for a confirmation email, then sign in."
   },
+  "subscribe": {
+    "title": "Choose your plan to continue",
+    "subtitle": "Pick any plan below to start your 30-day free trial and unlock your dashboard.",
+    "freeBannerTitle": "Your first month is on us.",
+    "freeBannerBody": "No matter which plan you choose, you won't be charged anything for 30 days. Cancel anytime before then and you'll pay nothing.",
+    "signOut": "Not ready yet? Sign out"
+  },
   "forgotPassword": {
     "genericError": "An error occurred",
     "title": "Reset your password",

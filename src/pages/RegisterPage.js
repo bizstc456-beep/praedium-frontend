@@ -74,12 +74,13 @@ export default function RegisterPage() {
           setError(loginError.message);
         }
       } else {
-        // Send the new landlord straight into plan selection + Stripe
-        // Checkout instead of the dashboard. There's no free no-card
-        // window anymore (see /api/auth/register) -- the first dashboard
-        // API call would 402 and bounce them here anyway, so this just
-        // skips that extra round trip.
-        navigate('/payment');
+        // Send the new landlord straight into the mandatory plan-selection
+        // page instead of the dashboard. This only runs in the rare case
+        // sign-in succeeds immediately after registering (email
+        // confirmation disabled); the normal path is confirming by email,
+        // which server.js now sends straight to /subscribe too (see
+        // emailRedirectTo in /api/auth/register).
+        navigate('/subscribe');
       }
     } catch (err) {
       setError(err.message || t('register.genericError'));

@@ -1915,6 +1915,126 @@
   margin-bottom: 26px;
 }
 
+/* ---- mandatory plan-selection gate (SubscribePage) ----
+   Same dark auth-page backdrop, but holds the wide pricing grid instead
+   of a narrow form -- so it needs the content-surface tokens too
+   (--pd-good, --pd-accent-soft, etc.), which .pd-auth-page doesn't
+   define since the login/register forms never need them. */
+.pd-subscribe-page {
+  --pd-accent: #9c6b1d;
+  --pd-accent-2: #c9962c;
+  --pd-accent-soft: #f6ead0;
+  --pd-gradient: linear-gradient(135deg, #e8bb54 0%, #ad7a2b 100%);
+  --pd-good: #0ea968;
+  --pd-good-soft: #e2f9ee;
+  --pd-danger: #e0294f;
+  --pd-danger-soft: #fce6ea;
+  --pd-line: #e8ddc3;
+  --pd-ink: #231c12;
+  --pd-ink2: #70644c;
+  --pd-card: #fffdf8;
+
+  min-height: 100vh;
+  padding: 56px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Public Sans", system-ui, sans-serif;
+  background: radial-gradient(circle at 15% 20%, #2b2010 0%, #0a0704 45%),
+    radial-gradient(circle at 85% 85%, #3d2a10 0%, transparent 55%),
+    #0a0704;
+  position: relative;
+}
+
+.pd-subscribe-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: "Bricolage Grotesque", "Outfit", sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: #f7f2e4;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.pd-subscribe-brand::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #e8bb54 0%, #ad7a2b 100%);
+  flex-shrink: 0;
+}
+
+.pd-subscribe-panel {
+  width: 100%;
+  max-width: 980px;
+  background: var(--pd-card);
+  border-radius: 24px;
+  padding: 44px 48px 36px;
+  box-shadow: 0 40px 80px -24px rgba(10, 7, 4, 0.6);
+  position: relative;
+  z-index: 1;
+}
+
+.pd-subscribe-free-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--pd-accent-soft);
+  border: 1px solid var(--pd-accent-2);
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin-bottom: 30px;
+  color: #6b4e13;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.pd-subscribe-free-emoji {
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.pd-subscribe-free-banner strong {
+  color: var(--pd-accent);
+}
+
+.pd-subscribe-footnote {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--pd-ink2);
+  margin: 0 0 22px;
+}
+
+.pd-subscribe-signout {
+  text-align: center;
+}
+
+.pd-subscribe-signout button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--pd-ink2);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pd-subscribe-signout button:hover {
+  color: var(--pd-ink);
+}
+
+@media (max-width: 620px) {
+  .pd-subscribe-panel {
+    padding: 30px 22px 26px;
+    border-radius: 18px;
+  }
+}
+
+
 .pd-auth-header h1 {
   font-family: "Bricolage Grotesque", "Outfit", sans-serif;
   font-size: 24px;
