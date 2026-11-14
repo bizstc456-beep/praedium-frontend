@@ -1,4 +1,8 @@
 {
+  "common": {
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
   "nav": {
     "admin": "Admin",
     "landlordView": "Landlord view",

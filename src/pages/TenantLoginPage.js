@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
+import PasswordInput from '../components/PasswordInput';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -64,13 +65,12 @@ export default function TenantLoginPage() {
               <label htmlFor="tenant-login-password">{t('tenantLogin.passwordLabel')}</label>
               <Link to="/forgot-password">{t('tenantLogin.forgotPassword')}</Link>
             </div>
-            <input
+            <PasswordInput
               id="tenant-login-password"
-              className="pd-input"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              autoComplete="current-password"
               required
             />
           </div>

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
+import PasswordInput from '../components/PasswordInput';
 import { apiRequest } from '../utils/api';
 import '../styles/dashboard.css';
 
@@ -138,25 +139,23 @@ export default function RegisterPage() {
           </div>
           <div className="pd-field">
             <label htmlFor="register-password">{t('register.passwordLabel')}</label>
-            <input
+            <PasswordInput
               id="register-password"
-              className="pd-input"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              autoComplete="new-password"
               required
             />
           </div>
           <div className="pd-field">
             <label htmlFor="register-confirm-password">{t('register.confirmPasswordLabel')}</label>
-            <input
+            <PasswordInput
               id="register-confirm-password"
-              className="pd-input"
-              type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
+              autoComplete="new-password"
               required
             />
           </div>

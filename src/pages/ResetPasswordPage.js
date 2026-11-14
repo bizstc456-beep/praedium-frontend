@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
+import PasswordInput from '../components/PasswordInput';
 import { apiRequest } from '../utils/api';
 import '../styles/dashboard.css';
 
@@ -96,26 +97,24 @@ export default function ResetPasswordPage() {
             {error && <div className="pd-alert-danger">{error}</div>}
             <div className="pd-field">
               <label htmlFor="reset-password-new">{t('resetPassword.newPasswordLabel')}</label>
-              <input
+              <PasswordInput
                 id="reset-password-new"
-                className="pd-input"
-                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                autoComplete="new-password"
                 required
                 minLength={6}
               />
             </div>
             <div className="pd-field">
               <label htmlFor="reset-password-confirm">{t('resetPassword.confirmPasswordLabel')}</label>
-              <input
+              <PasswordInput
                 id="reset-password-confirm"
-                className="pd-input"
-                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
+                autoComplete="new-password"
                 required
                 minLength={6}
               />

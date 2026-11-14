@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
+import PasswordInput from '../components/PasswordInput';
 import '../styles/dashboard.css';
 
 const supabase = createClient(
@@ -83,26 +84,24 @@ export default function TenantSetPasswordPage() {
             {error && <div className="pd-alert-danger">{error}</div>}
             <div className="pd-field">
               <label htmlFor="tenant-set-password-new">{t('tenantSetPassword.newPasswordLabel')}</label>
-              <input
+              <PasswordInput
                 id="tenant-set-password-new"
-                className="pd-input"
-                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                autoComplete="new-password"
                 required
                 minLength={6}
               />
             </div>
             <div className="pd-field">
               <label htmlFor="tenant-set-password-confirm">{t('tenantSetPassword.confirmPasswordLabel')}</label>
-              <input
+              <PasswordInput
                 id="tenant-set-password-confirm"
-                className="pd-input"
-                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
+                autoComplete="new-password"
                 required
                 minLength={6}
               />
