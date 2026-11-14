@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabaseClient';
 import AppShell from '../components/AppShell';
 import { apiRequest } from '../utils/api';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-landlord-auth' } }
-);
 
 // Quebec landlords typically collect rent on the 1st -- used to fill in the
 // {due_date} / {days_late} placeholders in the SMS templates.

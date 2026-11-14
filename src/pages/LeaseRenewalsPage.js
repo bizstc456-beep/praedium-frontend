@@ -1,15 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import AppShell from '../components/AppShell';
 import { apiRequest } from '../utils/api';
 import { formatUnitLabel } from '../utils/formatUnitLabel';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-landlord-auth' } }
-);
 
 const STATUS_META = {
   upcoming: { labelKey: 'leaseRenewals.statusUpcoming', badge: 'neutral' },

@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabaseClient';
 import AppShell from '../components/AppShell';
 import { apiRequest } from '../utils/api';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-landlord-auth' } }
-);
 
 const TIERS = [
   { key: 'starter', price: 39 },

@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import AppShell from '../components/AppShell';
 import LanguageToggle from '../components/LanguageToggle';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import { apiRequest } from '../utils/api';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-landlord-auth' } }
-);
 
 export default function SettingsPage() {
   const { t } = useTranslation();

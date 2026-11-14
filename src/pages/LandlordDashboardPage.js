@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabaseClient';
 import CountUp from '../components/CountUp';
 import { formatUnitLabel } from '../utils/formatUnitLabel';
 import { apiRequest } from '../utils/api';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-landlord-auth' } }
-);
 
 // All money from the API is in cents (matches Stripe's convention, used
 // consistently for rent_amount and payment amounts alike).

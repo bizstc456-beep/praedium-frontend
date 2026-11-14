@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
 import PasswordInput from '../components/PasswordInput';
 import { apiRequest } from '../utils/api';
 import '../styles/dashboard.css';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-landlord-auth' } }
-);
 
 // Reached via the link in the "reset your password" email. Supabase parses
 // the recovery token out of the URL on load and, once that's done, fires a

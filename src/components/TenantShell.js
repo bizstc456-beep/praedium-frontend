@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseTenant as supabase } from '../utils/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from './LanguageToggle';
 import LanguagePrompt from './LanguagePrompt';
 import { apiRequest } from '../utils/api';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-tenant-auth' } }
-);
 
 // Sidebar layout for the tenant-facing portal -- deliberately separate from
 // the landlord AppShell (different nav, different account type). Wrap a

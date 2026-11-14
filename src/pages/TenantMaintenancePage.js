@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseTenant as supabase } from '../utils/supabaseClient';
 import TenantShell from '../components/TenantShell';
 import { apiRequest } from '../utils/api';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-tenant-auth' } }
-);
 
 const STATUS_BADGE = { open: 'warn', in_progress: 'neutral', resolved: 'good' };
 const MAX_PHOTO_BYTES = 15 * 1024 * 1024;

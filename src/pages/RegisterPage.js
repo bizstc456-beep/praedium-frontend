@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
 import PasswordInput from '../components/PasswordInput';
 import { apiRequest } from '../utils/api';
 import '../styles/dashboard.css';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-landlord-auth' } }
-);
 
 export default function RegisterPage() {
   const { t } = useTranslation();

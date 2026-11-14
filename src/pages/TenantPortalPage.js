@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseTenant as supabase } from '../utils/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import TenantShell from '../components/TenantShell';
 import { apiRequest } from '../utils/api';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-tenant-auth' } }
-);
 
 function formatMoney(cents) {
   const amount = (cents || 0) / 100;

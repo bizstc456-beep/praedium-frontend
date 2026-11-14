@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import { ADMIN_EMAILS } from '../utils/adminEmails';
 import { apiRequest } from '../utils/api';
 import LanguageToggle from './LanguageToggle';
 import LanguagePrompt from './LanguagePrompt';
 import '../styles/dashboard.css';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-landlord-auth' } }
-);
 
 // Shared sidebar layout for the logged-in app. Wrap a page's content with
 // <AppShell active="dashboard">...</AppShell> to get the nav + sign out.

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
 import './App.css';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -30,16 +29,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import { ADMIN_EMAILS } from './utils/adminEmails';
 import { apiRequest } from './utils/api';
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-landlord-auth' } }
-);
-const supabaseTenant = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY,
-  { auth: { storageKey: 'pd-tenant-auth' } }
-);
+import { supabase, supabaseTenant } from './utils/supabaseClient';
 
 // Sends a GA4 page_view on every client-side route change (SPA navigations
 // don't trigger a normal page load, so gtag's automatic pageview misses them).
