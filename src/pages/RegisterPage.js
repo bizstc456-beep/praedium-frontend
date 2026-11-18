@@ -90,12 +90,25 @@ export default function RegisterPage() {
           <div className="pd-auth-brand">Praedium</div>
           <LanguageToggle />
         </div>
+        {confirmEmailSent ? (
+          // Once the account exists, the form fields (name/phone/email/
+          // password) no longer serve any purpose -- there's nothing left
+          // to submit, and leaving them on screen under the success
+          // message just reads as clutter / unfinished state. Swap the
+          // whole card body for a single centered confirmation instead.
+          <div className="pd-auth-header pd-auth-confirm-sent">
+            <div className="pd-auth-confirm-icon" aria-hidden="true">&#9993;</div>
+            <h1>{t('register.checkYourEmailTitle')}</h1>
+            <p>{t('register.checkEmailToConfirm')}</p>
+            <Link to="/login" className="pd-btn pd-btn-primary pd-btn-block">{t('register.signIn')}</Link>
+          </div>
+        ) : (
+          <>
         <div className="pd-auth-header">
           <h1>{t('register.createAccount')}</h1>
           <p>{t('register.trialSubtitle')}</p>
         </div>
         <form onSubmit={handleRegister}>
-          {confirmEmailSent && <div className="pd-alert-success">{t('register.checkEmailToConfirm')}</div>}
           {error && <div className="pd-alert-danger">{error}</div>}
           <div className="pd-field">
             <label htmlFor="register-name">{t('register.fullNameLabel')}</label>
@@ -177,6 +190,8 @@ export default function RegisterPage() {
           <p>{t('register.alreadyHaveAccount')} <Link to="/login">{t('register.signIn')}</Link></p>
           <p className="pd-auth-support">{t('register.needHelp')} <a href="mailto:support@praedium.pro">{t('register.contactSupport')}</a></p>
         </div>
+          </>
+        )}
       </div>
     </div>
   );

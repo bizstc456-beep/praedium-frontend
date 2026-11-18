@@ -1915,6 +1915,38 @@
   margin-bottom: 26px;
 }
 
+/* ---- "check your inbox" confirmation state (RegisterPage) ----
+   Once the account's created there's nothing left to submit, so the form
+   fields disappear entirely and this replaces them -- centered, with its
+   own icon, instead of a success banner stacked above a now-pointless
+   form. */
+.pd-auth-confirm-sent {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.pd-auth-confirm-icon {
+  width: 56px;
+  height: 56px;
+  line-height: 56px;
+  border-radius: 50%;
+  background: var(--pd-good-soft);
+  color: var(--pd-good);
+  font-size: 24px;
+  margin: 4px auto 18px;
+}
+
+.pd-auth-confirm-sent p {
+  color: var(--pd-ink2);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 10px 0 24px;
+}
+
+.pd-auth-confirm-sent .pd-btn {
+  margin-top: 4px;
+}
+
 /* ---- mandatory plan-selection gate (SubscribePage) ----
    Same dark auth-page backdrop, but holds the wide pricing grid instead
    of a narrow form -- so it needs the content-surface tokens too
