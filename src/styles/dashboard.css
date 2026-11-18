@@ -1887,6 +1887,15 @@
   margin-bottom: 22px;
 }
 
+/* The confirmation screen has no form to anchor the brand/language row to
+   the top-left of -- everything below it is centered, so this row needs
+   to read as centered too instead of defaulting to its usual left-brand,
+   right-toggle split. */
+.pd-auth-top-row-center {
+  justify-content: center;
+  gap: 16px;
+}
+
 .pd-auth-top-row .pd-auth-brand {
   margin-bottom: 0;
 }

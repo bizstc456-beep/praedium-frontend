@@ -86,7 +86,7 @@ export default function RegisterPage() {
   return (
     <div className="pd-auth-page">
       <div className="pd-auth-card">
-        <div className="pd-auth-top-row">
+        <div className={`pd-auth-top-row${confirmEmailSent ? ' pd-auth-top-row-center' : ''}`}>
           <div className="pd-auth-brand">Praedium</div>
           <LanguageToggle />
         </div>
