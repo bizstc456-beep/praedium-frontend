@@ -114,8 +114,6 @@ export default function DatePicker({ id, value, onChange, placeholder = 'Select 
           }}
         >
           <div className="pd-datepicker-year-nav">
-            <button type="button" onClick={() => setViewYear((y) => y - 1)} aria-label="Previous year">&lsaquo;</button>
-
             <div className="pd-datepicker-month-select" ref={monthSelectRef}>
               <button
                 type="button"
@@ -148,8 +146,11 @@ export default function DatePicker({ id, value, onChange, placeholder = 'Select 
               )}
             </div>
 
-            <span className="pd-datepicker-year">{viewYear}</span>
-            <button type="button" onClick={() => setViewYear((y) => y + 1)} aria-label="Next year">&rsaquo;</button>
+            <div className="pd-datepicker-year-stepper">
+              <button type="button" className="pd-datepicker-year-btn" onClick={() => setViewYear((y) => y - 1)} aria-label="Previous year">&#9660;</button>
+              <span className="pd-datepicker-year">{viewYear}</span>
+              <button type="button" className="pd-datepicker-year-btn" onClick={() => setViewYear((y) => y + 1)} aria-label="Next year">&#9650;</button>
+            </div>
           </div>
 
           <div className="pd-datepicker-calendar">

@@ -1497,9 +1497,11 @@
   width: 266px;
 }
 
-/* Year navigation arrows flank a centered month-dropdown + year pair --
-   the month used to live in its own scrollable sidebar list; now it sits
-   right next to the year, one row, click to open the picker below. */
+/* Month dropdown on the left, year with its own up/down steppers flanking
+   it directly on the right -- previously the year's prev/next arrows sat
+   at the far left/right of the whole row (with the month dropdown
+   sandwiched between them), which put the "previous year" button nowhere
+   near the year it affects. */
 .pd-datepicker-year-nav {
   display: flex;
   align-items: center;
@@ -1510,25 +1512,26 @@
   margin-bottom: 12px;
 }
 
-/* Direct-child combinator on purpose -- this sizes only the actual prev/
-   next year arrows. A plain ".pd-datepicker-year-nav button" descendant
-   selector also matched the month-dropdown trigger nested one level
-   deeper inside, squashing it to a 26x26 box and spilling its text over
-   the year next to it. */
-.pd-datepicker-year-nav > button {
+.pd-datepicker-year-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pd-datepicker-year-btn {
   background: none;
   border: 1px solid var(--pd-line);
   border-radius: 8px;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 9px;
   line-height: 1;
   color: var(--pd-ink2);
   flex-shrink: 0;
 }
 
-.pd-datepicker-year-nav > button:hover {
+.pd-datepicker-year-btn:hover {
   color: var(--pd-ink);
   background: var(--pd-bg);
 }
