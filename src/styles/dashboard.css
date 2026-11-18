@@ -1494,20 +1494,28 @@
   border-radius: 14px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
   padding: 14px;
-  width: 340px;
+  width: 266px;
 }
 
+/* Year navigation arrows flank a centered month-dropdown + year pair --
+   the month used to live in its own scrollable sidebar list; now it sits
+   right next to the year, one row, click to open the picker below. */
 .pd-datepicker-year-nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 10px;
   font-weight: 700;
   font-size: 15px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-.pd-datepicker-year-nav button {
+/* Direct-child combinator on purpose -- this sizes only the actual prev/
+   next year arrows. A plain ".pd-datepicker-year-nav button" descendant
+   selector also matched the month-dropdown trigger nested one level
+   deeper inside, squashing it to a 26x26 box and spilling its text over
+   the year next to it. */
+.pd-datepicker-year-nav > button {
   background: none;
   border: 1px solid var(--pd-line);
   border-radius: 8px;
@@ -1517,62 +1525,82 @@
   font-size: 16px;
   line-height: 1;
   color: var(--pd-ink2);
+  flex-shrink: 0;
 }
 
-.pd-datepicker-year-nav button:hover {
+.pd-datepicker-year-nav > button:hover {
   color: var(--pd-ink);
   background: var(--pd-bg);
 }
 
-.pd-datepicker-body {
+.pd-datepicker-year {
+  min-width: 40px;
+  text-align: center;
+}
+
+.pd-datepicker-month-select {
+  position: relative;
+}
+
+.pd-datepicker-month-trigger {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--pd-line);
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--pd-ink);
+  cursor: pointer;
 }
 
-.pd-datepicker-months {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  max-height: 210px;
-  overflow-y: auto;
-  padding-right: 4px;
-  border-right: 1px solid var(--pd-line);
+.pd-datepicker-month-trigger:hover {
+  background: var(--pd-bg);
 }
 
-.pd-datepicker-months {
-  scrollbar-width: thin;
+.pd-datepicker-chevron {
+  font-size: 10px;
+  color: var(--pd-ink2);
+  transform: translateY(1px);
 }
 
-.pd-datepicker-months::-webkit-scrollbar {
-  width: 5px;
-}
-
-.pd-datepicker-months::-webkit-scrollbar-thumb {
-  background: var(--pd-line);
+.pd-datepicker-month-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 41;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  background: var(--pd-card);
+  border: 1px solid var(--pd-line);
   border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+  padding: 8px;
+  width: 196px;
 }
 
-.pd-datepicker-months::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.pd-datepicker-month-item {
+.pd-datepicker-month-menu-item {
   background: none;
   border: none;
-  text-align: left;
-  padding: 5px 8px;
+  text-align: center;
+  padding: 7px 0;
   border-radius: 7px;
   font-size: 12.5px;
   color: var(--pd-ink2);
   cursor: pointer;
 }
 
-.pd-datepicker-month-item:hover {
+.pd-datepicker-month-menu-item:hover {
   background: var(--pd-bg);
   color: var(--pd-ink);
 }
 
-.pd-datepicker-month-item.active {
+.pd-datepicker-month-menu-item.active {
   background: var(--pd-accent-soft);
   color: var(--pd-ink);
   font-weight: 700;
