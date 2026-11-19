@@ -3630,6 +3630,30 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
+/* Generic pd-modal content -- used by any confirmation dialog built on the
+   .pd-modal-backdrop/.pd-modal shell above (e.g. the plan-switch
+   confirmation on the pricing page). Kept separate from .pd-lang-modal-*
+   below, which is specific to the first-use language prompt. */
+.pd-modal-title {
+  margin: 0 0 10px;
+  font-size: 19px;
+  line-height: 1.35;
+  color: var(--pd-ink);
+}
+
+.pd-modal-body {
+  margin: 0 0 22px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--pd-ink2);
+}
+
+.pd-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .pd-lang-modal-title {
   margin: 0 0 10px;
   font-size: 19px;

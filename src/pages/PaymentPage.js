@@ -21,6 +21,9 @@ export default function PaymentPage() {
   const [showCancelFeedback, setShowCancelFeedback] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelFeedback, setCancelFeedback] = useState('');
+  // The tier a user just clicked "Switch to X" on, awaiting confirmation in
+  // the pd-modal below -- null means no confirmation dialog is open.
+  const [pendingTier, setPendingTier] = useState(null);
 
   useEffect(() => {
     getUserAndPlan();
@@ -81,10 +84,17 @@ export default function PaymentPage() {
     }
   };
 
-  const handleChangePlan = async (tierKey) => {
-    const target = TIERS.find((tr) => tr.key === tierKey);
-    const planName = target ? t(`payment.tiers.${target.key}.name`) : '';
-    if (!window.confirm(t('payment.confirmSwitchPlan', { planName }))) return;
+  // Clicking "Switch to X" opens the pd-modal confirmation below instead of
+  // acting immediately -- the actual switch happens in confirmChangePlan,
+  // triggered by that modal's own confirm button.
+  const handleChangePlan = (tierKey) => {
+    setPendingTier(tierKey);
+  };
+
+  const confirmChangePlan = async () => {
+    const tierKey = pendingTier;
+    if (!tierKey) return;
+    setPendingTier(null);
     setLoadingTier(tierKey);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -339,6 +349,36 @@ export default function PaymentPage() {
           </div>
         </div>
       </div>
+
+      {pendingTier && (
+        <div className="pd-modal-backdrop" role="dialog" aria-modal="true" aria-label={t('payment.confirmSwitchTitle')}>
+          <div className="pd-modal pd-switch-plan-modal">
+            <h2 className="pd-modal-title">{t('payment.confirmSwitchTitle')}</h2>
+            <p className="pd-modal-body">
+              {t('payment.confirmSwitchPlan', {
+                planName: t(`payment.tiers.${pendingTier}.name`),
+              })}
+            </p>
+            <div className="pd-modal-actions">
+              <button
+                type="button"
+                className="pd-btn pd-btn-secondary"
+                onClick={() => setPendingTier(null)}
+                disabled={loadingTier !== null}
+              >
+                {t('payment.cancelAction')}
+              </button>
+              <button
+                type="button"
+                className="pd-btn pd-btn-primary"
+                onClick={confirmChangePlan}
+              >
+                {t('payment.confirmSwitchCta', { planName: t(`payment.tiers.${pendingTier}.name`) })}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
