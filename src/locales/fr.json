@@ -341,6 +341,7 @@
     "fieldTenantName": "Nom du locataire",
     "fieldUnit": "Unité (optionnel)",
     "unitPlaceholder": "Unité 2",
+    "unitLabel": "Unité",
     "fieldPhone": "Téléphone",
     "fieldEmail": "Courriel (optionnel)",
     "fieldMonthlyRent": "Loyer mensuel ($)",

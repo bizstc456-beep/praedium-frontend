@@ -525,7 +525,7 @@ export default function PropertiesPage() {
                   </div>
                   <div className="pd-property-actions">
                     <button className="pd-btn pd-btn-secondary" onClick={() => openEditPropertyForm(p)}>{t('properties.edit')}</button>
-                    <button className="pd-btn pd-btn-primary" onClick={() => openNewTenantForm(p.id)}>{t('properties.addTenant')}</button>
+                    <button className="pd-btn pd-btn-secondary" onClick={() => openNewTenantForm(p.id)}>{t('properties.addTenant')}</button>
                     <KebabMenu
                       items={[
                         { label: docsOpenKey === propertyDocsKey ? t('properties.hideDocuments') : t('properties.documents'), onClick: () => toggleDocs(propertyDocsKey) },
@@ -613,7 +613,7 @@ export default function PropertiesPage() {
                             </span>
                             <div className="pd-unit-actions">
                               <button className="pd-btn pd-btn-secondary" onClick={() => openEditTenantForm(tenant)}>{t('properties.edit')}</button>
-                              <button className="pd-btn pd-btn-primary" onClick={() => openPaymentForm(tenant)}>{t('properties.recordPayment')}</button>
+                              <button className="pd-btn pd-btn-secondary" onClick={() => openPaymentForm(tenant)}>{t('properties.recordPayment')}</button>
                               <KebabMenu
                                 items={[
                                   ...(tenant.auth_user_id ? [] : [{
